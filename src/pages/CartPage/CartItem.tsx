@@ -1,6 +1,5 @@
 //import React, { useState, useEffect } from 'react';
 import { useEffect } from 'react';
-import { CartItemType } from '../../App';
 import '../../assets/css/app.css';
 import orangeCart from '../../picture/orange-cart.png'
 import { useCartStore, CartState } from '../../components/CountMath';
@@ -30,33 +29,33 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
   }, []);
 
   const removeFromCart = (itemId: number) => {
-    setCart(cart.filter(item => item.id !== itemId));
+    setCart(cart.filter(item => (item.id || 0) !== itemId));
   };
 
   const updateQuantity = (itemId: number, quantity: number) => {
-    setCart(cart.map(item => item.id === itemId ? { ...item, quantity } : item));
+    setCart(cart.map(item => (item.id || 0) === itemId ? { ...item, quantity } : item));
 
   };
 
   const plusQuantity = (itemId: number) => {
-    setCart(cart.map(item => item.id === itemId ? { ...item, quantity: Math.min(10, item.quantity + 1) } : item));
+    setCart(cart.map(item => (item.id || 0) === itemId ? { ...item, quantity: Math.min(10, ((item.quantity || 0) || 0) + 1) } : item));
     calculateTotal();
   };
 
   const decreaseQuantity = (itemId: number) => {
-    const targetItem = cart.find(item => item.id === itemId);
+    const targetItem = cart.find(item => (item.id || 0) === itemId);
     if (!targetItem) {
       return;
     }
 
-    if (targetItem.quantity === 1) {
+    if ( (targetItem.quantity || 0) === 1) {
       const shouldDelete = window.confirm('是否要刪除此商品？');
       if (shouldDelete) {
-        setCart(cart.filter(item => item.id !== itemId));
+        setCart(cart.filter(item => (item.id || 0) !== itemId));
       }
     } else {
       setCart(cart.map(item =>
-        item.id === itemId ? { ...item, quantity: Math.max(0, item.quantity - 1) } : item
+        (item.id || 0) === itemId ? { ...item, quantity: Math.max(0, ((item.quantity || 0) || 0) - 1) } : item
       )
       );
     }
@@ -67,14 +66,14 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
     setCart([]);
   };
 
-  // total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0);
+  // total = cart.reduce((acc, item) => acc + (item.unitPrice || 0) * (item.quantity || 0), 0);
+  const totalItems = cart.reduce((acc, item) => acc + ((item.quantity || 0) || 0), 0);
 
   return (
     <div className="cart">
       {cart.map((item, index) => {
         return index === 0 ? (
-          <div key={item.id} className="row">
+          <div key={(item.id || 0)} className="row">
             <div className="col-lg-12">
               <table className="cart-table mb-24">
                 <thead>
@@ -90,47 +89,47 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
                     <td className="pd">
                       <div className="product-detail-box">
                         <div className="img-block">
-                          <img src={item.imgSrc} alt={item.name} />
+                          <img src='#'/*{ item.imgSrc}*/ alt='space'/*{item.name}*/ />
                         </div>
                         <div>
-                          <h5 className="dark-gray">{item.name}</h5>
+                          <h5 className="dark-gray">{/*item.name*/}</h5>
                         </div>
                       </div>
                     </td>
                     <td>
-                      <h5 className="dark-gray">${item.price}</h5>
+                      <h5 className="dark-gray">${(item.unitPrice || 0)}</h5>
                     </td>
                     <td>
                       <div className="quantity quantity-wrap">
-                        <input className="decrement dark-gray" type="button" value="-" onClick={() => decreaseQuantity(item.id)} />
+                        <input className="decrement dark-gray" type="button" value="-" onClick={() => decreaseQuantity((item.id || 0))} />
                         <input
                           type="text"
                           name="quantity"
-                          value={item.quantity}
+                          value={(item.quantity || 0)}
                           maxLength={2}
                           size={1}
                           className="number"
                           onChange={(e) => {
                             const newQuantity = parseInt(e.target.value, 10);
                             if (!isNaN(newQuantity) && newQuantity <= 10) {
-                              updateQuantity(item.id, newQuantity);
+                              updateQuantity((item.id || 0), newQuantity);
                             } else {
                               const shouldReset = window.confirm('購買10本以上的書籍，詳情請洽客服');
                               if (shouldReset) {
-                                e.target.value = item.quantity.toString();
+                                e.target.value = (item.quantity || 0).toString();
                               }
                             }
                           }}
                         />
-                        <input className="increment dark-gray" type="button" value="+" onClick={() => plusQuantity(item.id)} />
+                        <input className="increment dark-gray" type="button" value="+" onClick={() => plusQuantity((item.id || 0))} />
                       </div>
                     </td>
                     <td>
-                      <h5>${(item.price * item.quantity).toFixed(0)}</h5>
+                      <h5>${((item.unitPrice || 0) * (item.quantity || 0)).toFixed(0)}</h5>
                     </td>
                     <td>
                       <a href="#">
-                        <i onClick={() => removeFromCart(item.id)}>刪除</i>
+                        <i onClick={() => removeFromCart((item.id || 0))}>刪除</i>
                       </a>
                     </td>
                   </tr>
@@ -139,7 +138,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
             </div>
           </div>
         ) : (
-          <div key={item.id} className="row">
+          <div key={(item.id || 0)} className="row">
             <div className="col-lg-12">
               <table className="cart-table mb-24">
                 <tbody>
@@ -147,47 +146,47 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
                     <td className="pd">
                       <div className="product-detail-box">
                         <div className="img-block">
-                          <img src={item.imgSrc} alt={item.name} />
+                          <img src='#'/*{item.imgSrc}*/ alt='space'/*{item.name}*/ />
                         </div>
                         <div>
-                          <h5 className="dark-gray">{item.name}</h5>
+                          <h5 className="dark-gray">{/*item.name*/}</h5>
                         </div>
                       </div>
                     </td>
                     <td>
-                      <h5 className="dark-gray">${item.price}</h5>
+                      <h5 className="dark-gray">${(item.unitPrice || 0)}</h5>
                     </td>
                     <td>
                       <div className="quantity quantity-wrap">
-                        <input className="decrement dark-gray" type="button" value="-" onClick={() => decreaseQuantity(item.id)} />
+                        <input className="decrement dark-gray" type="button" value="-" onClick={() => decreaseQuantity((item.id || 0))} />
                         <input
                           type="text"
                           name="quantity"
-                          value={item.quantity}
+                          value={(item.quantity || 0)}
                           maxLength={2}
                           size={1}
                           className="number"
                           onChange={(e) => {
                             const newQuantity = parseInt(e.target.value, 10);
                             if (!isNaN(newQuantity) && newQuantity <= 10) {
-                              updateQuantity(item.id, newQuantity);
+                              updateQuantity((item.id || 0), newQuantity);
                             } else {
                               const shouldReset = window.confirm('購買10本以上的書籍，請訊問客服');
                               if (shouldReset) {
-                                e.target.value = item.quantity.toString();
+                                e.target.value = (item.quantity || 0).toString();
                               }
                             }
                           }}
                         />
-                        <input className="increment dark-gray" type="button" value="+" onClick={() => plusQuantity(item.id)} />
+                        <input className="increment dark-gray" type="button" value="+" onClick={() => plusQuantity((item.id || 0))} />
                       </div>
                     </td>
                     <td>
-                      <h5>${(item.price * item.quantity).toFixed(0)}</h5>
+                      <h5>${((item.unitPrice || 0) * (item.quantity || 0)).toFixed(0)}</h5>
                     </td>
                     <td>
                       <a href="#">
-                        <i className="fal fa-times" onClick={() => removeFromCart(item.id)}>刪除</i>
+                        <i className="fal fa-times" onClick={() => removeFromCart((item.id || 0))}>刪除</i>
                       </a>
                     </td>
                   </tr>

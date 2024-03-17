@@ -1,16 +1,13 @@
-import ProductItem from "../../components/ProductItem"
+//import ProductItem from "../../components/ProductItem"
 import SearchTable from "../../components/SearchTable"
 
-//type
-import { ProductType } from '../../components/ProductItem'
-
-const product: ProductType = {
-    ProductId: 1,
-    BookName: "好書",
-    Author: "好人",
-    OriginalPrice: 500,
-    DiscountPrice: 300
-}
+// const product: ProductType = {
+//     ProductId: 1,
+//     BookName: "好書",
+//     Author: "好人",
+//     OriginalPrice: 500,
+//     DiscountPrice: 300
+// }
 
 const ProductSearchPage = () => {
     return (
