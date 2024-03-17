@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+import CartItem from './pages/CartPage/CartItem.tsx';
+
+import { useGetApiCartsApiId } from './API.ts';
+
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faCoffee, faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faCoffee, faShoppingCart);
+
+export interface CartItemType {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+  imgSrc?: string;
+  description?: string;
+}
+
+// 初始化購物車數據
+const initialCart: Cart[] = [
+  { id: 1, name: '商品A', price: 100, quantity: 2, imgSrc: '/path/to/imageA.png' },
+  { id: 2, name: '商品B', price: 200, quantity: 1, imgSrc: '/path/to/imageB.png' },
+];
+let memberId = 0
+const TestData = useGetApiCartsApiId(memberId)
+
+// App 組件，應用的主要入口點
+const App: React.FC = () => {
+  // if (TestData.isSuccess)
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div>
+      {/* 在應用中顯示購物車頁面 */}
+      {TestData.data?.data && <CartItem initialCart={TestData.data.data} />}
+    </div>
+  );
 }
+
 
 export default App
