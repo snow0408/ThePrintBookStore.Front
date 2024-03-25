@@ -30,8 +30,7 @@ const initialCart: Cart[] = [
 // App 組件，應用的主要入口點
 const App: React.FC = () => {
 
-  const memberId = 0
-  const TestData = useGetApiCartsApiId(memberId)
+
   // if (TestData.isSuccess)
 
   return (

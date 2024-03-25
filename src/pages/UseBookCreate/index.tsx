@@ -18,6 +18,7 @@ import { faFacebook } from '@fortawesome/free-brands-svg-icons'
 const AddUsedBook: React.FC = () => {
   const [isbn, setIsbn] = useState<string>('');
   const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string>('');
   const [price, setPrice] = useState<string>('');
   const { data, isLoading, error, refetch } = useGetApiUsedBooksIsbnIsbn(isbn);
 
@@ -32,6 +33,22 @@ const AddUsedBook: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    if (image) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result as string);
+      };
+      reader.readAsDataURL(image);
+    } else {
+      setPreview('');
+    }
+  }, [image]);
+
+  const handleImageUploadClick = () => {
+    const fileInput = document.getElementById('fileInput');
+    fileInput?.click();
+  };
 
   const blurHandler = (event: React.FocusEvent<HTMLInputElement>) => {
     setIsbn(event.target.value); // 更新ISBN的值
@@ -153,11 +170,27 @@ const AddUsedBook: React.FC = () => {
   </div>
 )}
 {/* 上傳表單 */}
+<div>
+    
+      <div className="upload-area" onClick={handleImageUploadClick}>
+        {preview ? (
+          <img src={preview} alt="預覽圖片" className="image-preview" />
+        ) : (
+          <div className="image-placeholder">點擊此處上傳圖片</div>
+        )}
+        <input
+          id="fileInput"
+          type="file"
+          style={{ display: 'none' }}
+          onChange={handleImageUpload}
+        />
+      </div>
+      </div>
 <form onSubmit={handleSubmit} style={{margin:'20px'}}>
-  <label>
+  {/* <label>
     上傳書況圖片：
     <input type="file" onChange={handleImageUpload} />
-  </label>
+  </label> */}
   <label>
     定價：
     <input type="text" value={price} onChange={(e) => setPrice(e.target.value)} />
