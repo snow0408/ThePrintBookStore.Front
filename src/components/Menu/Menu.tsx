@@ -13,7 +13,7 @@ const Menu = () => {
   return (
     <nav>
       {/* header */}
-      <header className='main-header header-style-one style-two'>
+      <header className='main-header header-style-onep style-two'>
         <div className='header-top'>
           <div className='auto-container'>
             <div className='wrapper-box box-style-one'>

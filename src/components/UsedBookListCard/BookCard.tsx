@@ -3,9 +3,19 @@ import '../../assets/css/bootstrap.css';
 import '../../assets/css/style.css';
 import '../../assets/css/responsive.css';
 import '../../assets/css/color.css';
+import defaultImage from '../../assets/images/defaultImage0.jpg';
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { UsedBookDto, usePutApiUsedBooksBookId } from '../../API';
+import {
+  faClock,
+  faUserPen,
+  faBookOpenReader
+} from '@fortawesome/free-solid-svg-icons';
+import {
+  UsedBookDto,
+  usePutApiUsedBooksBookId,
+  useGetApiUsedBookOrdersApiBookIdBookId
+} from '../../API';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { AxiosError, AxiosResponse } from 'axios';
@@ -16,6 +26,7 @@ import { Switch, Stack, Typography } from '@mui/material';
 
 interface BookCardProps {
   usedbook: UsedBookDto;
+  usedBooksOrder: UsedBookDto;
 }
 
 const AntSwitch = styled(Switch)(({ theme }) => ({
@@ -62,37 +73,14 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
   }
 }));
 
-// type MutationSuccess = AxiosResponse<any>; // 根據實際的響應數據替換 any
-// type MutationError = AxiosError<any>;      // 根據實際的錯誤數據替換 any
-
 const BookCard: React.FC<BookCardProps> = ({ usedbook }) => {
   const queryClient = useQueryClient();
   const [productStatus, setProductStatus] = useState(usedbook.productStatus);
+  const { data } = useGetApiUsedBookOrdersApiBookIdBookId(
+    usedbook.id as number
+  );
 
   const { mutate: updateUsedBook } = usePutApiUsedBooksBookId();
-
-  //   const mutation = useMutation<AxiosResponse<any>, AxiosError, boolean>(
-  //     (newStatus: boolean) => {
-  //       // 根據API的要求創建一個FormData對象
-  //       const formData = new FormData();
-  //       formData.append('ProductStatus', newStatus ? 'true' : 'false');
-
-  //       // 使用axios發送FormData
-  //       return axios.patch(`/api/UsedBooks/${usedbook.id}`, formData, {
-  //         headers: {
-  //           'Content-Type': 'multipart/form-data'
-  //         }
-  //       });
-  //     },
-  //     {
-  //       onSuccess: () => {
-  //         queryClient.invalidateQueries(['usedbooks']);
-  //       },
-  //       onError: (error) => {
-  //         console.error('狀態更新失敗', error);
-  //       }
-  //     }
-  //   );
 
   const handleStatusToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newStatus = !event.target.checked;
@@ -108,21 +96,22 @@ const BookCard: React.FC<BookCardProps> = ({ usedbook }) => {
         <div className='auto-container'>
           <div className='row'>
             <div className='col-lg-3'>
-              <div className='image'>
-                <div
-                  style={{
-                    backgroundColor: '#e8e8e8',
-                    height: '260px',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                  }}
-                >
-                  <img
-                    src={usedbook.imageLinks?.thumbnail as string}
-                    alt={`Cover of ${usedbook.title}`}
-                  />
-                </div>
+              <div
+                className='image'
+                style={{
+                  overflow: 'hidden',
+                  width: '100%',
+                  height: '260px',
+                  backgroundColor: '#e8e8e8',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center'
+                }}
+              >
+                <img
+                  src={usedbook.imageLinks?.thumbnail || defaultImage}
+                  alt={`${usedbook.title}`}
+                />
               </div>
             </div>
             <div className='col-lg-9'>
@@ -130,22 +119,22 @@ const BookCard: React.FC<BookCardProps> = ({ usedbook }) => {
                 <div className='icon-list'>
                   <ul>
                     <li>
-                      <i className='flaticon-user'></i>
-                      <h4>Capacity</h4>
+                      <FontAwesomeIcon icon={faUserPen} />
+                      <h4>Author</h4>
                       <div className='text'>
                         {usedbook.authors.join(', ') || '缺少作者資訊'}
                       </div>
                     </li>
                     <li>
-                      <i className='flaticon-preview'></i>
-                      <h4>Size</h4>
+                      <FontAwesomeIcon icon={faBookOpenReader} />
+                      <h4>Publisher</h4>
                       <div className='text'>
                         {usedbook.publisher || '缺少出版商資訊'}
                       </div>
                     </li>
                     <li>
-                      <i className='flaticon-view'></i>
-                      <h4>View</h4>
+                      <FontAwesomeIcon icon={faClock} />
+                      <h4>Release date</h4>
                       <div className='text'>{usedbook.releaseDate}</div>
                     </li>
                   </ul>
@@ -155,7 +144,7 @@ const BookCard: React.FC<BookCardProps> = ({ usedbook }) => {
                   {usedbook.description || '沒有書籍介紹'}
                 </div>
                 <div className='inner-box'>
-                  <div className='pricing'>150/Night</div>
+                  <div className='pricing'>{data?.data || '未售出'}</div>
                   <Stack direction='row' spacing={1} alignItems='center'>
                     <Typography>下架</Typography>
                     <AntSwitch
@@ -166,7 +155,11 @@ const BookCard: React.FC<BookCardProps> = ({ usedbook }) => {
                     <Typography>上架</Typography>
                   </Stack>
 
-                  <a href='/add-used-book' className='btn-style-one'>
+                  <a
+                    href='/add-used-book'
+                    className='btn-style-one'
+                    style={{ marginTop: '30px' }}
+                  >
                     <span>編輯書籍</span>
                   </a>
                 </div>
