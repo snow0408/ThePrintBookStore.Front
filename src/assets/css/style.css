@@ -1535,15 +1535,14 @@ header.main-header.header-style-one.style-two {
 
 ***/
 
-.sticky-header {
+/* .sticky-header {
   position: fixed;
-  visibility: hidden;
-  opacity: 0;
+
   left: 0px;
   top: 0px;
   width: 100%;
   padding: 0px 0px;
-  z-index: -1;
+  z-index: 99;
   background: #ffffff;
   -webkit-transition: top 300ms ease;
   -o-transition: top 300ms ease;
@@ -1555,7 +1554,7 @@ header.main-header.header-style-one.style-two {
   z-index: 99901;
   visibility: visible;
   background: #fff;
-}
+} */
 
 /*** 
 
@@ -4728,10 +4727,11 @@ section.section-thirty-two .title-box {
 .page-title {
   position: relative;
   padding: 273px 0px 130px;
+  margin-top: 100px;
   text-align: center;
   background-size: cover;
   background-color: #222;
-  margin-top: -35px;
+  /* margin-top: -35px; */
 }
 
 .page-title .bread-crumb li:last-child {
@@ -4957,7 +4957,7 @@ section.section-thirty-eight {
   filter: drop-shadow(0px 14px 14px rgba(0, 0, 0, 0.04));
   background-color: #ffffff;
   border: 2px solid #f3f3f3;
-  padding: 45px 30px 46px;
+  padding: 20px 30px 20px;
   margin-left: -30px;
   margin-bottom: 32px;
   height: 260px;
@@ -6174,6 +6174,16 @@ section.section-twenty-three .image-icon {
   color: #fff;
   margin-bottom: 0;
   font-size: 60px;
+}
+
+/* RobotStyle.css */
+:root {
+  --df-messenger-bot-message: #ffffff; /* 機器人訊息的背景顏色 */
+  --df-messenger-button-titlebar-color: #ffa726; /* 標題欄顏色 */
+  --df-messenger-chat-background-color: #fafafa; /* 聊天背景顏色 */
+  --df-messenger-font-color: #000000; /* 字體顏色 */
+  --df-messenger-send-icon: #ffa726; /* 發送按鈕顏色 */
+  --df-messenger-user-message: #48a6ff; /* 使用者訊息的背景顏色 */
 }
 
 /* Footer */

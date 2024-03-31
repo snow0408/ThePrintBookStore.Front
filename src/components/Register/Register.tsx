@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "../../assets/css/app.css";
+//import "../../assets/css/app.css";
 import { useNavigate } from "react-router-dom";
 
 export async function action({ request }: { request: Request }) {
@@ -40,7 +40,7 @@ function RegisterForm() {
     try {
       // 注意：更改URL以匹配你的實際後端API端點
       const response = await axios.post(
-        "https://localhost:7236/api/EmailSend",
+        "https://localhost:7236/api/EmailSend/Register",
         formData
       );
 

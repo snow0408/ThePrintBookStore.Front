@@ -12,16 +12,18 @@ function CheckVerificationCode() {
     event.preventDefault();
     try {
       const response = await axios.post(
-        "https://localhost:7236/api/Members/CodeCheck",
+        "https://localhost:7236/api/MemberLogin/CodeCheck",
         {
           email: email,
           code: code,
         }
       );
+
       // 根據響應進行相應處理
-      if (response.data.success) {
+
+      if (response.data) {
         alert("驗證成功！");
-        navigate("/success-page"); // 驗證成功後導航到成功頁面
+        navigate("/MemberLoginForm"); // 驗證成功後導航到成功頁面
       } else {
         alert("驗證碼錯誤或已過期");
       }
@@ -39,7 +41,7 @@ function CheckVerificationCode() {
       );
       if (response.data) {
         alert("已重新寄送驗證碼！");
-        navigate("/success-page2"); // 驗證成功後導航到成功頁面
+        // 驗證成功後導航到成功頁面
       } else {
         alert("幹");
       }

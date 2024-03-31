@@ -4,8 +4,8 @@ import {
   GoogleLoginResponse,
   GoogleLoginResponseOffline,
 } from "react-google-login";
-import "../../assets/css/app.css";
-import { Link } from "react-router-dom";
+
+// import { Link } from "react-router-dom";
 // import FormBookImage from '../../component/Image/sign-up.png';
 
 export async function action({ request }: { request: Request }) {
@@ -20,11 +20,18 @@ export async function action({ request }: { request: Request }) {
     body: JSON.stringify(note),
   });
 }
+function logout() {
+  localStorage.removeItem("token");
+  window.location.href = "/MemberLoginForm";
+}
+
 function MemberLoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [captchaUrl, setCaptchaUrl] = useState("");
-  const [userCaptcha, setUserCaptcha] = useState("");
+  const [captcha, setUserCaptcha] = useState("");
+  const [cacheKey, setCacheKey] = useState("");
+
   const GoogleLoginSuccess = (
     response: GoogleLoginResponse | GoogleLoginResponseOffline
   ) => {
@@ -43,11 +50,12 @@ function MemberLoginForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, captcha, cacheKey }),
       });
 
       if (!response.ok) {
-        throw new Error("無此帳號密碼或帳號密碼錯誤");
+        const errorData = await response.text();
+        throw new Error(errorData || "登入過程中發生錯誤");
       }
 
       const { token } = await response.json(); // 假設後端回應包含 token
@@ -66,167 +74,303 @@ function MemberLoginForm() {
   }, []);
 
   // 生成圖形驗證碼
-  const generateCaptcha = () => {
-    // 更新為您的後端生成圖形驗證碼的URL
-    setCaptchaUrl(
+  const generateCaptcha = async () => {
+    // 備用網址
+    // `https://localhost:7236/api/Captcha/GetCaptcha?dummy=${new Date().getTime()}`
+    // https://localhost:7236/api/Captcha/GetCaptcha"
+    const response = await fetch(
       `https://localhost:7236/api/Captcha/GetCaptcha?dummy=${new Date().getTime()}`
     );
+    const data = await response.json();
+    //console.log(data);
+    // 保存cacheKey，例如在隐藏字段或JavaScript变量中
+    const cacheKey = data.cacheKey;
+    const file = data.file;
+
+    // 更新為您的後端生成圖形驗證碼的URL
+    setCaptchaUrl(
+      `data:image/png;base64,${file.fileContents}`
+      //`https://localhost:7236/api/Captcha/GetCaptcha?dummy=${new Date().getTime()}`
+    );
+    setCacheKey(cacheKey);
   };
 
   return (
-    <section className="signup p-40 mb-64">
-      <div className="container">
-        <div className="row">
-          <div className="col-lg-6">
-            <div className="form-block bg-lightest-gray">
-              <h3 className="mb-48">會員登入</h3>
+    // <section classNameName="signup p-40 mb-64">
+    //   <div classNameName="container">
+    //     <div classNameName="row">
+    //       <div classNameName="col-lg-6">
+    //         <div classNameName="form-block bg-lightest-gray">
+    //           <h3 classNameName="mb-48">會員登入</h3>
 
-              {/* 處理 Google 登錄按鈕 */}
-              <div className="row mb-24">
-                {/* <h6><a href="" class="link-btn mb-24 mb-sm-0"><img src="static/picture/google-icon.png" alt=""> Sign up with Google</a></h6> */}
-                <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                  <h6 style={{ marginLeft: "500px", textAlign: "right" }}>
-                    <Link to="/employee-login" className="color-black">
-                      員工登入
-                    </Link>
-                    <a href="signup.html" className="color-black"></a>
-                  </h6>
-                </div>
+    //           <div classNameName="row mb-24">
+    //             <div style={{ display: "flex", justifyContent: "flex-end" }}>
+    //               <h6 style={{ marginLeft: "500px", textAlign: "right" }}>
+    //                 <Link to="/employee-login" classNameName="color-black">
+    //                   員工登入
+    //                 </Link>
+    //               </h6>
+    //             </div>
 
-                <div className="col-sm-6">
-                  <GoogleLogin
-                    clientId="266231759117-rneh56rnftdqop46b2pvbted0pv9h79l.apps.googleusercontent.com"
-                    buttonText="使用Google登錄"
-                    onSuccess={GoogleLoginSuccess}
-                    onFailure={GoogleLoginFail}
-                    cookiePolicy={"single_host_origin"}
-                  />
-                </div>
-                {/* 可以在這裡添加 Facebook 登錄按鈕 */}
-              </div>
+    //             <div classNameName="col-sm-6">
+    //               <GoogleLogin
+    //                 clientId="your-client-id.apps.googleusercontent.com"
+    //                 buttonText="使用Google登錄"
+    //                 onSuccess={GoogleLoginSuccess}
+    //                 onFailure={GoogleLoginFail}
+    //                 cookiePolicy={"single_host_origin"}
+    //               />
+    //             </div>
+    //           </div>
 
-              <h5 className="or mb-24">or</h5>
+    //           <h5 classNameName="or mb-24">or</h5>
 
-              {/* 登錄表單 */}
-              <form onSubmit={handleSubmit}>
-                <div className="mb-24">
-                  <input
-                    type="email"
-                    className="form-control"
-                    id="login-email"
-                    name="login-email"
-                    required
-                    placeholder="請輸入電子信箱"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                <div className="mb-24">
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="login-password"
-                    name="login-password"
-                    required
-                    placeholder="請輸入密碼"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
+    //           <form onSubmit={handleSubmit}>
+    //             <div classNameName="mb-24">
+    //               <input
+    //                 type="email"
+    //                 classNameName="form-control"
+    //                 id="login-email"
+    //                 name="login-email"
+    //                 required
+    //                 placeholder="請輸入電子信箱"
+    //                 value={email}
+    //                 onChange={(e) => setEmail(e.target.value)}
+    //               />
+    //             </div>
+    //             <div classNameName="mb-24">
+    //               <input
+    //                 type="password"
+    //                 classNameName="form-control"
+    //                 id="login-password"
+    //                 name="login-password"
+    //                 required
+    //                 placeholder="請輸入密碼"
+    //                 value={password}
+    //                 onChange={(e) => setPassword(e.target.value)}
+    //               />
+    //             </div>
 
-                {/* 圖形驗證碼及刷新按鈕 */}
-                <div
-                  className="mb-24"
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <img
-                      src={captchaUrl}
-                      alt="captcha"
-                      onClick={generateCaptcha}
-                      style={{ cursor: "pointer" }}
-                    />
-                    <button
-                      type="button"
-                      onClick={generateCaptcha}
-                      className="refresh-button"
-                      style={{ marginLeft: "10px" }}
-                    >
-                      刷新驗證碼
-                    </button>
-                  </div>
-                </div>
-                {/* 驗證碼輸入框 */}
-                <div
-                  className="mb-24"
-                  style={{ display: "flex", justifyContent: "center" }}
-                >
-                  <input
-                    type="Captcha"
-                    className="form-control"
-                    required
-                    placeholder="請輸入驗證碼"
-                    value={userCaptcha}
-                    onChange={(e) => setUserCaptcha(e.target.value)}
-                    style={{ maxWidth: "200px" }} // 可根據需要調整寬度
-                  />
-                </div>
+    //             <div
+    //               classNameName="mb-24"
+    //               style={{
+    //                 display: "flex",
+    //                 justifyContent: "center",
+    //                 alignItems: "center",
+    //               }}
+    //             >
+    //               <div style={{ display: "flex", alignItems: "center" }}>
+    //                 <img
+    //                   src={captchaUrl}
+    //                   alt="captcha"
+    //                   onClick={generateCaptcha}
+    //                   style={{ cursor: "pointer" }}
+    //                 />
+    //                 <button
+    //                   type="button"
+    //                   onClick={generateCaptcha}
+    //                   classNameName="refresh-button"
+    //                   style={{ marginLeft: "10px" }}
+    //                 >
+    //                   刷新驗證碼
+    //                 </button>
+    //               </div>
+    //             </div>
 
-                {/* 登入按鈕 */}
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                  <button type="submit" className="b-unstyle cus-btn">
-                    <span className="icon">
-                      <img src="static/picture/click-button.png" alt="" />
-                    </span>
-                    按此登入
-                  </button>
-                </div>
-              </form>
+    //             <div
+    //               classNameName="mb-24"
+    //               style={{ display: "flex", justifyContent: "center" }}
+    //             >
+    //               <input
+    //                 type="text"
+    //                 classNameName="form-control"
+    //                 required
+    //                 placeholder="請輸入驗證碼"
+    //                 value={userCaptcha}
+    //                 onChange={(e) => setUserCaptcha(e.target.value)}
+    //                 style={{ maxWidth: "200px" }}
+    //               />
+    //             </div>
+    //             <div style={{ display: "flex", justifyContent: "center" }}>
+    //               <button type="submit" classNameName="b-unstyle cus-btn">
+    //                 <span classNameName="icon">
+    //                   {/* Assuming you have this image in your public folder or assets */}
+    //                   <img src="/static/picture/click-button.png" alt="Login" />
+    //                 </span>
+    //                 按此登入
+    //               </button>
+    //             </div>
+    //           </form>
 
-              <div
-                className="register-bottom"
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                }}
-              >
-                <h6 style={{ marginRight: "100px", textAlign: "left" }}>
-                  <a href="signup.html" className="color-primary">
-                    <Link to="/register" className="color-black">
-                      註冊會員
-                    </Link>
-                  </a>
-                </h6>
-                <h6 style={{ marginLeft: "100px", textAlign: "right" }}>
-                  <a href="signup.html" className="color-primary">
-                    <Link to="/ForgetPassword" className="color-primary">
-                      忘記密碼
-                    </Link>
-                  </a>
-                </h6>
-              </div>
-              {/* <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <h6 style={{ marginLeft: "500px", textAlign: "right" }}>
-                  <Link to="/employee-login" className="color-black">
-                    員工登入
-                  </Link>
-                  <a href="signup.html" className="color-black"></a>
-                </h6>
-              </div> */}
-            </div>
+    //           <div
+    //             classNameName="register-bottom"
+    //             style={{
+    //               display: "flex",
+    //               justifyContent: "space-between",
+    //               alignItems: "center",
+    //             }}
+    //           >
+    //             <h6 style={{ marginRight: "100px", textAlign: "left" }}>
+    //               <Link to="/register" classNameName="color-primary">
+    //                 註冊會員
+    //               </Link>
+    //             </h6>
+    //             <h6 style={{ marginLeft: "100px", textAlign: "right" }}>
+    //               <Link to="/ForgetPassword" classNameName="color-primary">
+    //                 忘記密碼
+    //               </Link>
+    //             </h6>
+    //           </div>
+    //         </div>
+    //       </div>
+
+    //       {/* 如果您有其他內容想放在右側，可以在這裡添加 */}
+    //       <div classNameName="col-lg-6">{/* 右側內容 */}</div>
+    //     </div>
+    //   </div>
+    // </section>
+    <div className="page-content">
+      <div
+        className="dz-bnr-inr overlay-secondary-dark dz-bnr-inr-sm"
+        style={{ backgroundImage: "url('assets/picture/bg3.jpg')" }}
+      >
+        <div className="container">
+          <div className="dz-bnr-inr-entry">
+            <h1>登入</h1>
+            <nav aria-label="breadcrumb" className="breadcrumb-row">
+              <ul className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <a href="index.html">首頁</a>
+                </li>
+                <li className="breadcrumb-item">登入</li>
+              </ul>
+            </nav>
           </div>
-
-          {/* <div className="col-lg-6">
-    <img src={FormBookImage} alt="Form Book" className="img-fluid" />
-  </div> */}
         </div>
       </div>
-    </section>
+
+      <section className="content-inner shop-account">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-6 col-md-6 mb-4">
+              <div className="login-area">
+                <div className="tab-content">
+                  <h4>新用戶</h4>
+                  <p>在我們印跡註冊帳號，你可以使用更多功能！</p>
+                  <a
+                    className="btn btn-primary btnhover m-r5 button-lg radius-no"
+                    href="/Register"
+                  >
+                    點此註冊
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div className="col-lg-6 col-md-6 mb-4">
+              <div className="login-area">
+                <div className="tab-content nav">
+                  <form
+                    method="post"
+                    id="login"
+                    className="tab-pane active col-12"
+                    onSubmit={handleSubmit}
+                  >
+                    <h4 className="text-secondary">登入</h4>
+                    <p className="font-weight-600">
+                      如果你已經註冊的話，那就登入吧！
+                    </p>
+                    <GoogleLogin
+                      clientId="266231759117-rneh56rnftdqop46b2pvbted0pv9h79l.apps.googleusercontent.com"
+                      buttonText="使用Google登錄"
+                      onSuccess={GoogleLoginSuccess}
+                      onFailure={GoogleLoginFail}
+                      cookiePolicy={"single_host_origin"}
+                    />
+
+                    <div className="mb-4">
+                      <label className="label-title">電子信箱 *</label>
+                      <input
+                        name="dzName"
+                        required
+                        className="form-control"
+                        placeholder="輸入您的電子信箱"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </div>
+                    <div className="mb-4">
+                      <label className="label-title">密碼 *</label>
+                      <input
+                        name="dzName"
+                        required
+                        className="form-control "
+                        placeholder="輸入您的密碼"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <img
+                        src={captchaUrl}
+                        alt="captcha"
+                        onClick={generateCaptcha}
+                        style={{ cursor: "pointer" }}
+                      />
+                      <div className="mb-4">
+                        <label className="label-title">驗證碼輸入框 *</label>
+                        <input
+                          name="captcha"
+                          required
+                          className="form-control "
+                          placeholder="輸入驗證碼"
+                          type="captcha"
+                          value={captcha}
+                          onChange={(e) => setUserCaptcha(e.target.value)}
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={generateCaptcha}
+                        className="refresh-button"
+                        style={{ marginLeft: "10px" }}
+                      >
+                        刷新驗證碼
+                      </button>
+                    </div>
+
+                    <div className="text-left">
+                      <button className="btn btn-primary btnhover me-2">
+                        點此登入
+                      </button>
+
+                      <a
+                        data-bs-toggle="tab"
+                        href="/ForgetPassword"
+                        className="m-l5"
+                      >
+                        <i className="fas fa-unlock-alt"></i>忘記密碼了嗎？
+                      </a>
+                      <br></br>
+
+                      <a
+                        data-bs-toggle="tab"
+                        href="/employee-login"
+                        className="m-l5"
+                      >
+                        <i className="text-secondary">員工登入</i>
+                      </a>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }
 

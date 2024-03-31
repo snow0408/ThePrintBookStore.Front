@@ -89,6 +89,23 @@ const BookCard: React.FC<BookCardProps> = ({ usedbook }) => {
       data: newStatus
     });
   };
+  function addNewLines(str, maxLineLength) {
+    let result = '';
+    while (str.length > maxLineLength) {
+      result += str.substring(0, maxLineLength) + '\n';
+      str = str.substring(maxLineLength);
+    }
+    result += str; // 添加剩餘的字符串（如果有）
+    return result;
+  }
+
+  function getDescription(usedbook) {
+    if (!usedbook.description) return '沒有書籍介紹';
+    if (usedbook.description.length > 150) {
+      return addNewLines(usedbook.description.substring(0, 100), 50) + '...';
+    }
+    return addNewLines(usedbook.description, 50);
+  }
 
   return (
     <div>
@@ -139,9 +156,14 @@ const BookCard: React.FC<BookCardProps> = ({ usedbook }) => {
                     </li>
                   </ul>
                 </div>
-                <h3>{usedbook.title}</h3>
-                <div className='text-two'>
-                  {usedbook.description || '沒有書籍介紹'}
+                <h3>
+                  {usedbook.title.length > 32
+                    ? `${usedbook.title.substring(0, 32)}...`
+                    : usedbook.title}
+                </h3>
+
+                <div className='text-two' style={{ whiteSpace: 'pre-wrap' }}>
+                  {getDescription(usedbook)}
                 </div>
                 <div className='inner-box'>
                   <div className='pricing'>{data?.data || '未售出'}</div>
