@@ -4997,7 +4997,7 @@ section.section-thirty-eight {
   font-family: 'Roboto';
   text-align: center;
   width: 70px;
-  height: 28px;
+  /* height: 28px; */
   background-color: #a8a8a8;
   position: fixed;
   margin-bottom: 20px;

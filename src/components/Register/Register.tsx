@@ -18,13 +18,13 @@ export async function action({ request }: { request: Request }) {
 
 function RegisterForm() {
   const [formData, setFormData] = useState({
-    name: "",
+    name: "我就是個測試",
     gender: true,
-    dateOfBirth: "",
-    email: "",
-    password: "",
-    address: "",
-    phoneNumber: "",
+    dateOfBirth: "1978-05-23",
+    email: "123testtest01@gmail.com",
+    password: "a123123!",
+    address: "桃園市龜山區紅寶七街325號",
+    phoneNumber: "0989371508",
   });
   const navigate = useNavigate();
 
@@ -59,98 +59,182 @@ function RegisterForm() {
   };
 
   return (
-    <div className="register-form">
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="name">姓名:</label>
-          <input
-            id="name"
-            type="text"
-            name="name"
-            placeholder="姓名"
-            value={formData.name}
-            onChange={handleChange}
-          />
-        </div>
+    <section className="content-inner shop-account">
+      <div className="container">
+        <div className="row justify-content-center">
+          <div className="col-lg-6 col-md-6 mb-4">
+            <div className="login-area">
+              <form onSubmit={handleSubmit}>
+                <h4 className="text-secondary">Registration</h4>
+                <p className="font-weight-600">這邊可以註冊會員</p>
+                <div className="mb-4 form-group">
+                  <label className="label-title">姓名</label>
+                  <input
+                    id="name"
+                    type="text"
+                    name="name"
+                    placeholder="姓名"
+                    value={formData.name}
+                    className="form-control"
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="mb-4 form-group">
+                  <label className="label-title">性别：</label>
+                  <select
+                    name="gender"
+                    value={String(formData.gender)}
+                    onChange={handleChange}
+                    className="form-control"
+                  >
+                    <option value="true">男性</option>
+                    <option value="false">女性</option>
+                  </select>
+                </div>
 
-        <div className="form-group">
-          <label>性别：</label>
-          <select
-            name="gender"
-            value={String(formData.gender)}
-            onChange={handleChange}
-          >
-            <option value="true">男性</option>
-            <option value="false">女性</option>
-          </select>
-        </div>
+                <div className="mb-4 form-group">
+                  <label htmlFor="dateOfBirth">出生日期:</label>
+                  <input
+                    id="dateOfBirth"
+                    type="date"
+                    name="dateOfBirth"
+                    value={formData.dateOfBirth}
+                    onChange={handleChange}
+                    className="form-control"
+                  />
+                </div>
+                <div className="mb-4 form-group">
+                  <label htmlFor="email">電子信箱:</label>
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    placeholder="電子信箱"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="form-control"
+                  />
+                </div>
+                <div className="mb-4 form-group">
+                  <label htmlFor="password">密碼:</label>
+                  <input
+                    id="password"
+                    type="password"
+                    name="password"
+                    placeholder="密碼"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="form-control"
+                  />
+                </div>
+                <div className="mb-4 form-group">
+                  <label htmlFor="address">地址:</label>
+                  <input
+                    id="address"
+                    type="text"
+                    name="address"
+                    placeholder="地址"
+                    value={formData.address}
+                    onChange={handleChange}
+                    className="form-control"
+                  />
+                </div>
+                <div className="mb-4 form-group">
+                  <label htmlFor="phoneNumber">手機號碼:</label>
+                  <input
+                    id="phoneNumber"
+                    type="text"
+                    name="phoneNumber"
+                    placeholder="手機號碼"
+                    value={formData.phoneNumber}
+                    onChange={handleChange}
+                    className="form-control"
+                  />
+                </div>
 
-        <div className="form-group">
-          <label htmlFor="dateOfBirth">出生日期:</label>
-          <input
-            id="dateOfBirth"
-            type="date"
-            name="dateOfBirth"
-            value={formData.dateOfBirth}
-            onChange={handleChange}
-          />
+                <div className="mb-5">
+                  <small>
+                    Your personal data will be used to support your experience
+                    throughout this website,to manage access to your account,and
+                    for other purposes described in our{" "}
+                    <a href="privacy-policy.html">privacy policy</a>.
+                  </small>
+                </div>
+                <div className="btn btn-primary btnhover w-100 me-2">
+                  <button type="submit" className="btn btn-primary">
+                    註冊
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
+      </div>
+    </section>
 
-        <div className="form-group">
-          <label htmlFor="email">電子信箱:</label>
-          <input
-            id="email"
-            type="email"
-            name="email"
-            placeholder="電子信箱"
-            value={formData.email}
-            onChange={handleChange}
-          />
-        </div>
+    // <section className="content-inner shop-account">
+    //   <div className="container">
+    //     <div className="row justify-content-center">
+    //       <div className="col-lg-6 col-md-6 mb-4">
+    //         <div className="login-area">
+    //           <form onSubmit={handleSubmit}>
+    //             <h4 className="text-secondary">Registration</h4>
+    //             <p className="font-weight-600">這邊可以註冊會員</p>
+    //             <div className="mb-4">
+    //               <label className="label-title">姓名</label>
+    //               <input
+    //                 className="form-control"
+    //                 id="name"
+    //                 type="text"
+    //                 name="name"
+    //                 placeholder="姓名"
+    //                 value={formData.name}
+    //                 onChange={handleChange}
+    //               />
+    //             </div>
+    //             <div className="mb-4">
+    //               <label className="label-title">性别：</label>
+    //               <select
+    //                 name="gender"
+    //                 value={String(formData.gender)}
+    //                 onChange={handleChange}
+    //                 className="form-control"
+    //               >
+    //                 <option value="true">男性</option>
+    //                 <option value="false">女性</option>
+    //               </select>
+    //             </div>
 
-        <div className="form-group">
-          <label htmlFor="password">密碼:</label>
-          <input
-            id="password"
-            type="password"
-            name="password"
-            placeholder="密碼"
-            value={formData.password}
-            onChange={handleChange}
-          />
-        </div>
+    //             <div className="mb-4">
+    //               <label htmlFor="dateOfBirth">出生日期:</label>
+    //               <input
+    //                 id="dateOfBirth"
+    //                 type="date"
+    //                 name="dateOfBirth"
+    //                 value={formData.dateOfBirth}
+    //                 onChange={handleChange}
+    //                 className="form-control"
+    //               />
+    //             </div>
+    //             <div className="mb-4">
+    //               <label htmlFor="email">電子信箱:</label>
+    //               <input
+    //                 id="email"
+    //                 type="email"
+    //                 name="email"
+    //                 placeholder="電子信箱"
+    //                 value={formData.email}
+    //                 onChange={handleChange}
+    //                 className="form-control"
+    //               />
+    //             </div>
 
-        <div className="form-group">
-          <label htmlFor="address">地址:</label>
-          <input
-            id="address"
-            type="text"
-            name="address"
-            placeholder="地址"
-            value={formData.address}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="phoneNumber">手機號碼:</label>
-          <input
-            id="phoneNumber"
-            type="text"
-            name="phoneNumber"
-            placeholder="手機號碼"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div className="form-group action">
-          <button type="submit" className="btn btn-primary">
-            註冊
-          </button>
-        </div>
-      </form>
-    </div>
+    //           </form>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </div>
+    // </section>
   );
 }
 

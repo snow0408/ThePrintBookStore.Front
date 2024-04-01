@@ -12,9 +12,9 @@ import LinePay from '../../picture/LinePay.png';
 interface CartProps {
   initialCart: CartItemType[];
 }
-
+//Step1屬性 CartProps { initialCart }
 // 客戶資料
-export const Step1: React.FC<CartProps> = ({ initialCart }) => {
+export const Step1: React.FC = () => {
   const { mutate: updatebuyer } = usePutApiCartsId();
   const [formData, setFormData] = useState({
     Name: '',
@@ -54,7 +54,7 @@ export const Step1: React.FC<CartProps> = ({ initialCart }) => {
                 className='form-control'
                 id='name'
                 name='Name'
-                placeholder='{memberName}'
+                placeholder='客戶名稱' //{memberName}
                 value={formData.firstName}
                 onChange={handleChange}
               />

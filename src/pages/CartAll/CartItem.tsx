@@ -11,6 +11,7 @@ import {
   useGetApiCartsDetails
 } from '../../API';
 import { useNavigate } from 'react-router-dom';
+import LoadingMessage from '../../main';
 
 interface CartProps {
   initialCart: CartDetailsDto[];
@@ -25,8 +26,14 @@ export interface CountQuantity {
 const CartPage: React.FC = () => {
   const memberId = 2;
   const TestData = useGetApiCartsDetails({ Id: memberId });
-  return <CartItem initialCart={TestData.data?.data} />;
+  if (TestData.isLoading) return <LoadingMessage />;
+  return (
+    <div className='container'>
+      <CartItem initialCart={TestData.data?.data as CartDetailsDto[]} />
+    </div>
+  );
 };
+
 const CartItem: React.FC<CartProps> = ({ initialCart }) => {
   //const [cart, setCart] = useState<CartItemType[]>(initialCart);
   const navigate = useNavigate();
@@ -125,32 +132,33 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
         cart.map((item, index) => {
           return index === 0 ? (
             <div key={item.id} className='row'>
-              <div className='col-lg-8'>
+              <div className='col-lg-12'>
                 <table className='cart-table mb-24'>
                   <thead>
                     <tr>
-                      <th>商品</th>
-                      <th>單價</th>
-                      <th>數量</th>
-                      <th>總計</th>
+                      <th className='col-4'>商品</th>
+                      <th className='col-2'>單價</th>
+                      <th className='col-2'>數量</th>
+                      <th className='col-2'>總計</th>
+                      <th className='col-2'></th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr className='col-md-8 mb-5'>
-                      <td className='pd'>
+                      <td className='pd col-4'>
                         <div className='product-detail-box'>
-                          <div className='img-block'>
+                          <div className='img-block col-6'>
                             <img src={item.imgSrc} alt={item.productName} />
                           </div>
-                          <div>
+                          <div className='col-6'>
                             <h5 className='dark-gray'>{item.productName}</h5>
                           </div>
                         </div>
                       </td>
-                      <td>
+                      <td className='col-2'>
                         <h5 className='dark-gray'>${item.unitPrice}</h5>
                       </td>
-                      <td>
+                      <td className='col-2'>
                         <div className='quantity quantity-wrap'>
                           <input
                             className='decrement dark-gray'
@@ -196,10 +204,10 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
                           />
                         </div>
                       </td>
-                      <td>
+                      <td className='col-2'>
                         <h5>${(item.unitPrice * item.quantity).toFixed(0)}</h5>
                       </td>
-                      <td>
+                      <td className='col-2'>
                         <a href='#'>
                           <i onClick={() => removeFromCart(item.id)}>刪除</i>
                         </a>
@@ -211,24 +219,24 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
             </div>
           ) : (
             <div key={item.id} className='row'>
-              <div className='col-lg-8'>
+              <div className='col-lg-12'>
                 <table className='cart-table mb-24'>
                   <tbody>
                     <tr className='col-md-8 mb-5'>
-                      <td className='pd'>
+                      <td className='pd col-4'>
                         <div className='product-detail-box'>
-                          <div className='img-block'>
+                          <div className='img-block col-6'>
                             <img src={item.imgSrc} alt={item.productName} />
                           </div>
-                          <div>
+                          <div className='col-6'>
                             <h5 className='dark-gray'>{item.productName}</h5>
                           </div>
                         </div>
                       </td>
-                      <td>
+                      <td className='col-2'>
                         <h5 className='dark-gray'>${item.unitPrice}</h5>
                       </td>
-                      <td>
+                      <td className='col-2'>
                         <div className='quantity quantity-wrap'>
                           <input
                             className='decrement dark-gray'
@@ -274,10 +282,10 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
                           />
                         </div>
                       </td>
-                      <td>
+                      <td className='col-2'>
                         <h5>${(item.unitPrice * item.quantity).toFixed(0)}</h5>
                       </td>
-                      <td>
+                      <td className='col-2'>
                         <a href='#'>
                           <i onClick={() => removeFromCart(item.id)}>刪除</i>
                         </a>
@@ -292,70 +300,68 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
       ) : (
         <div>空的</div>
       )}
-      <section className='shipping mb-40'>
-        <div className='container'>
-          <div className='choose-shipping-mode col-xl-6'>
-            <div className='row'>
-              <div className='col-xl-6'>
-                <div className='shipping-details'>
-                  <div className='filter-block'>
-                    <div className='title mb-32'>
-                      <h4>取貨方式</h4>
-                    </div>
-                    <ul className='unstyled list'>
-                      <li className='cart-list'>
-                        <div className='filter-checkbox'>
-                          <input type='checkbox' id='Instock' />
-                          <label
-                            className='cart-font black-color'
-                            htmlFor='Instock'
-                          >
-                            超商取貨(3~7天)
-                          </label>
-                        </div>
-                      </li>
-                      <br />
-                      <br />
-                      <li className='cart-list'>
-                        <div className='filter-checkbox'>
-                          <input type='checkbox' id='Instock1' />
-                          <label
-                            className='cart-font black-color'
-                            htmlFor='Instock1'
-                          >
-                            宅配到家(3~4天)
-                          </label>
-                        </div>
-                      </li>
-                    </ul>
+      <section className='shipping mb-40 '>
+        <div className='choose-shipping-mode col-xl-12'>
+          <div className='row'>
+            <div className='col-xl-6'>
+              <div className='shipping-details'>
+                <div className='filter-block'>
+                  <div className='title mb-32'>
+                    <h4>取貨方式</h4>
                   </div>
+                  <ul className='unstyled list'>
+                    <li className='cart-list'>
+                      <div className='filter-checkbox'>
+                        <input type='checkbox' id='Instock' />
+                        <label
+                          className='cart-font black-color'
+                          htmlFor='Instock'
+                        >
+                          超商取貨(3~7天)
+                        </label>
+                      </div>
+                    </li>
+                    <br />
+                    <br />
+                    <li className='cart-list'>
+                      <div className='filter-checkbox'>
+                        <input type='checkbox' id='Instock1' />
+                        <label
+                          className='cart-font black-color'
+                          htmlFor='Instock1'
+                        >
+                          宅配到家(3~4天)
+                        </label>
+                      </div>
+                    </li>
+                  </ul>
                 </div>
               </div>
-              <div className='col-xl-6'>
-                <div className='amounts'>
-                  <div className='shipping-charges mb-24'>
-                    <h6></h6>
-                    <h6></h6>
-                  </div>
-                  <div className='sub-total mb-24'>
-                    <h6>購物車商品總數</h6>
-                    <h6>{totalItems}</h6>
-                  </div>
-
-                  <div className='grand-total mb-24'>
-                    <h5>總金額：</h5>
-                    <h5>{total.toFixed(0)}</h5>
-                  </div>
-                  <h6>
-                    {' '}
-                    <button onClick={handleCheckout} className='cus-btn'>
-                      <span className='icon'>
-                        <img src={orangeCart} alt='' />
-                      </span>
-                      去結帳
-                    </button>
-                  </h6>
+            </div>
+            <div className='col-xl-6'>
+              <div className='amounts'>
+                <div className='shipping-charges mb-24'>
+                  <h6></h6>
+                  <h6></h6>
                 </div>
+                <div className='sub-total mb-24'>
+                  <h6>購物車商品總數</h6>
+                  <h6>{totalItems}</h6>
+                </div>
+
+                <div className='grand-total mb-24'>
+                  <h5>總金額：</h5>
+                  <h5>{total.toFixed(0)}</h5>
+                </div>
+                <h6>
+                  {' '}
+                  <button onClick={handleCheckout} className='cus-btn'>
+                    <span className='icon'>
+                      <img src={orangeCart} alt='' />
+                    </span>
+                    去結帳
+                  </button>
+                </h6>
               </div>
             </div>
           </div>

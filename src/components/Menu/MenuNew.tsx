@@ -15,6 +15,7 @@ import '../../assets/css/menu/style.css';
 import { Dropdown } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../Menu/nav.css';
+import MainHeader from '../MainHeader/MainHeader';
 
 const PhysicalEBookNav: React.FC = () => {
   const [bookSearch, setBookSearch] = useState<number>(10);
@@ -38,7 +39,7 @@ const PhysicalEBookNav: React.FC = () => {
           >
             {/* <!-- Website Logo */}
             <div className='logo-header logo-dark'>
-              <Link to='/'>
+              <Link to='/usedBook'>
                 <img src={logo} alt='logo' />
               </Link>
             </div>
@@ -137,7 +138,7 @@ const PhysicalEBookNav: React.FC = () => {
                         dropdownVisible ? 'open' : 'close'
                       }`}
                     >
-                      <li className='cart-item'>
+                      {/* <li className='cart-item'>
                         <div className='media'>
                           <div className='media-left'>
                             <a href='books-detail.html'>
@@ -202,17 +203,17 @@ const PhysicalEBookNav: React.FC = () => {
                             <span className='item-close'>&times;</span>
                           </div>
                         </div>
-                      </li>
-                      <li className='cart-item text-center'>
+                      </li> */}
+                      {/* <li className='cart-item text-center'>
                         <h6 className='text-secondary'>Totle = $500</h6>
-                      </li>
+                      </li> */}
                       <li className='text-center d-flex'>
-                        <a
-                          href='#'
+                        <Link
+                          to='/usedBook/usedBookCart'
                           className='btn btn-sm btn-primary me-2 btnhover w-100'
                         >
                           View Cart
-                        </a>
+                        </Link>
                         <a
                           href='#'
                           className='btn btn-sm btn-outline-primary btnhover w-100'
@@ -224,40 +225,7 @@ const PhysicalEBookNav: React.FC = () => {
 
                     {/* )} */}
                   </li>
-                  <Dropdown
-                    as='li'
-                    className='nav-item dropdown profile-dropdown ms-4'
-                  >
-                    <Dropdown.Toggle
-                      as='a'
-                      className='nav-link'
-                      id='dropdown-profile'
-                    >
-                      <img src={memberPicture} alt='Profile' />
-                      <div className='profile-info'>
-                        <h6 className='title'>Brian</h6>
-                        <span>info@gmail.com</span>
-                      </div>
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu className='dropdown-menu-end'>
-                      <Dropdown.Header>
-                        <h6>Brian</h6>
-                        <span>info@gmail.com</span>
-                      </Dropdown.Header>
-                      <Dropdown.Item href='/MemberCenter'>
-                        會員中心
-                      </Dropdown.Item>
-                      <Dropdown.Item href='/cart'>My Order</Dropdown.Item>
-                      <Dropdown.Item href='wishlist.html'>
-                        Wishlist
-                      </Dropdown.Item>
-                      <Dropdown.Divider />
-                      <Dropdown.Item href='/member-login'>
-                        Log Out
-                      </Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
+                  <MainHeader />
                 </ul>
               </div>
             </div>
@@ -273,14 +241,14 @@ const PhysicalEBookNav: React.FC = () => {
               >
                 <ul className='nav navbar-nav'>
                   <li>
-                    <a href='/usedBookAllBook'>
+                    <Link to='/usedBook/usedBookAllBook'>
                       <span>關於我們</span>
-                    </a>
+                    </Link>
                   </li>
                   <li className='sub-menu-down'>
-                    <a href='/usedBookAllBook'>
+                    <Link to='/usedBook/usedBookAllBook'>
                       &emsp;/&emsp;<span>二手書島</span>
-                    </a>
+                    </Link>
                     <ul className='sub-menu'>
                       {/* <li>
                         <a href='my-profile.html'>My Profile</a>
@@ -313,9 +281,9 @@ const PhysicalEBookNav: React.FC = () => {
                   </li>
                   &emsp;/&emsp;
                   <li className='sub-menu-down'>
-                    <a href='/used-book-list'>
+                    <Link to='/usedBook/used-book-list'>
                       &emsp;/&emsp; <span>我的二手書</span>
-                    </a>
+                    </Link>
                     {/* <ul className='sub-menu'>
                       <li>
                         <a href='books-grid-view.html'>Shop Grid</a>
@@ -354,9 +322,9 @@ const PhysicalEBookNav: React.FC = () => {
                     </ul> */}
                   </li>
                   <li className='sub-menu-down'>
-                    <a href='javascript:void(0);'>
+                    <Link to='#'>
                       &emsp;/&emsp;<span>文章</span>
-                    </a>
+                    </Link>
                     <ul className='sub-menu'>
                       <li>
                         <a href='blog-grid.html'>Blog Grid</a>
@@ -373,26 +341,26 @@ const PhysicalEBookNav: React.FC = () => {
                     </ul>
                   </li>
                   <li>
-                    <a href='#'>
+                    <Link to='#'>
                       &emsp;/&emsp; <span>聯絡我們</span>
-                    </a>
+                    </Link>
                   </li>
                 </ul>
                 <div className='dz-social-icon'>
                   <ul>
                     <li>
-                      <a
+                      <Link
                         className='fab fa-facebook-f'
                         target='_self'
-                        href='javascript:;'
-                      ></a>
+                        to=''
+                      ></Link>
                     </li>
                     <li>
-                      <a
+                      <Link
                         className='fab fa-twitter'
                         target='_self'
-                        href='javascript:;'
-                      ></a>
+                        to=''
+                      ></Link>
                     </li>
                     <li>
                       <a

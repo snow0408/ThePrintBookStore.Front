@@ -1,5 +1,5 @@
 //react
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import './index.css'; // 導入樣式表
@@ -27,11 +27,31 @@ import router from './Router';
 
 const queryClient = new QueryClient();
 
+const LoadingMessage = () => {
+  return (
+    <div className='page-wraper'>
+      <div id='loading-area' className='preloader-wrapper-1'>
+        <div className='preloader-inner'>
+          <div className='preloader-shade'></div>
+          <div className='preloader-wrap'></div>
+          <div className='preloader-wrap wrap2'></div>
+          <div className='preloader-wrap wrap3'></div>
+          <div className='preloader-wrap wrap4'></div>
+          <div className='preloader-wrap wrap5'></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+export default LoadingMessage;
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       {/* <ProductItem product={product} />*/}
-      <RouterProvider router={router} />
+      <Suspense fallback={<LoadingMessage />}>
+        <RouterProvider router={router} />
+      </Suspense>
     </QueryClientProvider>
   </React.StrictMode>
 );

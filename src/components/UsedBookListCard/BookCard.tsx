@@ -5,6 +5,7 @@ import '../../assets/css/responsive.css';
 import '../../assets/css/color.css';
 import defaultImage from '../../assets/images/defaultImage0.jpg';
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faClock,
@@ -177,13 +178,13 @@ const BookCard: React.FC<BookCardProps> = ({ usedbook }) => {
                     <Typography>上架</Typography>
                   </Stack>
 
-                  <a
-                    href='/add-used-book'
+                  <Link
+                    to='/UsedBook/add-used-book'
                     className='btn-style-one'
                     style={{ marginTop: '30px' }}
                   >
                     <span>編輯書籍</span>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

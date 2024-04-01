@@ -17,6 +17,7 @@ import axios from 'axios';
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
 axios.defaults.baseURL = 'https://localhost:7236';
+
 export type PatchApiUsedBooksIdBody = {
   ImageFile?: Blob;
   Price?: number;
@@ -52,8 +53,24 @@ export type GetApiUsedBookOrdersApiParams = {
   type?: string;
 };
 
+export type GetApiUsedBookOrderDetailsParams = {
+  orderId?: number;
+};
+
 export type GetApiUsedBookCartsApiParams = {
   memberId?: number;
+};
+
+export type GetApiProductsParams = {
+  Keyword?: string;
+  BookSearch?: number;
+  PhysicalBook?: string;
+  EBook?: string;
+  PriceRangeStart?: number;
+  PriceRangeEnd?: number;
+  ProductDetailsCategoryId?: number;
+  Page?: number;
+  pageSize?: number;
 };
 
 export type GetApiLinePayCancelParams = {
@@ -141,15 +158,6 @@ export interface UsedBooksOrder {
   usedBooksAllocationRecords?: UsedBooksAllocationRecord[] | null;
   usedBooksLogisticsOrders?: UsedBooksLogisticsOrder[] | null;
   usedBooksOrderDetails?: UsedBooksOrderDetail[] | null;
-}
-
-export interface UsedBooksOrderDetail {
-  book?: UsedBook;
-  bookID?: number;
-  id?: number;
-  order?: UsedBooksOrder;
-  orderID?: number;
-  unitPrice?: number;
 }
 
 export interface UsedBooksCart {
@@ -253,6 +261,15 @@ export interface UsedBook {
   webReaderLink?: string | null;
 }
 
+export interface UsedBooksOrderDetail {
+  book?: UsedBook;
+  bookID?: number;
+  id?: number;
+  order?: UsedBooksOrder;
+  orderID?: number;
+  unitPrice?: number;
+}
+
 export interface StringStringValuesKeyValuePair {
   key?: string | null;
   value?: string[];
@@ -323,42 +340,6 @@ export interface RedirectUrlsDto {
   confirmUrl?: string | null;
 }
 
-export interface Promotion {
-  coupons?: Coupon[] | null;
-  endDate?: string;
-  promotionId?: number;
-  promotionName?: string | null;
-  startDate?: string;
-  type?: string | null;
-}
-
-export interface Product {
-  analyzeOneBooks?: AnalyzeOneBook[] | null;
-  analyzeSales?: AnalyzeSale[] | null;
-  analyzeUserInteractions?: AnalyzeUserInteraction[] | null;
-  bookProducts?: BookProduct[] | null;
-  cartDetails?: CartDetail[] | null;
-  category: string;
-  description: string;
-  detailsCategory?: ProductDetailsCategory;
-  detailsCategoryId?: number | null;
-  eBooks?: EBook[] | null;
-  id?: number;
-  name: string;
-  offer?: number | null;
-  orderDetails?: OrderDetail[] | null;
-  pdInStocks?: PdInStock[] | null;
-  price?: number;
-  productKeywords?: ProductKeyword[] | null;
-  productPictures?: ProductPicture[] | null;
-  productStatus: string;
-  qtyBookInventories?: QtyBookInventory[] | null;
-  qtyflawBooks?: QtyflawBook[] | null;
-  realPrice?: number | null;
-  stock?: number;
-  writeBookReviews?: WriteBookReview[] | null;
-}
-
 export interface QtyflawBook {
   book?: Product;
   bookID?: number;
@@ -378,6 +359,61 @@ export interface QtyBookInventory {
   remark?: string | null;
   state: string;
   totalQty?: number;
+}
+
+export interface Promotion {
+  coupons?: Coupon[] | null;
+  endDate?: string;
+  promotionId?: number;
+  promotionName?: string | null;
+  startDate?: string;
+  type?: string | null;
+}
+
+export interface ProductKeywordDto {
+  id?: number;
+  keywordId?: number;
+  keywordName?: string | null;
+  productId?: number;
+}
+
+export interface ProductDetailsCategoryDto {
+  id?: number;
+  name?: string | null;
+}
+
+export interface ProductsPagingDto {
+  productDetailsCategories?: ProductDetailsCategoryDto[] | null;
+  productsReslut?: BookProductDto[] | null;
+  totalPages?: number;
+}
+
+export interface Product {
+  analyzeOneBooks?: AnalyzeOneBook[] | null;
+  analyzeSales?: AnalyzeSale[] | null;
+  analyzeUserInteractions?: AnalyzeUserInteraction[] | null;
+  bookProducts?: BookProduct[] | null;
+  cartDetails?: CartDetail[] | null;
+  category: string;
+  description: string;
+  detailsCategory?: ProductDetailsCategory;
+  detailsCategoryId?: number | null;
+  discountDegree?: number | null;
+  eBooks?: EBook[] | null;
+  id?: number;
+  name: string;
+  offer?: number | null;
+  orderDetails?: OrderDetail[] | null;
+  pdInStocks?: PdInStock[] | null;
+  price?: number;
+  productKeywords?: ProductKeyword[] | null;
+  productPictures?: ProductPicture[] | null;
+  productStatus: string;
+  qtyBookInventories?: QtyBookInventory[] | null;
+  qtyflawBooks?: QtyflawBook[] | null;
+  realPrice?: number | null;
+  stock?: number;
+  writeBookReviews?: WriteBookReview[] | null;
 }
 
 export interface ProductPicture {
@@ -429,6 +465,17 @@ export interface PaymentResponseDto {
   returnMessage?: string | null;
 }
 
+export interface PaymentConfirmResponseDto {
+  info?: ConfirmResponseInfoDto;
+  returnCode?: string | null;
+  returnMessage?: string | null;
+}
+
+export interface PaymentConfirmDto {
+  amount?: number;
+  currency?: string | null;
+}
+
 export interface PackageDto {
   amount?: number;
   id?: string | null;
@@ -444,17 +491,6 @@ export interface PaymentRequestDto {
   redirectUrls?: RedirectUrlsDto;
 }
 
-export interface PaymentConfirmResponseDto {
-  info?: ConfirmResponseInfoDto;
-  returnCode?: string | null;
-  returnMessage?: string | null;
-}
-
-export interface PaymentConfirmDto {
-  amount?: number;
-  currency?: string | null;
-}
-
 export interface OrdersDto {
   address?: string | null;
   discountAmount?: number | null;
@@ -464,7 +500,7 @@ export interface OrdersDto {
   message?: string | null;
   orderDate?: string;
   paymentMethod?: string | null;
-  phone?: number | null;
+  phone?: string | null;
   status?: string | null;
   totalAmount?: number;
 }
@@ -478,29 +514,6 @@ export interface OrderDetailsDto {
   unitPrice?: number;
 }
 
-export interface OrderCreationDto {
-  orderDetailsDto?: OrderDetailsDto[] | null;
-  ordersDto?: OrdersDto;
-}
-
-export interface Order {
-  address?: string | null;
-  discountAmount?: number | null;
-  id?: number;
-  logisticsOrders?: LogisticsOrder[] | null;
-  member?: Member;
-  memberId?: number;
-  message?: string | null;
-  orderDate?: string;
-  orderDetails?: OrderDetail[] | null;
-  paymentMethod: string;
-  phone?: number | null;
-  refunds?: Refund[] | null;
-  returns?: Return[] | null;
-  status: string;
-  totalAmount?: number;
-}
-
 export interface OrderDetail {
   id?: number;
   order?: Order;
@@ -509,6 +522,11 @@ export interface OrderDetail {
   productId?: number;
   quantity?: number;
   unitPrice?: number;
+}
+
+export interface OrderCreationDto {
+  orderDetailsDto?: OrderDetailsDto[] | null;
+  ordersDto?: OrdersDto;
 }
 
 export interface News {
@@ -536,6 +554,15 @@ export interface MemberLoginRequest {
   captcha?: string | null;
   email?: string | null;
   password?: string | null;
+}
+
+export interface MemberDto {
+  address?: string | null;
+  dateOfBirth?: string;
+  email?: string | null;
+  id?: number;
+  name?: string | null;
+  phoneNumber?: string | null;
 }
 
 export interface Member {
@@ -582,6 +609,24 @@ export interface LogisticsOrder {
   recipientPhone: string;
   returns?: Return[] | null;
   trackingNumber: string;
+}
+
+export interface Order {
+  address?: string | null;
+  discountAmount?: number | null;
+  id?: number;
+  logisticsOrders?: LogisticsOrder[] | null;
+  member?: Member;
+  memberId?: number;
+  message?: string | null;
+  orderDate?: string;
+  orderDetails?: OrderDetail[] | null;
+  paymentMethod: string;
+  phone?: string | null;
+  refunds?: Refund[] | null;
+  returns?: Return[] | null;
+  status: string;
+  totalAmount?: number;
 }
 
 export interface LinePayProductDto {
@@ -676,13 +721,6 @@ export interface GroupFunction {
   name: string;
 }
 
-export interface GroupPermission {
-  employees?: Employee[] | null;
-  functions?: GroupFunction[] | null;
-  groupName: string;
-  id?: number;
-}
-
 export interface ForgotPasswordDto {
   email?: string | null;
 }
@@ -718,6 +756,13 @@ export interface Employee {
   verificationCodeExpiration?: string | null;
 }
 
+export interface GroupPermission {
+  employees?: Employee[] | null;
+  functions?: GroupFunction[] | null;
+  groupName: string;
+  id?: number;
+}
+
 export interface EBook {
   eBooksPermissions?: EBooksPermission[] | null;
   fileLink: string;
@@ -735,6 +780,14 @@ export interface EBooksPermission {
   member?: Member;
   memberID?: number;
   permissionType?: string | null;
+}
+
+export interface CouponRedemption {
+  coupon?: Coupon;
+  couponId?: number;
+  memberId?: number;
+  redemptionDate?: string;
+  usageId?: number;
 }
 
 export interface CouponDTO {
@@ -785,14 +838,6 @@ export interface Coupon {
   valid?: boolean;
 }
 
-export interface CouponRedemption {
-  coupon?: Coupon;
-  couponId?: number;
-  memberId?: number;
-  redemptionDate?: string;
-  usageId?: number;
-}
-
 export interface CouponAPIResponse {
   errorMessages?: string[] | null;
   isSuccess?: boolean;
@@ -828,15 +873,6 @@ export interface ConfirmResponseInfoDto {
   payInfo?: ConfirmResponsePayInfoDto[] | null;
   regKey?: string | null;
   transactionId?: number;
-}
-
-export interface Category {
-  books?: Book[] | null;
-  discountDegree?: number | null;
-  displayOrder?: number;
-  id?: number;
-  name: string;
-  usedBooks?: UsedBook[] | null;
 }
 
 export interface CartsDto {
@@ -882,6 +918,18 @@ export interface CartDetail {
   unitPrice?: number;
 }
 
+export interface Bookseller {
+  address: string;
+  bankAccount?: string | null;
+  bookProducts?: BookProduct[] | null;
+  compiled?: number | null;
+  contactPerson: string;
+  id?: number;
+  name: string;
+  pdInStocks?: PdInStock[] | null;
+  phone: string;
+}
+
 export interface BookReview {
   content: string;
   isSpoiler?: boolean;
@@ -890,6 +938,30 @@ export interface BookReview {
   rating?: string | null;
   reviewID?: number;
   reviewTime?: string;
+}
+
+export interface BookProductDto {
+  author?: string | null;
+  bookId?: number;
+  bookLanguage?: string | null;
+  description?: string | null;
+  detailsCategoryId?: number | null;
+  detailsCategoryName?: string | null;
+  discountDegree?: number | null;
+  id?: number;
+  imageUrl?: string[] | null;
+  isbn?: string | null;
+  price?: number;
+  productCategory?: string | null;
+  productId?: number;
+  productKeywords?: ProductKeywordDto[] | null;
+  productName?: string | null;
+  productStatus?: string | null;
+  publishDate?: string | null;
+  publisherId?: number;
+  publisherName?: string | null;
+  realPrice?: number | null;
+  stock?: number;
 }
 
 export interface Book {
@@ -903,6 +975,15 @@ export interface Book {
   name: string;
 }
 
+export interface Category {
+  books?: Book[] | null;
+  discountDegree?: number | null;
+  displayOrder?: number;
+  id?: number;
+  name: string;
+  usedBooks?: UsedBook[] | null;
+}
+
 export interface BookProduct {
   book?: Book;
   bookId?: number;
@@ -913,18 +994,6 @@ export interface BookProduct {
   publishDate?: string;
   publisher?: Bookseller;
   publisherId?: number;
-}
-
-export interface Bookseller {
-  address: string;
-  bankAccount?: string | null;
-  bookProducts?: BookProduct[] | null;
-  compiled?: number | null;
-  contactPerson: string;
-  id?: number;
-  name: string;
-  pdInStocks?: PdInStock[] | null;
-  phone: string;
 }
 
 export interface BookPreview {
@@ -1374,6 +1443,265 @@ export const useDeleteApiCartsId = <
   return useMutation(mutationOptions);
 };
 
+export const getApiCartsApiId = (
+  id: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<Cart>> => {
+  return axios.get(`/api/CartsApi/${id}`, options);
+};
+
+export const getGetApiCartsApiIdQueryKey = (id: number) => {
+  return [`/api/CartsApi/${id}`] as const;
+};
+
+export const getGetApiCartsApiIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiCartsApiId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiCartsApiId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetApiCartsApiIdQueryKey(id);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiCartsApiId>>
+  > = ({ signal }) => getApiCartsApiId(id, { signal, ...axiosOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiCartsApiId>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetApiCartsApiIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiCartsApiId>>
+>;
+export type GetApiCartsApiIdQueryError = AxiosError<unknown>;
+
+export const useGetApiCartsApiId = <
+  TData = Awaited<ReturnType<typeof getApiCartsApiId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiCartsApiId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApiCartsApiIdQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+export const putApiCartsApiId = (
+  id: number,
+  cart: Cart,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.put(`/api/CartsApi/${id}`, cart, options);
+};
+
+export const getPutApiCartsApiIdMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiCartsApiId>>,
+    TError,
+    { id: number; data: Cart },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putApiCartsApiId>>,
+  TError,
+  { id: number; data: Cart },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putApiCartsApiId>>,
+    { id: number; data: Cart }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return putApiCartsApiId(id, data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PutApiCartsApiIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putApiCartsApiId>>
+>;
+export type PutApiCartsApiIdMutationBody = Cart;
+export type PutApiCartsApiIdMutationError = AxiosError<unknown>;
+
+export const usePutApiCartsApiId = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiCartsApiId>>,
+    TError,
+    { id: number; data: Cart },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getPutApiCartsApiIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const deleteApiCartsApiId = (
+  id: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.delete(`/api/CartsApi/${id}`, options);
+};
+
+export const getDeleteApiCartsApiIdMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiCartsApiId>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteApiCartsApiId>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteApiCartsApiId>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteApiCartsApiId(id, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteApiCartsApiIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteApiCartsApiId>>
+>;
+
+export type DeleteApiCartsApiIdMutationError = AxiosError<unknown>;
+
+export const useDeleteApiCartsApiId = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiCartsApiId>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getDeleteApiCartsApiIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const postApiCartsApi = (
+  cart: Cart,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<string>> => {
+  return axios.post(`/api/CartsApi`, cart, options);
+};
+
+export const getPostApiCartsApiMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiCartsApi>>,
+    TError,
+    { data: Cart },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiCartsApi>>,
+  TError,
+  { data: Cart },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiCartsApi>>,
+    { data: Cart }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postApiCartsApi(data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiCartsApiMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiCartsApi>>
+>;
+export type PostApiCartsApiMutationBody = Cart;
+export type PostApiCartsApiMutationError = AxiosError<unknown>;
+
+export const usePostApiCartsApi = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiCartsApi>>,
+    TError,
+    { data: Cart },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getPostApiCartsApiMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
 export const getApiCartsDetails = (
   params?: GetApiCartsDetailsParams,
   options?: AxiosRequestConfig
@@ -1636,6 +1964,266 @@ export const useDeleteApiCartsDetailsId = <
   axios?: AxiosRequestConfig;
 }) => {
   const mutationOptions = getDeleteApiCartsDetailsIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const getApiCartsDetailsApiId = (
+  id: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<CartDetail>> => {
+  return axios.get(`/api/CartsDetailsApi/${id}`, options);
+};
+
+export const getGetApiCartsDetailsApiIdQueryKey = (id: number) => {
+  return [`/api/CartsDetailsApi/${id}`] as const;
+};
+
+export const getGetApiCartsDetailsApiIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiCartsDetailsApiId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiCartsDetailsApiId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiCartsDetailsApiIdQueryKey(id);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiCartsDetailsApiId>>
+  > = ({ signal }) => getApiCartsDetailsApiId(id, { signal, ...axiosOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiCartsDetailsApiId>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetApiCartsDetailsApiIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiCartsDetailsApiId>>
+>;
+export type GetApiCartsDetailsApiIdQueryError = AxiosError<unknown>;
+
+export const useGetApiCartsDetailsApiId = <
+  TData = Awaited<ReturnType<typeof getApiCartsDetailsApiId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiCartsDetailsApiId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApiCartsDetailsApiIdQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+export const putApiCartsDetailsApiId = (
+  id: number,
+  cartDetail: CartDetail,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.put(`/api/CartsDetailsApi/${id}`, cartDetail, options);
+};
+
+export const getPutApiCartsDetailsApiIdMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiCartsDetailsApiId>>,
+    TError,
+    { id: number; data: CartDetail },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putApiCartsDetailsApiId>>,
+  TError,
+  { id: number; data: CartDetail },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putApiCartsDetailsApiId>>,
+    { id: number; data: CartDetail }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return putApiCartsDetailsApiId(id, data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PutApiCartsDetailsApiIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putApiCartsDetailsApiId>>
+>;
+export type PutApiCartsDetailsApiIdMutationBody = CartDetail;
+export type PutApiCartsDetailsApiIdMutationError = AxiosError<unknown>;
+
+export const usePutApiCartsDetailsApiId = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiCartsDetailsApiId>>,
+    TError,
+    { id: number; data: CartDetail },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getPutApiCartsDetailsApiIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const deleteApiCartsDetailsApiId = (
+  id: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.delete(`/api/CartsDetailsApi/${id}`, options);
+};
+
+export const getDeleteApiCartsDetailsApiIdMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiCartsDetailsApiId>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteApiCartsDetailsApiId>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteApiCartsDetailsApiId>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteApiCartsDetailsApiId(id, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteApiCartsDetailsApiIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteApiCartsDetailsApiId>>
+>;
+
+export type DeleteApiCartsDetailsApiIdMutationError = AxiosError<unknown>;
+
+export const useDeleteApiCartsDetailsApiId = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiCartsDetailsApiId>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getDeleteApiCartsDetailsApiIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const postApiCartsDetailsApi = (
+  cartDetail: CartDetail,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<string>> => {
+  return axios.post(`/api/CartsDetailsApi`, cartDetail, options);
+};
+
+export const getPostApiCartsDetailsApiMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiCartsDetailsApi>>,
+    TError,
+    { data: CartDetail },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiCartsDetailsApi>>,
+  TError,
+  { data: CartDetail },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiCartsDetailsApi>>,
+    { data: CartDetail }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postApiCartsDetailsApi(data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiCartsDetailsApiMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiCartsDetailsApi>>
+>;
+export type PostApiCartsDetailsApiMutationBody = CartDetail;
+export type PostApiCartsDetailsApiMutationError = AxiosError<unknown>;
+
+export const usePostApiCartsDetailsApi = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiCartsDetailsApi>>,
+    TError,
+    { data: CartDetail },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getPostApiCartsDetailsApiMutationOptions(options);
 
   return useMutation(mutationOptions);
 };
@@ -3504,6 +4092,68 @@ export const useDeleteApiMembersId = <
   return useMutation(mutationOptions);
 };
 
+export const putApiMembersIdMemberEdit = (
+  id: number,
+  memberDto: MemberDto,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.put(`/api/Members/${id}/MemberEdit`, memberDto, options);
+};
+
+export const getPutApiMembersIdMemberEditMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiMembersIdMemberEdit>>,
+    TError,
+    { id: number; data: MemberDto },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putApiMembersIdMemberEdit>>,
+  TError,
+  { id: number; data: MemberDto },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putApiMembersIdMemberEdit>>,
+    { id: number; data: MemberDto }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return putApiMembersIdMemberEdit(id, data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PutApiMembersIdMemberEditMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putApiMembersIdMemberEdit>>
+>;
+export type PutApiMembersIdMemberEditMutationBody = MemberDto;
+export type PutApiMembersIdMemberEditMutationError = AxiosError<unknown>;
+
+export const usePutApiMembersIdMemberEdit = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiMembersIdMemberEdit>>,
+    TError,
+    { id: number; data: MemberDto },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getPutApiMembersIdMemberEditMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
 export const getApiOrderMemberId = (
   memberId: number,
   options?: AxiosRequestConfig
@@ -3903,6 +4553,829 @@ export const usePutApiOrdersDetailsId = <
   return useMutation(mutationOptions);
 };
 
+export const getApiProducts = (
+  params?: GetApiProductsParams,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<ProductsPagingDto>> => {
+  return axios.get(`/api/Products`, {
+    ...options,
+    params: { ...params, ...options?.params }
+  });
+};
+
+export const getGetApiProductsQueryKey = (params?: GetApiProductsParams) => {
+  return [`/api/Products`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetApiProductsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiProducts>>,
+  TError = AxiosError<unknown>
+>(
+  params?: GetApiProductsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiProducts>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetApiProductsQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiProducts>>> = ({
+    signal
+  }) => getApiProducts(params, { signal, ...axiosOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProducts>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetApiProductsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiProducts>>
+>;
+export type GetApiProductsQueryError = AxiosError<unknown>;
+
+export const useGetApiProducts = <
+  TData = Awaited<ReturnType<typeof getApiProducts>>,
+  TError = AxiosError<unknown>
+>(
+  params?: GetApiProductsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiProducts>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApiProductsQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+export const postApiProducts = (
+  postApiProductsBody: string,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.post(`/api/Products`, postApiProductsBody, options);
+};
+
+export const getPostApiProductsMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiProducts>>,
+    TError,
+    { data: string },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiProducts>>,
+  TError,
+  { data: string },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiProducts>>,
+    { data: string }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postApiProducts(data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiProductsMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiProducts>>
+>;
+export type PostApiProductsMutationBody = string;
+export type PostApiProductsMutationError = AxiosError<unknown>;
+
+export const usePostApiProducts = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiProducts>>,
+    TError,
+    { data: string },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getPostApiProductsMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const getApiProductsId = (
+  id: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<BookProductDto>> => {
+  return axios.get(`/api/Products/${id}`, options);
+};
+
+export const getGetApiProductsIdQueryKey = (id: number) => {
+  return [`/api/Products/${id}`] as const;
+};
+
+export const getGetApiProductsIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiProductsId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiProductsId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetApiProductsIdQueryKey(id);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiProductsId>>
+  > = ({ signal }) => getApiProductsId(id, { signal, ...axiosOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProductsId>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetApiProductsIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiProductsId>>
+>;
+export type GetApiProductsIdQueryError = AxiosError<unknown>;
+
+export const useGetApiProductsId = <
+  TData = Awaited<ReturnType<typeof getApiProductsId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiProductsId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApiProductsIdQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+export const putApiProductsId = (
+  id: number,
+  putApiProductsIdBody: string,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.put(`/api/Products/${id}`, putApiProductsIdBody, options);
+};
+
+export const getPutApiProductsIdMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiProductsId>>,
+    TError,
+    { id: number; data: string },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putApiProductsId>>,
+  TError,
+  { id: number; data: string },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putApiProductsId>>,
+    { id: number; data: string }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return putApiProductsId(id, data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PutApiProductsIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putApiProductsId>>
+>;
+export type PutApiProductsIdMutationBody = string;
+export type PutApiProductsIdMutationError = AxiosError<unknown>;
+
+export const usePutApiProductsId = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiProductsId>>,
+    TError,
+    { id: number; data: string },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getPutApiProductsIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const deleteApiProductsId = (
+  id: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.delete(`/api/Products/${id}`, options);
+};
+
+export const getDeleteApiProductsIdMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiProductsId>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteApiProductsId>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteApiProductsId>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteApiProductsId(id, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteApiProductsIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteApiProductsId>>
+>;
+
+export type DeleteApiProductsIdMutationError = AxiosError<unknown>;
+
+export const useDeleteApiProductsId = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiProductsId>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getDeleteApiProductsIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const getApiProductsGetByDetailsCategoryProductId = (
+  productId: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<BookProductDto[]>> => {
+  return axios.get(`/api/Products/GetByDetailsCategory/${productId}`, options);
+};
+
+export const getGetApiProductsGetByDetailsCategoryProductIdQueryKey = (
+  productId: number
+) => {
+  return [`/api/Products/GetByDetailsCategory/${productId}`] as const;
+};
+
+export const getGetApiProductsGetByDetailsCategoryProductIdQueryOptions = <
+  TData = Awaited<
+    ReturnType<typeof getApiProductsGetByDetailsCategoryProductId>
+  >,
+  TError = AxiosError<unknown>
+>(
+  productId: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiProductsGetByDetailsCategoryProductId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetApiProductsGetByDetailsCategoryProductIdQueryKey(productId);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiProductsGetByDetailsCategoryProductId>>
+  > = ({ signal }) =>
+    getApiProductsGetByDetailsCategoryProductId(productId, {
+      signal,
+      ...axiosOptions
+    });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!productId,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProductsGetByDetailsCategoryProductId>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetApiProductsGetByDetailsCategoryProductIdQueryResult =
+  NonNullable<
+    Awaited<ReturnType<typeof getApiProductsGetByDetailsCategoryProductId>>
+  >;
+export type GetApiProductsGetByDetailsCategoryProductIdQueryError =
+  AxiosError<unknown>;
+
+export const useGetApiProductsGetByDetailsCategoryProductId = <
+  TData = Awaited<
+    ReturnType<typeof getApiProductsGetByDetailsCategoryProductId>
+  >,
+  TError = AxiosError<unknown>
+>(
+  productId: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiProductsGetByDetailsCategoryProductId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions =
+    getGetApiProductsGetByDetailsCategoryProductIdQueryOptions(
+      productId,
+      options
+    );
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+export const getApiProductsGetByPublishDate = (
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<BookProductDto[]>> => {
+  return axios.get(`/api/Products/GetByPublishDate`, options);
+};
+
+export const getGetApiProductsGetByPublishDateQueryKey = () => {
+  return [`/api/Products/GetByPublishDate`] as const;
+};
+
+export const getGetApiProductsGetByPublishDateQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiProductsGetByPublishDate>>,
+  TError = AxiosError<unknown>
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProductsGetByPublishDate>>,
+    TError,
+    TData
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiProductsGetByPublishDateQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiProductsGetByPublishDate>>
+  > = ({ signal }) =>
+    getApiProductsGetByPublishDate({ signal, ...axiosOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProductsGetByPublishDate>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetApiProductsGetByPublishDateQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiProductsGetByPublishDate>>
+>;
+export type GetApiProductsGetByPublishDateQueryError = AxiosError<unknown>;
+
+export const useGetApiProductsGetByPublishDate = <
+  TData = Awaited<ReturnType<typeof getApiProductsGetByPublishDate>>,
+  TError = AxiosError<unknown>
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProductsGetByPublishDate>>,
+    TError,
+    TData
+  >;
+  axios?: AxiosRequestConfig;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApiProductsGetByPublishDateQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+export const getApiProductsCategory = (
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<string[]>> => {
+  return axios.get(`/api/ProductsCategory`, options);
+};
+
+export const getGetApiProductsCategoryQueryKey = () => {
+  return [`/api/ProductsCategory`] as const;
+};
+
+export const getGetApiProductsCategoryQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiProductsCategory>>,
+  TError = AxiosError<unknown>
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProductsCategory>>,
+    TError,
+    TData
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiProductsCategoryQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiProductsCategory>>
+  > = ({ signal }) => getApiProductsCategory({ signal, ...axiosOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProductsCategory>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetApiProductsCategoryQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiProductsCategory>>
+>;
+export type GetApiProductsCategoryQueryError = AxiosError<unknown>;
+
+export const useGetApiProductsCategory = <
+  TData = Awaited<ReturnType<typeof getApiProductsCategory>>,
+  TError = AxiosError<unknown>
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProductsCategory>>,
+    TError,
+    TData
+  >;
+  axios?: AxiosRequestConfig;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApiProductsCategoryQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+export const postApiProductsCategory = (
+  postApiProductsCategoryBody: string,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.post(
+    `/api/ProductsCategory`,
+    postApiProductsCategoryBody,
+    options
+  );
+};
+
+export const getPostApiProductsCategoryMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiProductsCategory>>,
+    TError,
+    { data: string },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiProductsCategory>>,
+  TError,
+  { data: string },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiProductsCategory>>,
+    { data: string }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postApiProductsCategory(data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiProductsCategoryMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiProductsCategory>>
+>;
+export type PostApiProductsCategoryMutationBody = string;
+export type PostApiProductsCategoryMutationError = AxiosError<unknown>;
+
+export const usePostApiProductsCategory = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiProductsCategory>>,
+    TError,
+    { data: string },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getPostApiProductsCategoryMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const getApiProductsCategoryId = (
+  id: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<string>> => {
+  return axios.get(`/api/ProductsCategory/${id}`, options);
+};
+
+export const getGetApiProductsCategoryIdQueryKey = (id: number) => {
+  return [`/api/ProductsCategory/${id}`] as const;
+};
+
+export const getGetApiProductsCategoryIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiProductsCategoryId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiProductsCategoryId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiProductsCategoryIdQueryKey(id);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiProductsCategoryId>>
+  > = ({ signal }) => getApiProductsCategoryId(id, { signal, ...axiosOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProductsCategoryId>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetApiProductsCategoryIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiProductsCategoryId>>
+>;
+export type GetApiProductsCategoryIdQueryError = AxiosError<unknown>;
+
+export const useGetApiProductsCategoryId = <
+  TData = Awaited<ReturnType<typeof getApiProductsCategoryId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiProductsCategoryId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApiProductsCategoryIdQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+export const putApiProductsCategoryId = (
+  id: number,
+  putApiProductsCategoryIdBody: string,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.put(
+    `/api/ProductsCategory/${id}`,
+    putApiProductsCategoryIdBody,
+    options
+  );
+};
+
+export const getPutApiProductsCategoryIdMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiProductsCategoryId>>,
+    TError,
+    { id: number; data: string },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putApiProductsCategoryId>>,
+  TError,
+  { id: number; data: string },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putApiProductsCategoryId>>,
+    { id: number; data: string }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return putApiProductsCategoryId(id, data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PutApiProductsCategoryIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putApiProductsCategoryId>>
+>;
+export type PutApiProductsCategoryIdMutationBody = string;
+export type PutApiProductsCategoryIdMutationError = AxiosError<unknown>;
+
+export const usePutApiProductsCategoryId = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiProductsCategoryId>>,
+    TError,
+    { id: number; data: string },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getPutApiProductsCategoryIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const deleteApiProductsCategoryId = (
+  id: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.delete(`/api/ProductsCategory/${id}`, options);
+};
+
+export const getDeleteApiProductsCategoryIdMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiProductsCategoryId>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteApiProductsCategoryId>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteApiProductsCategoryId>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteApiProductsCategoryId(id, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteApiProductsCategoryIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteApiProductsCategoryId>>
+>;
+
+export type DeleteApiProductsCategoryIdMutationError = AxiosError<unknown>;
+
+export const useDeleteApiProductsCategoryId = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiProductsCategoryId>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions =
+    getDeleteApiProductsCategoryIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
 export const getApiUsedBookCartsApi = (
   params?: GetApiUsedBookCartsApiParams,
   options?: AxiosRequestConfig
@@ -4103,25 +5576,30 @@ export const useDeleteApiUsedBookCartsApiId = <
   return useMutation(mutationOptions);
 };
 
-export const getApiUsedBookOrderDetailsId = (
-  id: number,
+export const getApiUsedBookOrderDetails = (
+  params?: GetApiUsedBookOrderDetailsParams,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<UsedBookOrderDetailDto[]>> => {
-  return axios.get(`/api/UsedBookOrderDetails/${id}`, options);
+  return axios.get(`/api/UsedBookOrderDetails`, {
+    ...options,
+    params: { ...params, ...options?.params }
+  });
 };
 
-export const getGetApiUsedBookOrderDetailsIdQueryKey = (id: number) => {
-  return [`/api/UsedBookOrderDetails/${id}`] as const;
+export const getGetApiUsedBookOrderDetailsQueryKey = (
+  params?: GetApiUsedBookOrderDetailsParams
+) => {
+  return [`/api/UsedBookOrderDetails`, ...(params ? [params] : [])] as const;
 };
 
-export const getGetApiUsedBookOrderDetailsIdQueryOptions = <
-  TData = Awaited<ReturnType<typeof getApiUsedBookOrderDetailsId>>,
+export const getGetApiUsedBookOrderDetailsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiUsedBookOrderDetails>>,
   TError = AxiosError<unknown>
 >(
-  id: number,
+  params?: GetApiUsedBookOrderDetailsParams,
   options?: {
     query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApiUsedBookOrderDetailsId>>,
+      Awaited<ReturnType<typeof getApiUsedBookOrderDetails>>,
       TError,
       TData
     >;
@@ -4131,45 +5609,43 @@ export const getGetApiUsedBookOrderDetailsIdQueryOptions = <
   const { query: queryOptions, axios: axiosOptions } = options ?? {};
 
   const queryKey =
-    queryOptions?.queryKey ?? getGetApiUsedBookOrderDetailsIdQueryKey(id);
+    queryOptions?.queryKey ?? getGetApiUsedBookOrderDetailsQueryKey(params);
 
   const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getApiUsedBookOrderDetailsId>>
+    Awaited<ReturnType<typeof getApiUsedBookOrderDetails>>
   > = ({ signal }) =>
-    getApiUsedBookOrderDetailsId(id, { signal, ...axiosOptions });
+    getApiUsedBookOrderDetails(params, { signal, ...axiosOptions });
 
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!id,
-    ...queryOptions
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof getApiUsedBookOrderDetailsId>>,
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiUsedBookOrderDetails>>,
     TError,
     TData
   > & { queryKey: QueryKey };
 };
 
-export type GetApiUsedBookOrderDetailsIdQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getApiUsedBookOrderDetailsId>>
+export type GetApiUsedBookOrderDetailsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiUsedBookOrderDetails>>
 >;
-export type GetApiUsedBookOrderDetailsIdQueryError = AxiosError<unknown>;
+export type GetApiUsedBookOrderDetailsQueryError = AxiosError<unknown>;
 
-export const useGetApiUsedBookOrderDetailsId = <
-  TData = Awaited<ReturnType<typeof getApiUsedBookOrderDetailsId>>,
+export const useGetApiUsedBookOrderDetails = <
+  TData = Awaited<ReturnType<typeof getApiUsedBookOrderDetails>>,
   TError = AxiosError<unknown>
 >(
-  id: number,
+  params?: GetApiUsedBookOrderDetailsParams,
   options?: {
     query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApiUsedBookOrderDetailsId>>,
+      Awaited<ReturnType<typeof getApiUsedBookOrderDetails>>,
       TError,
       TData
     >;
     axios?: AxiosRequestConfig;
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetApiUsedBookOrderDetailsIdQueryOptions(id, options);
+  const queryOptions = getGetApiUsedBookOrderDetailsQueryOptions(
+    params,
+    options
+  );
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -4534,6 +6010,161 @@ export const useGetApiUsedBooksIsbnIsbn = <
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
   const queryOptions = getGetApiUsedBooksIsbnIsbnQueryOptions(isbn, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+export const getApiUsedBooksIdId = (
+  id: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<UsedBookDto>> => {
+  return axios.get(`/api/UsedBooks/Id/${id}`, options);
+};
+
+export const getGetApiUsedBooksIdIdQueryKey = (id: number) => {
+  return [`/api/UsedBooks/Id/${id}`] as const;
+};
+
+export const getGetApiUsedBooksIdIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiUsedBooksIdId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiUsedBooksIdId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetApiUsedBooksIdIdQueryKey(id);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiUsedBooksIdId>>
+  > = ({ signal }) => getApiUsedBooksIdId(id, { signal, ...axiosOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiUsedBooksIdId>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetApiUsedBooksIdIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiUsedBooksIdId>>
+>;
+export type GetApiUsedBooksIdIdQueryError = AxiosError<unknown>;
+
+export const useGetApiUsedBooksIdId = <
+  TData = Awaited<ReturnType<typeof getApiUsedBooksIdId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiUsedBooksIdId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApiUsedBooksIdIdQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+export const getApiUsedBooksCategoryBookId = (
+  id: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<UsedBookDto[]>> => {
+  return axios.get(`/api/UsedBooks/Category/Book/${id}`, options);
+};
+
+export const getGetApiUsedBooksCategoryBookIdQueryKey = (id: number) => {
+  return [`/api/UsedBooks/Category/Book/${id}`] as const;
+};
+
+export const getGetApiUsedBooksCategoryBookIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiUsedBooksCategoryBookId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiUsedBooksCategoryBookId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiUsedBooksCategoryBookIdQueryKey(id);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiUsedBooksCategoryBookId>>
+  > = ({ signal }) =>
+    getApiUsedBooksCategoryBookId(id, { signal, ...axiosOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiUsedBooksCategoryBookId>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetApiUsedBooksCategoryBookIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiUsedBooksCategoryBookId>>
+>;
+export type GetApiUsedBooksCategoryBookIdQueryError = AxiosError<unknown>;
+
+export const useGetApiUsedBooksCategoryBookId = <
+  TData = Awaited<ReturnType<typeof getApiUsedBooksCategoryBookId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiUsedBooksCategoryBookId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApiUsedBooksCategoryBookIdQueryOptions(
+    id,
+    options
+  );
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;

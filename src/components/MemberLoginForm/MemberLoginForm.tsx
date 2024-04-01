@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   GoogleLogin,
   GoogleLoginResponse,
-  GoogleLoginResponseOffline,
-} from "react-google-login";
+  GoogleLoginResponseOffline
+} from 'react-google-login';
+import { Link } from 'react-router-dom';
 
 // import { Link } from "react-router-dom";
 // import FormBookImage from '../../component/Image/sign-up.png';
@@ -11,59 +12,59 @@ import {
 export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
   const note = Object.fromEntries(formData);
-  return fetch("/api/notes", {
-    method: "POST",
+  return fetch('/api/notes', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer SOMEJWTTOKEN",
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer SOMEJWTTOKEN'
     },
-    body: JSON.stringify(note),
+    body: JSON.stringify(note)
   });
 }
 function logout() {
-  localStorage.removeItem("token");
-  window.location.href = "/MemberLoginForm";
+  localStorage.removeItem('token');
+  window.location.href = '/MemberLoginForm';
 }
 
 function MemberLoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [captchaUrl, setCaptchaUrl] = useState("");
-  const [captcha, setUserCaptcha] = useState("");
-  const [cacheKey, setCacheKey] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [captchaUrl, setCaptchaUrl] = useState('');
+  const [captcha, setUserCaptcha] = useState('');
+  const [cacheKey, setCacheKey] = useState('');
 
   const GoogleLoginSuccess = (
     response: GoogleLoginResponse | GoogleLoginResponseOffline
   ) => {
-    console.log("Google登錄成功：", response);
+    console.log('Google登錄成功：', response);
   };
   const GoogleLoginFail = (response: GoogleLoginResponse) => {
-    console.log("Google登錄失敗：", response);
+    console.log('Google登錄失敗：', response);
     // 在這裡處理登錄失敗的邏輯
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch("https://localhost:7236/api/MemberLogin", {
-        method: "POST",
+      const response = await fetch('https://localhost:7236/api/MemberLogin', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password, captcha, cacheKey }),
+        body: JSON.stringify({ email, password, captcha, cacheKey })
       });
 
       if (!response.ok) {
         const errorData = await response.text();
-        throw new Error(errorData || "登入過程中發生錯誤");
+        throw new Error(errorData || '登入過程中發生錯誤');
       }
 
       const { token } = await response.json(); // 假設後端回應包含 token
-      localStorage.setItem("token", token); // 儲存 JWT 到 localStorage
+      localStorage.setItem('token', token); // 儲存 JWT 到 localStorage
 
-      alert("登入成功");
+      alert('登入成功');
       // 這裡可以重定向到會員中心或執行其他操作
-      window.location.href = "/MemberCenter"; // 重定向到會員中心頁面
+      window.location.href = '/MemberCenter'; // 重定向到會員中心頁面
     } catch (error) {
       if (error instanceof Error) alert(error.message);
     }
@@ -229,138 +230,145 @@ function MemberLoginForm() {
     //     </div>
     //   </div>
     // </section>
-    <div className="page-content">
+    <div className=''>
       <div
-        className="dz-bnr-inr overlay-secondary-dark dz-bnr-inr-sm"
+        className='dz-bnr-inr overlay-secondary-dark dz-bnr-inr-sm'
         style={{ backgroundImage: "url('assets/picture/bg3.jpg')" }}
       >
-        <div className="container">
-          <div className="dz-bnr-inr-entry">
+        <div className='container'>
+          <div className='dz-bnr-inr-entry'>
             <h1>登入</h1>
-            <nav aria-label="breadcrumb" className="breadcrumb-row">
-              <ul className="breadcrumb">
-                <li className="breadcrumb-item">
-                  <a href="index.html">首頁</a>
+            <nav aria-label='breadcrumb' className='breadcrumb-row'>
+              <ul className='breadcrumb'>
+                <li className='me-4'>
+                  <Link to='/' style={{ color: '#000000' }}>
+                    實體書首頁
+                  </Link>
                 </li>
-                <li className="breadcrumb-item">登入</li>
+                <li>
+                  <Link to='/usedBook' style={{ color: '#000000' }}>
+                    二手書首頁
+                  </Link>
+                </li>
+                {/* <li className='breadcrumb-item'>登入</li> */}
               </ul>
             </nav>
           </div>
         </div>
       </div>
 
-      <section className="content-inner shop-account">
-        <div className="container">
-          <div className="row">
-            <div className="col-lg-6 col-md-6 mb-4">
-              <div className="login-area">
-                <div className="tab-content">
+      <section className='content-inner shop-account'>
+        <div className='container'>
+          <div className='row'>
+            <div className='col-lg-6 col-md-6 mb-4'>
+              <div className='login-area'>
+                <div className='tab-content'>
                   <h4>新用戶</h4>
                   <p>在我們印跡註冊帳號，你可以使用更多功能！</p>
                   <a
-                    className="btn btn-primary btnhover m-r5 button-lg radius-no"
-                    href="/Register"
+                    className='btn btn-primary btnhover m-r5 button-lg radius-no'
+                    href='/Register'
                   >
                     點此註冊
                   </a>
                 </div>
               </div>
             </div>
-            <div className="col-lg-6 col-md-6 mb-4">
-              <div className="login-area">
-                <div className="tab-content nav">
+            <div className='col-lg-6 col-md-6 mb-4'>
+              <div className='login-area'>
+                <div className='tab-content nav'>
                   <form
-                    method="post"
-                    id="login"
-                    className="tab-pane active col-12"
+                    method='post'
+                    id='login'
+                    className='tab-pane active col-12'
                     onSubmit={handleSubmit}
                   >
-                    <h4 className="text-secondary">登入</h4>
-                    <p className="font-weight-600">
+                    <h4 className='text-secondary'>登入</h4>
+                    <p className='font-weight-600'>
                       如果你已經註冊的話，那就登入吧！
                     </p>
                     <GoogleLogin
-                      clientId="266231759117-rneh56rnftdqop46b2pvbted0pv9h79l.apps.googleusercontent.com"
-                      buttonText="使用Google登錄"
+                      clientId='266231759117-rneh56rnftdqop46b2pvbted0pv9h79l.apps.googleusercontent.com'
+                      buttonText='使用Google登錄'
                       onSuccess={GoogleLoginSuccess}
                       onFailure={GoogleLoginFail}
-                      cookiePolicy={"single_host_origin"}
+                      cookiePolicy={'single_host_origin'}
                     />
 
-                    <div className="mb-4">
-                      <label className="label-title">電子信箱 *</label>
+                    <div className='mt-4 mb-4'>
+                      <label className='label-title'>電子信箱 *</label>
                       <input
-                        name="dzName"
+                        name='dzName'
                         required
-                        className="form-control"
-                        placeholder="輸入您的電子信箱"
-                        type="email"
+                        className='form-control'
+                        placeholder='輸入您的電子信箱'
+                        type='email'
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
-                    <div className="mb-4">
-                      <label className="label-title">密碼 *</label>
+                    <div className='mb-4'>
+                      <label className='label-title'>密碼 *</label>
                       <input
-                        name="dzName"
+                        name='dzName'
                         required
-                        className="form-control "
-                        placeholder="輸入您的密碼"
-                        type="password"
+                        className='form-control '
+                        placeholder='輸入您的密碼'
+                        type='password'
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                       />
                     </div>
 
-                    <div style={{ display: "flex", alignItems: "center" }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
                       <img
                         src={captchaUrl}
-                        alt="captcha"
+                        alt='captcha'
                         onClick={generateCaptcha}
-                        style={{ cursor: "pointer" }}
+                        style={{ cursor: 'pointer', marginRight: '25px' }}
                       />
-                      <div className="mb-4">
-                        <label className="label-title">驗證碼輸入框 *</label>
+                      <div className='mb-4'>
+                        <label className='label-title'>驗證碼輸入框 *</label>
                         <input
-                          name="captcha"
+                          name='captcha'
                           required
-                          className="form-control "
-                          placeholder="輸入驗證碼"
-                          type="captcha"
+                          className='form-control '
+                          placeholder='輸入驗證碼'
+                          type='captcha'
                           value={captcha}
                           onChange={(e) => setUserCaptcha(e.target.value)}
                         />
                       </div>
                       <button
-                        type="button"
+                        type='button'
                         onClick={generateCaptcha}
-                        className="refresh-button"
-                        style={{ marginLeft: "10px" }}
+                        className='refresh-button'
+                        style={{ marginLeft: '10px' }}
                       >
                         刷新驗證碼
                       </button>
                     </div>
 
-                    <div className="text-left">
-                      <button className="btn btn-primary btnhover me-2">
+                    <div className='text-left'>
+                      <button className='btn btn-primary btnhover me-4'>
                         點此登入
                       </button>
 
                       <a
-                        data-bs-toggle="tab"
-                        href="/ForgetPassword"
-                        className="m-l5"
+                        data-bs-toggle='tab'
+                        href='/ForgetPassword'
+                        className='m-l5'
                       >
-                        <i className="fas fa-unlock-alt"></i>忘記密碼了嗎？
+                        <i className='fas fa-unlock-alt'></i>忘記密碼了嗎？
                       </a>
                       <br></br>
 
                       <a
-                        data-bs-toggle="tab"
-                        href="/employee-login"
-                        className="m-l5"
+                        data-bs-toggle='tab'
+                        href='/employee-login'
+                        className='m-l5'
                       >
-                        <i className="text-secondary">員工登入</i>
+                        <i className='text-secondary'>員工登入</i>
                       </a>
                     </div>
                   </form>

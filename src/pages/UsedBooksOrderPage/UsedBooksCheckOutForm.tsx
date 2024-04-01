@@ -1,0 +1,332 @@
+// OrderConfirmation.tsx
+import React, { useEffect, useState } from 'react';
+import '../../assets/css/app.css';
+import { Outlet, Link } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { Fragment } from 'react/jsx-runtime';
+import { UsedBookCartsDto } from '../../API';
+import { usepaymentAmountStore, paymentAmountstate } from '../../state';
+import LinePay from '../../picture/LinePay.png';
+
+interface UsedBookOrderProps {
+  cart: UsedBookCartsDto[];
+  total: number;
+  fee: number;
+}
+
+//寄送資訊
+export const CheckOutStep1 = () => {
+  return (
+    <div id='step-1' role='tabpanel' aria-labelledby='step-1'>
+      <div className='contact-info'>
+        <h4 className='mb-32'>寄送資訊</h4>
+      </div>
+      <div className='row'>
+        <div className='col-sm-6'>
+          <div className='mb-24'>
+            <input
+              type='text'
+              className='form-control'
+              id='name'
+              name='name'
+              placeholder='收件人姓名'
+            />
+          </div>
+        </div>
+        <div className='col-sm-6'>
+          <div className='mb-24'>
+            <input
+              type='tel'
+              className='form-control'
+              id='phone'
+              name='phone'
+              placeholder='收件人電話'
+            />
+          </div>
+        </div>
+        <div className='col-sm-12'>
+          <div className='mb-24'>
+            <input
+              type='text'
+              className='form-control'
+              id='email'
+              name='email'
+              placeholder='Email'
+            />
+          </div>
+        </div>
+        <div className='col-sm-12'>
+          <div className='mb-24'>
+            <input
+              type='text'
+              className='form-control'
+              id='House'
+              name='House'
+              placeholder='請輸入完整地址'
+            />
+          </div>
+        </div>
+        <div className='col-sm-12'>
+          <textarea
+            className='form-control notes mb-32'
+            name='notes'
+            id=''
+            cols={68}
+            rows={5}
+            placeholder='備註事項'
+          ></textarea>
+        </div>
+        <div className='sw-toolbar-elm toolbar toolbar-bottom' role='toolbar'>
+          <Link to={'/usedBook/usedBookCart'} className='nav-link'>
+            <button className='btn sw-btn-prev sw-btn' type='button'>
+              Back
+            </button>
+          </Link>
+          <Link to={'/usedBook/checkOut/Step2'} className='nav-link'>
+            <button className='btn sw-btn-next sw-btn' type='button'>
+              Next
+            </button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+//付款方式 //todo 加綠界
+export const CheckOutStep2 = () => {
+  //取得付款金額
+  const { count, setCount } = usepaymentAmountStore<paymentAmountstate>(
+    (state) => state
+  );
+  useEffect(() => {
+    setCount(500);
+  }, []);
+
+  const requestPayment = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    const baseLoginPayUrl = 'https://localhost:7236/api/LinePay/';
+
+    const payment = {
+      amount: count,
+      currency: 'TWD',
+      orderId: Date.now().toString(),
+      packages: [
+        {
+          id: '20191011I001',
+          amount: count,
+          name: '印跡書閣',
+          products: [
+            {
+              name: '印跡書閣',
+              quantity: 1,
+              price: count
+            }
+          ]
+        }
+      ],
+      redirectUrls: {
+        confirmUrl: 'http://localhost:5173/usedBook/usedBookPayment/linepay',
+        cancelUrl: 'https://localhost:7236/api/Cancel'
+      }
+    };
+
+    try {
+      const response = await fetch(baseLoginPayUrl + 'Create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payment)
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const res = await response.json();
+      window.location = res.info.paymentUrl.web;
+    } catch (error) {
+      console.log('Request failed', error);
+    }
+  };
+
+  return (
+    <div id='step-2' role='tabpanel' aria-labelledby='step-2'>
+      <div className='contact-info'>
+        <h4 className='mb-32'>付款方式</h4>
+      </div>
+      <div className='row'>
+        <div className='col-sm-6'>
+          <div className='mb-24'>
+            <div className='mb-24'>
+              <div>
+                <button type='button' onClick={requestPayment}>
+                  <img src={LinePay} />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className='col-sm-6'>
+          <div className='mb-24'>
+            <div className='mb-32'></div>
+          </div>
+        </div>
+        <div className='col-sm-12'>
+          <div className='mb-24'></div>
+        </div>
+        <div className='sw-toolbar-elm toolbar toolbar-bottom' role='toolbar'>
+          <Link to={'/usedBook/checkOut'} className='nav-link'>
+            <button className='btn sw-btn-prev sw-btn' type='button'>
+              Back
+            </button>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+//訂單資訊
+const YourUsedBookOrder: React.FC<UsedBookOrderProps> = ({
+  cart,
+  total,
+  fee
+}) => {
+  //運費計算
+  const sellers = new Set(cart.map((item) => item.sellerName)); //找到商品來自哪些不同賣家
+  const totalFee = sellers.size * fee;
+  const paymentAmount = total + totalFee;
+
+  const { count, setCount } = usepaymentAmountStore<paymentAmountstate>(
+    (state) => state
+  );
+  useEffect(() => {
+    setCount(paymentAmount);
+  }, [paymentAmount]);
+
+  return (
+    <div className='order-detail'>
+      {Array.from(sellers).map((seller, index) => {
+        let orderTotal = 0;
+        return (
+          <Fragment key={index}>
+            <div className='sub-total'>
+              <h5>訂單{index + 1}</h5>
+              <h5>賣家：{seller}</h5>
+            </div>
+            <div className='sub-total'>
+              <h6>
+                <span className='dark-gray'>訂單商品</span>
+              </h6>
+              <h6>單價</h6>
+            </div>
+            <hr />
+            {cart.map((item) => {
+              if (item.sellerName == seller) {
+                orderTotal += item.unitPrice!;
+                return (
+                  <div className='sub-total' key={item.id}>
+                    <h6>
+                      <span className='dark-gray'>{item.name}</span>
+                    </h6>
+                    <h6>${item.unitPrice}</h6>
+                  </div>
+                );
+              }
+            })}
+            <hr />
+            <div className='sub-total'>
+              <h6 className='dark-gray'>商品總價</h6>
+              <h6>${orderTotal}</h6>
+            </div>
+            <div className='sub-total'>
+              <h6 className='dark-gray'>運費</h6>
+              <h6>${fee}</h6>
+            </div>
+            <hr />
+          </Fragment>
+        );
+      })}
+      <h6>選擇折價券</h6>
+      <div className='find-books-input'>
+        <input type='text' className='search-input' placeholder='Add Coupon' />
+        <a href='#'>
+          <img src='static/picture/click-btn-white.png' alt='' />
+        </a>
+      </div>
+      <hr />
+      <div className='sub-total'>
+        <h5 className='dark-gray'>折價券</h5>
+        <h5>-$00.00</h5>
+      </div>
+      <div className='sub-total'>
+        <h4>總付款金額</h4>
+        <h4>${paymentAmount}</h4>
+      </div>
+      <hr />
+    </div>
+  );
+};
+
+const OrderConfirmation: React.FC = () => {
+  const [cart, setCart] = useState<UsedBookCartsDto[]>([]);
+  const [total, setTotal] = useState<number>(0);
+  const [fee, setFee] = useState<number>(0);
+
+  // 取得商品及總額, 只在由購物車載入付款頁面時獲取
+  const location = useLocation();
+  useEffect(() => {
+    if (location.state) {
+      setCart(location.state.cartItems);
+      setTotal(location.state.total);
+      setFee(location.state.fee);
+    }
+  }, [location.state]);
+
+  return (
+    <div className='page-content'>
+      {/* Shipping Details Start */}
+      <section className='checkout container'>
+        <div className='row'>
+          <div className='col-xl-8'>
+            <div className='checkout-form'>
+              <form action='signup.html' id='form-wizard'>
+                <ul className='nav'>
+                  <li className='nav-item'>
+                    {/* <Link to={'/checkOut/'} className="nav-link"> */}
+                    <div className='nav-link'>
+                      <div className='num'>1</div>
+                      <span>寄送資訊</span>
+                    </div>
+                    {/* </Link> */}
+                  </li>
+                  <li className='nav-item'>
+                    {/* <Link to={`/checkOut/Step2`} className="nav-link"> */}
+                    <div className='nav-link'>
+                      <div className='num'>2</div>
+                      <span>付款方式</span>
+                    </div>
+                    {/* </Link> */}
+                  </li>
+                </ul>
+
+                <div className='tab-content'>
+                  <Outlet />
+                </div>
+              </form>
+            </div>
+          </div>
+          <div className='col-xl-4'>
+            <YourUsedBookOrder cart={cart} total={total} fee={fee} />
+          </div>
+        </div>
+      </section>
+
+      {/* Shipping Details End */}
+    </div>
+  );
+};
+
+export default OrderConfirmation;

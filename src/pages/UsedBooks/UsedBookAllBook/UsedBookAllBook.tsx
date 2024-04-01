@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import '../../../assets/css/bootstrap.css';
 import '../../../assets/css/style.css';
 import '../../../assets/css/responsive.css';
@@ -17,6 +19,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 const UsedBookAllBook = () => {
+  const navigate = useNavigate();
   const { data, isLoading, error } = useGetApiUsedBooks();
   const [selectedBook, setSelectedBook] = useState<number | null>(null);
   const [showScrollToTop, setShowScrollToTop] = useState(false);
@@ -27,6 +30,10 @@ const UsedBookAllBook = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleBookClick = (bookId: number) => {
+    navigate(`/usedBook/${bookId}`);
+  };
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -48,8 +55,10 @@ const UsedBookAllBook = () => {
                 className={`books-panel-item-wrap ${
                   selectedBook === book.id ? 'is-flipped' : ''
                 }`}
+                onClick={() => handleBookClick(book.id)} // 添加點擊處理器
                 onMouseEnter={() => setSelectedBook(book.id as number)}
                 onMouseLeave={() => setSelectedBook(null)}
+                style={{ cursor: 'pointer' }}
               >
                 <div className='book-thumb-img-wrap has-edge'>
                   <img
