@@ -31,12 +31,14 @@ const UsedBooksOrderConfirmation: React.FC = () => {
   }, 2000);
 
   return (
-    <>
+
+    <div className="cart">
       <h2>UsedBooksOrderConfirmation</h2>
       {paymentStatus ? <h3>付款成功</h3> : <h3>付款失敗</h3>}
 
-      <button onClick={handleCreateOrder}>TEST</button>
-    </>
+      <button onClick={handleCreateOrder}>TEST Create Order</button>
+    </div>
+
   );
 };
 export default UsedBooksOrderConfirmation;

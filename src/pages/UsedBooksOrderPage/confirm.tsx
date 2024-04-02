@@ -3,20 +3,22 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { usepaymentAmountStore, paymentAmountstate } from '../../state';
 import '../../App.css';
+import { usePutApiUsedBookPaymentRecordsApi, useGetApiUsedBookPaymentRecordsApi } from '../../API';
 
 const LinePay: React.FC = () => {
   const navigate = useNavigate(); // useNavigate在函式組件的主體使用
   const [transactionId, setTransactionId] = useState<string>('');
   const [orderId, setOrderId] = useState<string>('');
-  const { count, setCount } = usepaymentAmountStore<paymentAmountstate>(
-    (state) => state
-  );
+
+  const { mutate: putUsedBookPaymentRecord } = usePutApiUsedBookPaymentRecordsApi();
+  function updatePaymentStatus(orderId: string, paymentStatus: boolean) {
+    putUsedBookPaymentRecord({ params: { paymentNumber: orderId, status: paymentStatus } });
+  }
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const transactionIdParam = params.get('transactionId');
     const orderIdParam = params.get('orderId');
-    setCount(500);
 
     if (transactionIdParam && orderIdParam) {
       setTransactionId(transactionIdParam);
@@ -24,13 +26,22 @@ const LinePay: React.FC = () => {
     }
   }, []);
 
+  const [amount, setAmount] = useState<number>(0)
+  const getPaymentRecord = useGetApiUsedBookPaymentRecordsApi({ paymentNumber: orderId });
+  const paymentRecord = getPaymentRecord.data?.data;
+  useEffect(() => {
+    if (paymentRecord && paymentRecord.length > 0) {
+      const firstPaymentRecord = paymentRecord[0];
+      setAmount(firstPaymentRecord.paymentAmount!);
+    }
+  }, [paymentRecord]);
+
   const baseLoginPayUrl = 'https://localhost:7236/api/LinePay/';
   const confirmPayment = async () => {
-    console.log(count);
 
     try {
       const payment = {
-        amount: 500,
+        amount: amount,
         currency: 'TWD'
       };
 
@@ -51,6 +62,9 @@ const LinePay: React.FC = () => {
       ) {
         console.log('完成付款');
         paymentStatus = true;
+
+        //更新付款紀錄
+        updatePaymentStatus(orderId, true);
       } else {
         console.log('付款失敗');
       }
@@ -87,7 +101,7 @@ const LinePay: React.FC = () => {
             </tr>
             <tr>
               <td colSpan={2} style={{ textAlign: 'right' }}>
-                總金額 : {count}
+                總金額 : {amount}
               </td>
             </tr>
             <tr>

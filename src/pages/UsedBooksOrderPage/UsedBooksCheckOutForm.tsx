@@ -4,8 +4,8 @@ import '../../assets/css/app.css';
 import { Outlet, Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
-import { UsedBookCartsDto } from '../../API';
-import { usepaymentAmountStore, paymentAmountstate } from '../../state';
+import { UsedBookCartsDto, usePostApiUsedBookPaymentRecordsApi } from '../../API';
+import { usepaymentAmountStore, paymentAmountstate, usedUsedBookCartStore, usedBookCartState } from '../../state';
 import LinePay from '../../picture/LinePay.png';
 
 interface UsedBookOrderProps {
@@ -99,13 +99,22 @@ export const CheckOutStep2 = () => {
   const { count, setCount } = usepaymentAmountStore<paymentAmountstate>(
     (state) => state
   );
-  useEffect(() => {
-    setCount(500);
-  }, []);
+
+  const { orderItem, setOrderItem, orderFee, setOrderFee } = usedUsedBookCartStore<usedBookCartState>(
+    (state) => state
+  );
+  console.log(orderItem);
+  console.log(orderFee);
+
+  const { mutate: createPaymentRecord } = usePostApiUsedBookPaymentRecordsApi();
+  function createPayment(paymentAmount: number, paymentNumber: string, orderId: string) {
+    createPaymentRecord({ data: { paymentAmount: paymentAmount, paymentNumber: paymentNumber, orderId: orderId } });
+  }
 
   const requestPayment = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
     const baseLoginPayUrl = 'https://localhost:7236/api/LinePay/';
+    const paymentNumber = Date.now().toString();
 
     const payment = {
       amount: count,
@@ -143,6 +152,8 @@ export const CheckOutStep2 = () => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
+      createPayment(count, paymentNumber, '1');
 
       const res = await response.json();
       window.location = res.info.paymentUrl.web;
@@ -284,6 +295,16 @@ const OrderConfirmation: React.FC = () => {
       setFee(location.state.fee);
     }
   }, [location.state]);
+
+  const { orderItem, setOrderItem, orderFee, setOrderFee } = usedUsedBookCartStore<usedBookCartState>(
+    (state) => state
+  );
+  useEffect(() => {
+    setOrderItem(cart)
+  }, [cart])
+  useEffect(() => {
+    setOrderFee(fee)
+  }, [fee])
 
   return (
     <div className='page-content'>
