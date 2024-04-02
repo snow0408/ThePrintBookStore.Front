@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { CartItemType } from "../App";
 import { CartDetail } from "../API";
 
 export interface CartState {
@@ -16,7 +15,7 @@ export const useCartStore = create<CartState>((set) => ({
 
     calculateTotal: () =>
         set((state) => ({
-            total: state.cart.reduce((acc, item) => acc + item.unitPrice * item.quantity, 0),
+            total: state.cart.reduce((acc, item) => acc + (item.unitPrice || 0)  * (item.quantity || 0), 0),
         })),
     setCart: (newCart) => set((state) => ({
         ...state,
