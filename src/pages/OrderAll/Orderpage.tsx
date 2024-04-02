@@ -19,6 +19,46 @@ import Button from '@mui/material/Button';
 interface OrderProp {
   memberId: number;
 }
+// 定義 SideOrder 組件，接受 orderData 屬性
+const SideOrder: React.FC<{ orderData: OrdersDto[] }> = ({ orderData }) => {
+  return (
+    <div className='col-lg-5 mt-5'>
+      <form className='shop-form widget'>
+        <h4 className='widget-title'>訂單資訊</h4>
+        {orderData &&
+          orderData.length > 0 &&
+          orderData.map((order, index) => (
+            <table className='table-bordered check-tbl mb-4' key={index}>
+              <tbody>
+                <tr>
+                  <td>付款方式</td>
+                  <td className='product-price'>信用卡</td>
+                </tr>
+                <tr>
+                  <td>下單時間</td>
+                  <td>{order.orderDate}</td>
+                </tr>
+                <tr>
+                  <td>運送狀態</td>
+                  <td className='product-price-total'>{order.status}</td>
+                </tr>
+                <tr>
+                  <td>使用優惠券</td>
+                  <td className='product-price'>
+                    {order.discountAmount ? '$0.00' : '未使用'}
+                  </td>
+                </tr>
+                <tr>
+                  <td>總價格</td>
+                  <td className='product-price-total'>${order.totalAmount}</td>
+                </tr>
+              </tbody>
+            </table>
+          ))}
+      </form>
+    </div>
+  );
+};
 
 // 定義 OneOrder 組件，接受 orderId 屬性
 const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
@@ -132,7 +172,7 @@ const OrderPage: React.FC<OrderProp> = ({ memberId }) => {
         {/* 左側區域顯示會員的訂單列表 */}
         <div className='col-lg-7 widget mt-5'>
           <h4 className='widget-title'>您的訂單</h4>
-          {orderData ? (
+          {orderData && orderData.length > 0 ? (
             orderData.map((order, index) => (
               <OneOrder orderId={order.id as number} key={index} />
             ))
@@ -146,38 +186,38 @@ const OrderPage: React.FC<OrderProp> = ({ memberId }) => {
         <div className='col-lg-5 mt-5'>
           <form className='shop-form widget'>
             <h4 className='widget-title'>訂單資訊</h4>
-            {orderData && orderData.length > 0 && (
-              <table className='table-bordered check-tbl mb-4'>
-                <tbody>
-                  <tr>
-                    <td>付款方式</td>
-                    <td className='product-price'>信用卡</td>
-                  </tr>
-                  <tr>
-                    <td>下單時間</td>
-                    <td>{orderData[0].orderDate}</td>
-                  </tr>
-                  <tr>
-                    <td>運送狀態</td>
-                    <td className='product-price-total'>
-                      {orderData[0].status}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>使用優惠券</td>
-                    <td className='product-price'>
-                      {orderData[0].couponUsed ? '$0.00' : '未使用'}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>總價格</td>
-                    <td className='product-price-total'>
-                      ${orderData[0].totalPrice}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            )}
+            {orderData &&
+              orderData.length > 0 &&
+              orderData.map((order, index) => (
+                <table className='table-bordered check-tbl mb-4'>
+                  <tbody>
+                    <tr>
+                      <td>付款方式</td>
+                      <td className='product-price'>信用卡</td>
+                    </tr>
+                    <tr>
+                      <td>下單時間</td>
+                      <td>{order.orderDate}</td>
+                    </tr>
+                    <tr>
+                      <td>運送狀態</td>
+                      <td className='product-price-total'>{order.status}</td>
+                    </tr>
+                    <tr>
+                      <td>使用優惠券</td>
+                      <td className='product-price'>
+                        {order.discountAmount ? '$0.00' : '未使用'}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>總價格</td>
+                      <td className='product-price-total'>
+                        ${order.totalAmount}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              ))}
           </form>
         </div>
       </div>

@@ -12,7 +12,6 @@ import {
 } from '../../API';
 import { useNavigate } from 'react-router-dom';
 import LoadingMessage from '../../main';
-
 interface CartProps {
   initialCart: CartDetailsDto[];
 }
@@ -143,6 +142,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
                       <th className='col-2'></th>
                     </tr>
                   </thead>
+
                   <tbody>
                     <tr className='col-md-8 mb-5'>
                       <td className='pd col-4'>
@@ -300,50 +300,21 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
       ) : (
         <div>空的</div>
       )}
-      <section className='shipping mb-40 '>
+      {/* <h6 > <button onClick={clearCart} className="clearcart-btn"><i class="fa-regular fa-trash-can">清空購物車</i></button></h6> */}
+      <section className='shipping mb-40'>
         <div className='choose-shipping-mode col-xl-12'>
           <div className='row'>
             <div className='col-xl-6'>
               <div className='shipping-details'>
-                <div className='filter-block'>
-                  <div className='title mb-32'>
-                    <h4>取貨方式</h4>
-                  </div>
-                  <ul className='unstyled list'>
-                    <li className='cart-list'>
-                      <div className='filter-checkbox'>
-                        <input type='checkbox' id='Instock' />
-                        <label
-                          className='cart-font black-color'
-                          htmlFor='Instock'
-                        >
-                          超商取貨(3~7天)
-                        </label>
-                      </div>
-                    </li>
-                    <br />
-                    <br />
-                    <li className='cart-list'>
-                      <div className='filter-checkbox'>
-                        <input type='checkbox' id='Instock1' />
-                        <label
-                          className='cart-font black-color'
-                          htmlFor='Instock1'
-                        >
-                          宅配到家(3~4天)
-                        </label>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
+                <div className='filter-block'></div>
               </div>
             </div>
             <div className='col-xl-6'>
-              <div className='amounts'>
+              <div className='amounts between'>
                 <div className='shipping-charges mb-24'>
                   <h6></h6>
-                  <h6></h6>
                 </div>
+
                 <div className='sub-total mb-24'>
                   <h6>購物車商品總數</h6>
                   <h6>{totalItems}</h6>
@@ -367,7 +338,6 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
           </div>
         </div>
       </section>
-      <button onClick={clearCart}>清空購物車</button>
     </div>
   );
 };

@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../assets/css/app.css';
 import { useCartStore, CartState } from './CountMath';
+import { useGetApiCartsMemberId } from '../../API';
 
 const LinePayPage: React.FC = () => {
   const [transactionId, setTransactionId] = useState<string>('');
   const [orderId, setOrderId] = useState<string>('');
   const { total } = useCartStore<CartState>((state) => state);
-
+  const totalAmount = useGetApiCartsMemberId(2);
+  const totalAmountData = totalAmount.data?.data;
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const transactionIdParam = params.get('transactionId');
@@ -23,7 +25,7 @@ const LinePayPage: React.FC = () => {
   const confirmPayment = async () => {
     try {
       const payment = {
-        amount: total,
+        amount: totalAmountData?.totalAmount, // 這邊要改成從購物車取得總金額
         currency: 'TWD'
       };
 
@@ -48,6 +50,7 @@ const LinePayPage: React.FC = () => {
   };
 
   return (
+    //todo這一段不需要餒
     <div>
       {/* 最上方的 bar */}
       <center>
@@ -66,17 +69,9 @@ const LinePayPage: React.FC = () => {
                 />
               </td>
             </tr>
-            <tr>
-              <td colSpan={2}> 價格 : {total} </td>
-            </tr>
-            <tr>
-              <td colSpan={2}> 購買數量 : </td>
-            </tr>
-            <tr>
-              <td colSpan={2} style={{ textAlign: 'right' }}>
-                總金額 : {total}
-              </td>
-            </tr>
+            <td colSpan={2} style={{ textAlign: 'right' }}>
+              總金額 : {total}
+            </td>
             <tr>
               <td align='center' colSpan={2}>
                 <button onClick={confirmPayment}> 確認付款</button>
