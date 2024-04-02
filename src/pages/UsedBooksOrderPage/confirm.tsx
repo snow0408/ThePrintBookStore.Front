@@ -81,12 +81,7 @@ const LinePay: React.FC = () => {
     <div className='cart'>
       {/* 最上方的 bar */}
       <center>
-        <table>
-          <thead>
-            <tr>
-              <th colSpan={2}> 測試商品 </th>
-            </tr>
-          </thead>
+        <table className='mt-5'>
           <tbody>
             <tr>
               <td colSpan={2}>
@@ -97,22 +92,19 @@ const LinePay: React.FC = () => {
               </td>
             </tr>
             <tr>
-              <td colSpan={2}> 購買數量 : </td>
-            </tr>
-            <tr>
-              <td colSpan={2} style={{ textAlign: 'right' }}>
-                總金額 : {amount}
+              <td colSpan={2} align='center'>
+                <h5>總金額 : {amount}</h5>
               </td>
             </tr>
             <tr>
               <td align='center' colSpan={2}>
-                <button onClick={confirmPayment}> 確認付款</button>
+                <button onClick={confirmPayment} className='btn btn-primary btnhover btnhover2 mt-3'> 確認付款</button>
               </td>
             </tr>
           </tbody>
         </table>
 
-        <div className='Container'>
+        <div className='Container mt-4'>
           <p id='paymentStatus'>交易狀態 : 交易已授權，等待確認</p>
         </div>
       </center>

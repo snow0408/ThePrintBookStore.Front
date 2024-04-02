@@ -95,81 +95,83 @@ const UsedBooksCart: React.FC = () => {
 
   return (
     <div className='cart'>
-      <div className='row'>
-        <div className='col-lg-12'>
-          <table className='cart-table mb-24'>
-            <thead>
-              <tr>
-                <th>
-                  <input type='checkbox' onChange={handleChosedAllItems} /> 全選
-                </th>
-                <th style={{ textAlign: 'center' }}>商品</th>
-                <th>單價</th>
-                <th>書況</th>
-                <th>賣家</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {cart && cart.length > 0 ? (
-                cart.map((item) => {
-                  return (
-                    <tr className='col-md-8 mb-5' key={item.id}>
-                      <td>
-                        <input
-                          type='checkbox'
-                          value={item.id}
-                          onChange={handleChosedItemChange}
-                          name='cartItem'
-                          disabled={item.productStatus ? false : true}
-                        />
-                        {/* productStatus 為false時商品不可被勾選 */}
-                      </td>
-                      <td>
-                        <div className='product-detail-box'>
-                          <div className='img-block'>
-                            <img src={item.picture!} />
-                          </div>
-                          <div>
-                            <h5 className='dark-gray'>{item.name}</h5>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <h6 className='dark-gray'>
-                          {item.productStatus
-                            ? '$' + item.unitPrice
-                            : '商品已下架或售出'}
-                        </h6>
-                      </td>
-                      <td>
-                        <h6 className='dark-gray'>{item.bookStatus}</h6>
-                      </td>
-                      <td>
-                        <h6 className='dark-gray'>{item.sellerName}</h6>
-                      </td>
-                      <td>
-                        <a href='#'>
-                          <i
-                            className='fal fa-times'
-                            onClick={() => removeFromCart(item.id!)}
-                          >
-                            刪除
-                          </i>
-                        </a>
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr className='col-md-8 mb-5'>
-                  <td>
-                    <h5>尚無商品</h5>
-                  </td>
+      <div className="container">
+        <div className='row'>
+          <div className='col-lg-12'>
+            <table className='cart-table mb-24'>
+              <thead>
+                <tr>
+                  <th style={{ paddingLeft: '23px' }}>
+                    <input type='checkbox' onChange={handleChosedAllItems} /> 全選
+                  </th>
+                  <th style={{ textAlign: 'center' }}>商品</th>
+                  <th>單價</th>
+                  <th>書況</th>
+                  <th>賣家</th>
+                  <th></th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {cart && cart.length > 0 ? (
+                  cart.map((item) => {
+                    return (
+                      <tr className='col-md-8 mb-5' key={item.id}>
+                        <td>
+                          <input
+                            type='checkbox'
+                            value={item.id}
+                            onChange={handleChosedItemChange}
+                            name='cartItem'
+                            disabled={item.productStatus ? false : true}
+                          />
+                          {/* productStatus 為false時商品不可被勾選 */}
+                        </td>
+                        <td>
+                          <div className='product-detail-box'>
+                            <div className='img-block'>
+                              <img src={item.picture!} />
+                            </div>
+                            <div>
+                              <h5 className='dark-gray'>{item.name}</h5>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <h6 className='dark-gray'>
+                            {item.productStatus
+                              ? '$' + item.unitPrice
+                              : '商品已下架或售出'}
+                          </h6>
+                        </td>
+                        <td>
+                          <h6 className='dark-gray'>{item.bookStatus}</h6>
+                        </td>
+                        <td>
+                          <h6 className='dark-gray'>{item.sellerName}</h6>
+                        </td>
+                        <td>
+                          <a href='#'>
+                            <i
+                              className='fal fa-times'
+                              onClick={() => removeFromCart(item.id!)}
+                            >
+                              刪除
+                            </i>
+                          </a>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr className='col-md-8 mb-5'>
+                    <td>
+                      <h5>尚無商品</h5>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
