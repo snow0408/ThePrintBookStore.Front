@@ -4524,7 +4524,7 @@ export const usePostApiUsedBookOrderDetails = <TError = AxiosError<unknown>,
 
 export const postApiUsedBookOrdersApi = (
   usedBooksOrder: UsedBooksOrder, options?: AxiosRequestConfig
-): Promise<AxiosResponse<string>> => {
+): Promise<AxiosResponse<number>> => {
 
   return axios.post(
     `/api/UsedBookOrdersApi`,
