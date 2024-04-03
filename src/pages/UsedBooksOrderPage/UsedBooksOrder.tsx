@@ -131,7 +131,7 @@ const UsedBooksOrder: React.FC = () => {
                   <td>{item.status}</td>
                   <td style={{ fontSize: '16px', color: '#212529' }}>
                     {item.sellerName}
-                    <a href='#' style={{ display: 'inline', fontSize: '12px' }}>
+                    <a href='#'>
                       <img src={mailBox} />
                     </a>
                   </td>
@@ -181,7 +181,7 @@ const UsedBooksOrder: React.FC = () => {
                   <td>{item.status}</td>
                   <td style={{ fontSize: '16px', color: '#212529' }}>
                     {item.buyerName}
-                    <a href='#' style={{ display: 'inline', fontSize: '12px' }}>
+                    <a href='#'>
                       <img src={mailBox} />
                     </a>
                   </td>
@@ -227,12 +227,10 @@ const UsedBooksOrder: React.FC = () => {
                 <div className='modal-header'>
                   <h5 className='modal-title'>訂單取消申請</h5>
                   <button
-                    type='button'
-                    className='close'
+                    className='btn'
                     onClick={handleCloseModal}
-                    aria-label='Close'
                   >
-                    <span aria-hidden='true'>&times;</span>
+                    X
                   </button>
                 </div>
                 <div className='modal-body'>
@@ -269,17 +267,15 @@ const UsedBooksOrder: React.FC = () => {
           role='dialog'
           style={{ display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
         >
-          <div className='modal-dialog' role='document'>
+          <div className='modal-dialog modal-dialog-centered' role='document'>
             <div className='modal-content'>
               <div className='modal-header'>
                 <h5 className='modal-title'>訂單明細</h5>
                 <button
-                  type='button'
-                  className='close'
+                  className='btn'
                   onClick={closeOrderDetail}
-                  aria-label='Close'
                 >
-                  <span aria-hidden='true'>&times;</span>
+                  X
                 </button>
               </div>
               <div className='modal-body'>
