@@ -7157,7 +7157,7 @@ section.section-thirty-four .video-btn a:hover {
 .sidebar-widget {
   position: relative;
   margin-bottom: 50px;
-  border: 2px solid #ebebeb;
+  /* border: 2px solid #ebebeb; */
   padding: 40px;
 }
 

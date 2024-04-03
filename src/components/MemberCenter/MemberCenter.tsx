@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
 interface MemberInfoType {
   id?: number;
@@ -8,30 +8,46 @@ interface MemberInfoType {
   phoneNumber?: number;
   address?: string;
 }
-
+const menuItems = [
+  {
+    title: '會員中心',
+    link: 'MemberCenter',
+    icon: 'far fa-user',
+    subItems: [
+      { title: '個人資料', link: '/profile' },
+      { title: '訂單記錄', link: '/orders' }
+      // 其他次選項...
+    ]
+  }
+  // 其他主選項...
+];
 const MemberCenter: React.FC = () => {
   const [memberInfo, setMemberInfo] = useState<MemberInfoType | null>(null);
+  const [activeMenu, setActiveMenu] = useState(null);
   // const [activeTab, setActiveTab] = useState("profile");
 
+  const handleMenuClick = (index) => {
+    setActiveMenu(activeMenu === index ? null : index); // 如果點擊的是當前已展開的選項，則收縮；否則，展開新的選項。
+  };
   useEffect(() => {
     const fetchMemberInfo = async () => {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       if (!token) {
         return;
       }
 
       try {
         const response = await fetch(
-          "https://localhost:7236/api/MemberLogin/member-info",
+          'https://localhost:7236/api/MemberLogin/member-info',
           {
             headers: {
-              Authorization: `Bearer ${token}`,
-            },
+              Authorization: `Bearer ${token}`
+            }
           }
         );
 
         if (!response.ok) {
-          throw new Error("無法獲取會員信息");
+          throw new Error('無法獲取會員信息');
         }
 
         const data = await response.json();
@@ -47,25 +63,25 @@ const MemberCenter: React.FC = () => {
   const handleMemberUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!memberInfo) return;
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem('token');
     const response = await fetch(
       `https://localhost:7236/api/Members/${memberInfo.id}/MemberEdit`,
       {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(memberInfo),
+        body: JSON.stringify(memberInfo)
       }
     );
 
     if (!response.ok) {
-      console.error("更新失败");
+      console.error('更新失败');
       return;
     }
 
-    console.log("会员信息已更新");
+    console.log('会员信息已更新');
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,160 +103,141 @@ const MemberCenter: React.FC = () => {
   // };
 
   return (
-    <div className="page-content bg-white">
-      <div className="content-block">
-        <section className="content-inner bg-white">
-          <div className="container">
-            <div className="row">
-              <div className="col-xl-3 col-lg-4 m-b30">
-                <div className="sticky-top">
-                  <div className="shop-account">
-                    <ul className="account-list">
-                      <li>
-                        <a href="MemberCenter" className="active">
-                          <i className="far fa-user" aria-hidden="true"></i>
-                          <span>會員中心</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="shop-cart.html">
-                          <i className="flaticon-shopping-cart-1"></i>
-                          <span>My Cart</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="wishlist.html">
-                          <i className="far fa-heart" aria-hidden="true"></i>
-                          <span>Wishlist</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="books-grid-view.html">
-                          <i className="fa fa-briefcase" aria-hidden="true"></i>
-                          <span>Shop</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="services.html">
-                          <i className="far fa-bell" aria-hidden="true"></i>
-                          <span>Services</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="help-desk.html">
-                          <i className="far fa-id-card" aria-hidden="true"></i>
-                          <span>Help Desk</span>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="privacy-policy.html">
-                          <i className="fa fa-key" aria-hidden="true"></i>
-                          <span>Privacy Policy</span>
-                        </a>
-                      </li>
+    <div className='page-content bg-white'>
+      <div className='content-block'>
+        <section className='content-inner bg-white'>
+          <div className='container'>
+            <div className='row'>
+              <div className='col-xl-3 col-lg-4 m-b30'>
+                <div className='sticky-top'>
+                  <div className='shop-account'>
+                    <ul className='account-list'>
+                      {menuItems.map((item, index) => (
+                        <li key={index}>
+                          <a
+                            href='#'
+                            onClick={(e) => {
+                              e.preventDefault();
+                              handleMenuClick(index);
+                            }}
+                          >
+                            <i className={item.icon} aria-hidden='true'></i>
+                            <span>{item.title}</span>
+                          </a>
+                          {activeMenu === index && (
+                            <ul>
+                              {item.subItems.map((subItem, subIndex) => (
+                                <li key={subIndex}>
+                                  <a href={subItem.link}>{subItem.title}</a>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>
               </div>
-              <div className="col-xl-9 col-lg-8 m-b30">
-                <div className="shop-bx shop-profile">
-                  <div className="shop-bx-title clearfix">
-                    <h5 className="text-uppercase">Basic Information</h5>
+              <div className='col-xl-9 col-lg-8 m-b30'>
+                <div className='shop-bx shop-profile'>
+                  <div className='shop-bx-title clearfix'>
+                    <h5 className='text-uppercase'>Basic Information</h5>
                   </div>
                   <form onSubmit={handleMemberUpdate}>
-                    <div className="row m-b30">
-                      <div className="col-lg-6 col-md-6">
-                        <div className="mb-3">
-                          <label htmlFor="姓名：" className="form-label">
+                    <div className='row m-b30'>
+                      <div className='col-lg-6 col-md-6'>
+                        <div className='mb-3'>
+                          <label htmlFor='姓名：' className='form-label'>
                             姓名：
                           </label>
                           <input
-                            type="text"
-                            className="form-control"
-                            id="name"
-                            name="name"
-                            value={memberInfo?.name || ""}
+                            type='text'
+                            className='form-control'
+                            id='name'
+                            name='name'
+                            value={memberInfo?.name || ''}
                             onChange={handleChange}
                           />
                         </div>
                       </div>
-                      <div className="col-lg-6 col-md-6">
-                        <div className="mb-3">
-                          <label htmlFor="信箱" className="form-label">
+                      <div className='col-lg-6 col-md-6'>
+                        <div className='mb-3'>
+                          <label htmlFor='信箱' className='form-label'>
                             信箱
                           </label>
                           <input
-                            type="email"
-                            className="form-control"
-                            id="email"
-                            name="email"
-                            value={memberInfo?.email || ""}
+                            type='email'
+                            className='form-control'
+                            id='email'
+                            name='email'
+                            value={memberInfo?.email || ''}
                             onChange={handleChange}
                           />
                         </div>
                       </div>
-                      <div className="col-lg-6 col-md-6">
-                        <div className="mb-3">
-                          <label htmlFor="生日" className="form-label">
+                      <div className='col-lg-6 col-md-6'>
+                        <div className='mb-3'>
+                          <label htmlFor='生日' className='form-label'>
                             生日
                           </label>
                           <input
-                            type="date"
-                            className="form-control"
-                            id="dateOfBirth"
-                            name="dateOfBirth"
+                            type='date'
+                            className='form-control'
+                            id='dateOfBirth'
+                            name='dateOfBirth'
                             value={
                               memberInfo?.dateOfBirth
                                 ? new Date(
                                     memberInfo.dateOfBirth
-                                  ).toLocaleDateString("en-CA")
-                                : ""
+                                  ).toLocaleDateString('en-CA')
+                                : ''
                             }
                             onChange={handleChange}
                           />
                         </div>
                       </div>
-                      <div className="col-lg-6 col-md-6">
-                        <div className="mb-3">
-                          <label htmlFor="電話號碼" className="form-label">
+                      <div className='col-lg-6 col-md-6'>
+                        <div className='mb-3'>
+                          <label htmlFor='電話號碼' className='form-label'>
                             電話號碼
                           </label>
                           <input
-                            type="tel"
-                            className="form-control"
-                            id="phoneNumber"
-                            name="phoneNumber"
-                            value={memberInfo?.phoneNumber || ""}
+                            type='tel'
+                            className='form-control'
+                            id='phoneNumber'
+                            name='phoneNumber'
+                            value={memberInfo?.phoneNumber || ''}
                             onChange={handleChange}
                           />
                         </div>
                       </div>
-                      <div className="col-lg-12 col-md-12">
-                        <div className="mb-3">
-                          <label htmlFor="地址" className="form-label">
+                      <div className='col-lg-12 col-md-12'>
+                        <div className='mb-3'>
+                          <label htmlFor='地址' className='form-label'>
                             地址
                           </label>
                           <input
-                            type="text"
-                            className="form-control"
-                            id="address"
-                            name="address"
-                            value={memberInfo?.address || ""}
+                            type='text'
+                            className='form-control'
+                            id='address'
+                            name='address'
+                            value={memberInfo?.address || ''}
                             onChange={handleChange}
                           />
                         </div>
                       </div>
-                      <div className="col-lg-12 col-md-12">
-                        <div className="mb-3">
+                      <div className='col-lg-12 col-md-12'>
+                        <div className='mb-3'>
                           <label
-                            htmlFor="exampleFormControlTextarea"
-                            className="form-label"
+                            htmlFor='exampleFormControlTextarea'
+                            className='form-label'
                           >
                             Description:
                           </label>
                           <textarea
-                            className="form-control"
-                            id="exampleFormControlTextarea"
+                            className='form-control'
+                            id='exampleFormControlTextarea'
                             rows={5}
                           >
                             Lorem Ipsum is simply dummy text of the printing and
@@ -256,108 +253,108 @@ const MemberCenter: React.FC = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="shop-bx-title clearfix">
-                      <h5 className="text-uppercase">Contact Information</h5>
+                    <div className='shop-bx-title clearfix'>
+                      <h5 className='text-uppercase'>Contact Information</h5>
                     </div>
-                    <div className="row">
-                      <div className="col-lg-6 col-md-6">
-                        <div className="mb-3">
+                    <div className='row'>
+                      <div className='col-lg-6 col-md-6'>
+                        <div className='mb-3'>
                           <label
-                            htmlFor="formcontrolinput5"
-                            className="form-label"
+                            htmlFor='formcontrolinput5'
+                            className='form-label'
                           >
                             Contact Number:
                           </label>
                           <input
-                            type="text"
-                            className="form-control"
-                            id="formcontrolinput5"
-                            placeholder="+1 123 456 7890"
+                            type='text'
+                            className='form-control'
+                            id='formcontrolinput5'
+                            placeholder='+1 123 456 7890'
                           />
                         </div>
                       </div>
-                      <div className="col-lg-6 col-md-6">
-                        <div className="mb-3">
+                      <div className='col-lg-6 col-md-6'>
+                        <div className='mb-3'>
                           <label
-                            htmlFor="formcontrolinput6"
-                            className="form-label"
+                            htmlFor='formcontrolinput6'
+                            className='form-label'
                           >
                             Email Address:
                           </label>
                           <input
-                            type="text"
-                            className="form-control"
-                            id="formcontrolinput6"
-                            placeholder="info@example.com"
+                            type='text'
+                            className='form-control'
+                            id='formcontrolinput6'
+                            placeholder='info@example.com'
                           />
                         </div>
                       </div>
-                      <div className="col-lg-6 col-md-6">
-                        <div className="mb-3">
+                      <div className='col-lg-6 col-md-6'>
+                        <div className='mb-3'>
                           <label
-                            htmlFor="formcontrolinput7"
-                            className="form-label"
+                            htmlFor='formcontrolinput7'
+                            className='form-label'
                           >
                             Country:
                           </label>
                           <input
-                            type="text"
-                            className="form-control"
-                            id="formcontrolinput7"
-                            placeholder="Country Name"
+                            type='text'
+                            className='form-control'
+                            id='formcontrolinput7'
+                            placeholder='Country Name'
                           />
                         </div>
                       </div>
-                      <div className="col-lg-6 col-md-6">
-                        <div className="mb-3">
+                      <div className='col-lg-6 col-md-6'>
+                        <div className='mb-3'>
                           <label
-                            htmlFor="formcontrolinput8"
-                            className="form-label"
+                            htmlFor='formcontrolinput8'
+                            className='form-label'
                           >
                             Postcode:
                           </label>
                           <input
-                            type="text"
-                            className="form-control"
-                            id="formcontrolinput8"
-                            placeholder="112233"
+                            type='text'
+                            className='form-control'
+                            id='formcontrolinput8'
+                            placeholder='112233'
                           />
                         </div>
                       </div>
-                      <div className="col-lg-6 col-md-6">
-                        <div className="mb-3">
+                      <div className='col-lg-6 col-md-6'>
+                        <div className='mb-3'>
                           <label
-                            htmlFor="formcontrolinput9"
-                            className="form-label"
+                            htmlFor='formcontrolinput9'
+                            className='form-label'
                           >
                             City:
                           </label>
                           <input
-                            type="text"
-                            className="form-control"
-                            id="formcontrolinput9"
-                            placeholder="City Name"
+                            type='text'
+                            className='form-control'
+                            id='formcontrolinput9'
+                            placeholder='City Name'
                           />
                         </div>
                       </div>
-                      <div className="col-lg-6 col-md-6">
-                        <div className="mb-4">
+                      <div className='col-lg-6 col-md-6'>
+                        <div className='mb-4'>
                           <label
-                            htmlFor="formcontrolinput10"
-                            className="form-label"
+                            htmlFor='formcontrolinput10'
+                            className='form-label'
                           >
                             Full Address:
                           </label>
                           <input
-                            type="text"
-                            className="form-control"
-                            id="formcontrolinput10"
-                            placeholder="New york City"
+                            type='text'
+                            className='form-control'
+                            id='formcontrolinput10'
+                            placeholder='New york City'
                           />
                         </div>
                       </div>
                     </div>
-                    <button type="submit" className="btn btn-primary btnhover">
+                    <button type='submit' className='btn btn-primary btnhover'>
                       Save Setting
                     </button>
                   </form>

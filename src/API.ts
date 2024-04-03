@@ -226,22 +226,22 @@ export interface UsedBookOrderDetailDto {
 export interface UsedBookDto {
   authors?: string[] | null;
   bookStatus?: string | null;
-  categoryId?: number;
+  categoryId?: number | null;
   description?: string | null;
-  id?: number;
+  id?: number | null;
   identifier?: string | null;
   imageFile?: Blob | null;
   imageLinks?: ImageLinksDto;
-  isDeleted?: boolean;
+  isDeleted?: boolean | null;
   kind?: string | null;
   memberEmail?: string | null;
-  memberId?: number;
+  memberId?: number | null;
   picture?: string | null;
   price?: number;
-  productStatus?: boolean;
+  productStatus?: boolean | null;
   publishedDate?: string | null;
   publisher?: string | null;
-  releaseDate?: string;
+  releaseDate?: string | null;
   title?: string | null;
   webReaderLink?: string | null;
 }
