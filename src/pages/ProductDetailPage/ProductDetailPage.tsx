@@ -1,22 +1,36 @@
 import { Link, useParams } from "react-router-dom";
 import {
+    getGetApiCartsDetailsQueryKey,
+    useGetApiCartsDetails,
     useGetApiProductsGetByDetailsCategoryProductId,
     useGetApiProductsId,
+    usePostApiCartsDetails,
 } from "../../API";
 import LoadingMessage from "../../main";
 import { useEffect, useState } from "react";
 //images
 import noImage from "../../assets/images/noImage.jpg";
+import { useCartState } from "../../state";
+import { useQueryClient } from "@tanstack/react-query";
+import Snackbar from "@mui/material/Snackbar";
 
 const ProductDetail: React.FC = () => {
     const { productId } = useParams();
     const [publishDate, setPublishDate] = useState<Date | null>(null);
+    const [open, setOpen] = useState(false);
+    const [barMesaage, setBarMessage] = useState("");
+    const { cartCount, setCartCount } = useCartState((state) => state);
 
+    const queryClient = useQueryClient();
     const productResponse = useGetApiProductsId(Number(productId));
+    const cartDetailResponse = useGetApiCartsDetails({ Id: 2 }); //todo 會員ID
     const sameCategoryBookResponse =
         useGetApiProductsGetByDetailsCategoryProductId(Number(productId));
+    const { mutate: addCart } = usePostApiCartsDetails();
+
     const product = productResponse.data?.data;
     const sameCategoryBook = sameCategoryBookResponse.data?.data;
+    const cartDetailData = cartDetailResponse.data?.data;
 
     useEffect(() => {
         setPublishDate(new Date(product?.publishDate as string));
@@ -26,8 +40,43 @@ const ProductDetail: React.FC = () => {
         return <LoadingMessage />;
     }
 
+    const handleClickAddCart = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        e.preventDefault();
+        if (product === undefined) {
+            setOpen(true);
+            setBarMessage("找不到商品。");
+        } else if (cartDetailData === undefined) setCartCount(1);
+        else if (
+            cartDetailData.find(
+                (item) => item.productId! === product.productId!
+            ) === undefined
+        )
+            setCartCount(1);
+        else if (
+            cartDetailData.find((item) => item.productId === product?.productId)
+                ?.quantity >= 10
+        ) {
+            setOpen(true);
+            setBarMessage("此商品超過購買數量限制。");
+            return;
+        }
+        addCart({ params: { memberId: 2, productId: product?.productId } }); //todo 會員ID
+        queryClient.invalidateQueries({
+            queryKey: getGetApiCartsDetailsQueryKey({ Id: 2 }), //todo 會員ID
+        });
+    };
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     return (
         <div className="bg-grey">
+            <Snackbar
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                open={open}
+                onClose={handleClose}
+                message={barMesaage}
+            />
             <section className="content-inner-1">
                 <div className="container">
                     <div className="row book-grid-row style-4 m-b60">
@@ -166,8 +215,8 @@ const ProductDetail: React.FC = () => {
                                             </div>
                                             <div className="product-num">
                                                 <a
-                                                    href=""
                                                     className="btn btn-primary btnhover btnhover2"
+                                                    onClick={handleClickAddCart}
                                                 >
                                                     <i className="flaticon-shopping-cart-1"></i>{" "}
                                                     <span>加入購物車</span>
@@ -265,7 +314,10 @@ const ProductDetail: React.FC = () => {
                                                                     <a
                                                                         href="#"
                                                                         className="badge"
-                                                                        style={{padding:"6px"}}
+                                                                        style={{
+                                                                            padding:
+                                                                                "6px",
+                                                                        }}
                                                                         key={
                                                                             tags.keywordId
                                                                         }
@@ -289,7 +341,6 @@ const ProductDetail: React.FC = () => {
                                             </tr>
                                         </table>
                                     </div>
-                                    
                                 </div>
                             </div>
                         </div>
@@ -301,7 +352,10 @@ const ProductDetail: React.FC = () => {
                                     sameCategoryBook.length > 0 ? (
                                         sameCategoryBook?.map((book) => {
                                             return (
-                                                <div className="col-xl-12 col-lg-6">
+                                                <div
+                                                    className="col-xl-12 col-lg-6"
+                                                    key={book.productId}
+                                                >
                                                     <div className="dz-shop-card style-5">
                                                         <div className="dz-media">
                                                             <Link
@@ -378,8 +432,10 @@ const ProductDetail: React.FC = () => {
                                                                 </del>
                                                             </div>
                                                             <a
-                                                                href=""
                                                                 className="btn btn-outline-primary btn-sm btnhover btnhover2"
+                                                                onClick={
+                                                                    handleClickAddCart
+                                                                }
                                                             >
                                                                 <i className="flaticon-shopping-cart-1 me-2"></i>{" "}
                                                                 加入購物車
