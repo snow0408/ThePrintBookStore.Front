@@ -7,7 +7,7 @@ import {
 //images
 import noImage from '../../assets/images/defaultImage0.jpg';
 import React, { useEffect, useState } from 'react';
-import '../../assets/css/bootstrap.css';
+// import '../../assets/css/bootstrap.css';
 import '../../assets/css/style.css';
 import '../../assets/css/responsive.css';
 import '../../assets/css/color.css';
@@ -179,10 +179,7 @@ const UsedBookInside: React.FC = () => {
                         <p className='p-lr10'>{UsedBooks?.price} 元</p>
                       </div>
                       <div className='product-num'>
-                        <a
-                          href=''
-                          className='btn btn-primary btnhover btnhover2'
-                        >
+                        <a href='' className='btn btnhover btn-custom '>
                           <i className='flaticon-shopping-cart-1'></i>{' '}
                           <span>加入購物車</span>
                         </a>

@@ -13,7 +13,7 @@ import logo from '../../assets/images/logo_dark.png';
 import '../../assets/css/menu/style.css';
 //css
 import { Dropdown } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/dist/css/bootstrap.min.css';
 import '../Menu/nav.css';
 import MainHeader from '../MainHeader/MainHeader';
 

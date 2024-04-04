@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from 'react-router-dom';
 
 const MainHeader: React.FC = () => {
@@ -19,6 +19,7 @@ const MainHeader: React.FC = () => {
   };
 
   const handleNavigation = (path: string) => {
+    console.log(isLoggedIn);
     if (!isLoggedIn && path === '/MemberCenter') {
       alert('您還沒有登入，請先登入！');
       navigate('/member-login');

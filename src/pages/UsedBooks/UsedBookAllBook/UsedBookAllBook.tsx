@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import '../../../assets/css/bootstrap.css';
+// import '../../../assets/css/bootstrap.css';
 import '../../../assets/css/style.css';
 import '../../../assets/css/responsive.css';
 import '../../../assets/css/color.css';

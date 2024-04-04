@@ -5,8 +5,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css'; // 導入樣式表
 
 //css
-import './assets/css/css2.css';
 import './assets/css/bootstrap.min.css';
+import './assets/css/css2.css';
 import './assets/css/font-awesome.css';
 import './assets/css/slick.css';
 import './assets/css/slick-theme.css';
@@ -14,6 +14,7 @@ import './assets/css/ionrangeslider.css';
 import './assets/css/app.css';
 import './assets/css/smart_wizard_all.min.css';
 import './assets/css/menu/style.css';
+import './assets/css/menu/flaticon.css';
 
 //react-query
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

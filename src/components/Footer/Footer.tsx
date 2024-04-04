@@ -15,7 +15,7 @@ import '../../assets/css/color.css';
 import '../../assets/css/custom-animate.css';
 import '../../assets/css/flaticon.css';
 import '../../assets/css/jquery.fancybox.min.css';
-import '../../assets/css/bootstrap.css';
+// import '../../assets/css/bootstrap.css';
 import './FooterStyle.css';
 
 const Footer: React.FC = () => {
