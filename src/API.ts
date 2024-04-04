@@ -64,6 +64,14 @@ export type GetApiUsedBookPaymentRecordsApiParams = {
   paymentNumber?: string;
 };
 
+export type PostApiUsedBookOrdersCreateApiParams = {
+  buyerId?: number;
+  fee?: number;
+  method?: string;
+  paymentNumber?: string;
+  paymentAmount?: number;
+};
+
 export type GetApiUsedBookOrdersApiParams = {
   memberId?: number;
   type?: string;
@@ -264,6 +272,7 @@ export interface UsedBookCartsDto {
   name?: string | null;
   picture?: string | null;
   productStatus?: boolean;
+  sellerID?: number;
   sellerName?: string | null;
   unitPrice?: number;
 }
@@ -364,27 +373,6 @@ export interface RedirectUrlsDto {
   confirmUrl?: string | null;
 }
 
-export interface QtyflawBook {
-  book?: Product;
-  bookID?: number;
-  handler: string;
-  handlingDate?: string;
-  handlingMethod: string;
-  id?: number;
-  reason: string;
-  status: string;
-}
-
-export interface QtyBookInventory {
-  buyPrice?: number;
-  id?: number;
-  product?: Product;
-  productId?: number;
-  remark?: string | null;
-  state: string;
-  totalQty?: number;
-}
-
 export interface Promotion {
   coupons?: Coupon[] | null;
   endDate?: string;
@@ -392,6 +380,14 @@ export interface Promotion {
   promotionName?: string | null;
   startDate?: string;
   type?: string | null;
+}
+
+export interface ProductPicture {
+  displayOrder?: number;
+  id?: number;
+  name: string;
+  product?: Product;
+  productId?: number;
 }
 
 export interface ProductKeywordDto {
@@ -440,12 +436,25 @@ export interface Product {
   writeBookReviews?: WriteBookReview[] | null;
 }
 
-export interface ProductPicture {
-  displayOrder?: number;
+export interface QtyflawBook {
+  book?: Product;
+  bookID?: number;
+  handler: string;
+  handlingDate?: string;
+  handlingMethod: string;
   id?: number;
-  name: string;
+  reason: string;
+  status: string;
+}
+
+export interface QtyBookInventory {
+  buyPrice?: number;
+  id?: number;
   product?: Product;
   productId?: number;
+  remark?: string | null;
+  state: string;
+  totalQty?: number;
 }
 
 export interface ProductKeyword {
@@ -470,17 +479,6 @@ export interface PointsHistory {
   member?: Member;
   memberId?: number;
   pointChange?: number;
-}
-
-export interface PdInStock {
-  buyDate?: string;
-  buyPrice?: number;
-  id?: number;
-  product?: Product;
-  productId?: number;
-  qty?: number;
-  supplier?: Bookseller;
-  supplierID?: number | null;
 }
 
 export interface PaymentResponseDto {
@@ -952,6 +950,17 @@ export interface Bookseller {
   name: string;
   pdInStocks?: PdInStock[] | null;
   phone: string;
+}
+
+export interface PdInStock {
+  buyDate?: string;
+  buyPrice?: number;
+  id?: number;
+  product?: Product;
+  productId?: number;
+  qty?: number;
+  supplier?: Bookseller;
+  supplierID?: number | null;
 }
 
 export interface BookReview {
@@ -4675,6 +4684,55 @@ export const useGetApiUsedBookOrdersApiBookIdBookId = <TData = Awaited<ReturnTyp
 
 
 
+
+export const postApiUsedBookOrdersCreateApi = (
+  usedBookCartsDto: UsedBookCartsDto[],
+  params?: PostApiUsedBookOrdersCreateApiParams, options?: AxiosRequestConfig
+): Promise<AxiosResponse<string>> => {
+
+  return axios.post(
+    `/api/UsedBookOrdersCreateApi`,
+    usedBookCartsDto, {
+    ...options,
+    params: { ...params, ...options?.params },
+  }
+  );
+}
+
+
+
+export const getPostApiUsedBookOrdersCreateApiMutationOptions = <TError = AxiosError<unknown>,
+  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postApiUsedBookOrdersCreateApi>>, TError, { data: UsedBookCartsDto[]; params?: PostApiUsedBookOrdersCreateApiParams }, TContext>, axios?: AxiosRequestConfig }
+  ): UseMutationOptions<Awaited<ReturnType<typeof postApiUsedBookOrdersCreateApi>>, TError, { data: UsedBookCartsDto[]; params?: PostApiUsedBookOrdersCreateApiParams }, TContext> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+
+
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiUsedBookOrdersCreateApi>>, { data: UsedBookCartsDto[]; params?: PostApiUsedBookOrdersCreateApiParams }> = (props) => {
+    const { data, params } = props ?? {};
+
+    return postApiUsedBookOrdersCreateApi(data, params, axiosOptions)
+  }
+
+
+
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PostApiUsedBookOrdersCreateApiMutationResult = NonNullable<Awaited<ReturnType<typeof postApiUsedBookOrdersCreateApi>>>
+export type PostApiUsedBookOrdersCreateApiMutationBody = UsedBookCartsDto[]
+export type PostApiUsedBookOrdersCreateApiMutationError = AxiosError<unknown>
+
+export const usePostApiUsedBookOrdersCreateApi = <TError = AxiosError<unknown>,
+  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postApiUsedBookOrdersCreateApi>>, TError, { data: UsedBookCartsDto[]; params?: PostApiUsedBookOrdersCreateApiParams }, TContext>, axios?: AxiosRequestConfig }
+  ) => {
+
+  const mutationOptions = getPostApiUsedBookOrdersCreateApiMutationOptions(options);
+
+  return useMutation(mutationOptions);
+}
 
 export const getApiUsedBookPaymentRecordsApi = (
   params?: GetApiUsedBookPaymentRecordsApiParams, options?: AxiosRequestConfig

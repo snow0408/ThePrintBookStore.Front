@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { usepaymentAmountStore, paymentAmountstate } from '../../state';
 import '../../App.css';
 import { usePutApiUsedBookPaymentRecordsApi, useGetApiUsedBookPaymentRecordsApi } from '../../API';
 
@@ -27,14 +26,18 @@ const LinePay: React.FC = () => {
   }, []);
 
   const [amount, setAmount] = useState<number>(0)
+  const [orderIdString, setOrderIdString] = useState<string>('');
   const getPaymentRecord = useGetApiUsedBookPaymentRecordsApi({ paymentNumber: orderId });
   const paymentRecord = getPaymentRecord.data?.data;
   useEffect(() => {
     if (paymentRecord && paymentRecord.length > 0) {
       const firstPaymentRecord = paymentRecord[0];
       setAmount(firstPaymentRecord.paymentAmount!);
+      setOrderIdString(firstPaymentRecord.orderId);
     }
   }, [paymentRecord]);
+
+  const orderIdArray = orderIdString.split(',').map(Number);
 
   const baseLoginPayUrl = 'https://localhost:7236/api/LinePay/';
   const confirmPayment = async () => {
@@ -77,9 +80,9 @@ const LinePay: React.FC = () => {
   };
 
   return (
-    //todo這一段不需要餒
+
     <div className='cart'>
-      {/* 最上方的 bar */}
+
       <center>
         <table className='mt-5'>
           <tbody>

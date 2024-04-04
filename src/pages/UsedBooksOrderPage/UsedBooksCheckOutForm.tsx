@@ -4,7 +4,7 @@ import '../../assets/css/app.css';
 import { Outlet, Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
-import { UsedBookCartsDto, usePostApiUsedBookPaymentRecordsApi } from '../../API';
+import { UsedBookCartsDto, usePostApiUsedBookOrdersCreateApi } from '../../API';
 import { usepaymentAmountStore, paymentAmountstate, usedUsedBookCartStore, usedBookCartState } from '../../state';
 import LinePay from '../../picture/LinePay.png';
 
@@ -100,15 +100,15 @@ export const CheckOutStep2 = () => {
     (state) => state
   );
 
+  //取得商品及運費
   const { orderItem, setOrderItem, orderFee, setOrderFee } = usedUsedBookCartStore<usedBookCartState>(
     (state) => state
   );
-  console.log(orderItem);
-  console.log(orderFee);
+  const sellers = new Set(orderItem.map((item) => item.sellerID));
 
-  const { mutate: createPaymentRecord } = usePostApiUsedBookPaymentRecordsApi();
-  function createPayment(paymentAmount: number, paymentNumber: string, orderId: string) {
-    createPaymentRecord({ data: { paymentAmount: paymentAmount, paymentNumber: paymentNumber, orderId: orderId } });
+  const { mutate: createOrder } = usePostApiUsedBookOrdersCreateApi();
+  function createOrders(orderItem: UsedBookCartsDto[], buyerId: number, fee: number, method: string, paymentNumber: string, paymentAmount: number) {
+    createOrder({ data: orderItem, params: { buyerId: buyerId, fee: fee, method: method, paymentNumber: paymentNumber, paymentAmount: paymentAmount } });
   }
 
   const requestPayment = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -119,7 +119,7 @@ export const CheckOutStep2 = () => {
     const payment = {
       amount: count,
       currency: 'TWD',
-      orderId: Date.now().toString(),
+      orderId: paymentNumber,
       packages: [
         {
           id: '20191011I001',
@@ -153,7 +153,19 @@ export const CheckOutStep2 = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      createPayment(count, paymentNumber, '1');
+      //依照賣家生成訂單
+      sellers.forEach((seller) => {
+        //計算單筆訂單金額
+        let amount: number = 0;
+        orderItem.forEach((item) => {
+          if (item.sellerID == seller) {
+            amount += item.unitPrice!;
+          }
+        })
+      });
+
+      //生成訂單&明細&付款紀錄
+      createOrders(orderItem, 28, orderFee, 'LinePay', paymentNumber, count)
 
       const res = await response.json();
       window.location = res.info.paymentUrl.web;
