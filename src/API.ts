@@ -15,7 +15,9 @@ import type {
 } from '@tanstack/react-query';
 import axios from 'axios';
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+
 axios.defaults.baseURL = 'https://localhost:7236';
+
 export type PatchApiUsedBooksIdBody = {
   ImageFile?: Blob;
   Price?: number;
@@ -246,7 +248,7 @@ export interface UsedBook {
   authors?: string | null;
   bookStatus: string;
   category?: Category;
-  categoryId?: number;
+  categoryId?: number | null;
   description?: string | null;
   id?: number;
   isbn: string;

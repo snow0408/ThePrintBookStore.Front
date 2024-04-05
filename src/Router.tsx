@@ -28,6 +28,7 @@ import OtherErrorPage from './pages/ErrorPage/OtherErrorPage.tsx';
 import { lazy } from 'react';
 
 import OrderPage from './pages/OrderAll/Orderpage.tsx';
+import UsedBookEdit from './pages/UsedBooks/UsedBookEdit/UsedBookEdit.tsx';
 
 // #region 懶加載元件匯入
 const UsedBookInside = lazy(
@@ -107,6 +108,10 @@ const router = createBrowserRouter(
         <Route
           path='/usedBook/used-book-list'
           element={<UserBooksList userId={2} />}
+        />
+        <Route
+          path='/usedBook/UsedBookEdit/:UsedBookId'
+          element={<UsedBookEdit />}
         />
         <Route path='/usedBook/usedBookAllBook' element={<UsedBookAllBook />} />
         <Route path='/usedBook/:UsedBookId' element={<UsedBookInside />} />
