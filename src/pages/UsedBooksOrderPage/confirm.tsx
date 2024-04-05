@@ -2,12 +2,17 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../../App.css';
-import { usePutApiUsedBookPaymentRecordsApi, useGetApiUsedBookPaymentRecordsApi } from '../../API';
+import { usePutApiUsedBookPaymentRecordsApi, useGetApiUsedBookPaymentRecordsApi, usePutApiUsedBookOrdersApi } from '../../API';
 
 const LinePay: React.FC = () => {
   const navigate = useNavigate(); // useNavigate在函式組件的主體使用
   const [transactionId, setTransactionId] = useState<string>('');
   const [orderId, setOrderId] = useState<string>('');
+
+  const { mutate: putUsedBookOrder } = usePutApiUsedBookOrdersApi();
+  function updateUsedBookOrder(id: number, status: string) {
+    putUsedBookOrder({ params: { Id: id, status: status } });
+  }
 
   const { mutate: putUsedBookPaymentRecord } = usePutApiUsedBookPaymentRecordsApi();
   function updatePaymentStatus(orderId: string, paymentStatus: boolean) {
@@ -36,7 +41,6 @@ const LinePay: React.FC = () => {
       setOrderIdString(firstPaymentRecord.orderId);
     }
   }, [paymentRecord]);
-
   const orderIdArray = orderIdString.split(',').map(Number);
 
   const baseLoginPayUrl = 'https://localhost:7236/api/LinePay/';
@@ -68,6 +72,10 @@ const LinePay: React.FC = () => {
 
         //更新付款紀錄
         updatePaymentStatus(orderId, true);
+        //更新訂單狀態
+        orderIdArray.forEach((orderId) => {
+          updateUsedBookOrder(orderId, '已付款');
+        });
       } else {
         console.log('付款失敗');
       }

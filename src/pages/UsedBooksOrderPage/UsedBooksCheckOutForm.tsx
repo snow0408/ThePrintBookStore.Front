@@ -95,6 +95,9 @@ export const CheckOutStep1 = () => {
 
 //付款方式 //todo 加綠界
 export const CheckOutStep2 = () => {
+  const [memberId, setMemberId] = useState<number>(28);
+  console.log(memberId);
+
   //取得付款金額
   const { count, setCount } = usepaymentAmountStore<paymentAmountstate>(
     (state) => state
@@ -165,7 +168,7 @@ export const CheckOutStep2 = () => {
       });
 
       //生成訂單&明細&付款紀錄
-      createOrders(orderItem, 28, orderFee, 'LinePay', paymentNumber, count)
+      createOrders(orderItem, memberId, orderFee, 'LinePay', paymentNumber, count)
 
       const res = await response.json();
       window.location = res.info.paymentUrl.web;

@@ -17,14 +17,14 @@ import type {
   UseQueryResult
 } from '@tanstack/react-query'
 import axios from 'axios'
-
-axios.defaults.baseURL = "https://localhost:7236";
-
 import type {
   AxiosError,
   AxiosRequestConfig,
   AxiosResponse
 } from 'axios'
+
+axios.defaults.baseURL = "https://localhost:7236";
+
 export type PatchApiUsedBooksIdBody = {
   ImageFile?: Blob;
   Price?: number;
@@ -72,6 +72,11 @@ export type PostApiUsedBookOrdersCreateApiParams = {
   paymentAmount?: number;
 };
 
+export type PutApiUsedBookOrdersApiParams = {
+  Id?: number;
+  status?: string;
+};
+
 export type GetApiUsedBookOrdersApiParams = {
   memberId?: number;
   type?: string;
@@ -114,10 +119,6 @@ export type PostApiEmailSendAAAParams = {
   email?: string;
 };
 
-export type PostAddPayInfoIdBody = {
-  PayInfo?: StringStringValuesKeyValuePair[];
-};
-
 export type PutApiCartsDetailsIdParams = {
   quantity?: number;
 };
@@ -151,6 +152,15 @@ export interface VerifyCodeDto {
   email?: string | null;
 }
 
+export interface UsedBooksOrderDetail {
+  book?: UsedBook;
+  bookID?: number;
+  id?: number;
+  order?: UsedBooksOrder;
+  orderID?: number;
+  unitPrice?: number;
+}
+
 export interface UsedBooksLogisticsOrder {
   actualDeliveryDate?: string | null;
   estimateDeliveryDate?: string;
@@ -168,6 +178,17 @@ export interface UsedBooksLogisticsOrder {
   trackingNumber: string;
 }
 
+export interface UsedBooksAllocationRecord {
+  allocationAccount: string;
+  allocationAmount?: number;
+  id?: number;
+  member?: Member;
+  memberID?: number;
+  order?: UsedBooksOrder;
+  orderID?: number;
+  platformShareAmount?: number;
+}
+
 export interface UsedBooksOrder {
   buyer?: Member;
   buyerId?: number;
@@ -182,35 +203,6 @@ export interface UsedBooksOrder {
   usedBooksAllocationRecords?: UsedBooksAllocationRecord[] | null;
   usedBooksLogisticsOrders?: UsedBooksLogisticsOrder[] | null;
   usedBooksOrderDetails?: UsedBooksOrderDetail[] | null;
-}
-
-export interface UsedBooksOrderDetail {
-  book?: UsedBook;
-  bookID?: number;
-  id?: number;
-  order?: UsedBooksOrder;
-  orderID?: number;
-  unitPrice?: number;
-}
-
-export interface UsedBooksCart {
-  addToCartDate?: string;
-  book?: UsedBook;
-  bookID?: number;
-  id?: number;
-  member?: Member;
-  memberID?: number;
-}
-
-export interface UsedBooksAllocationRecord {
-  allocationAccount: string;
-  allocationAmount?: number;
-  id?: number;
-  member?: Member;
-  memberID?: number;
-  order?: UsedBooksOrder;
-  orderID?: number;
-  platformShareAmount?: number;
 }
 
 export interface UsedBookPaymentRecord {
@@ -303,9 +295,13 @@ export interface UsedBook {
   webReaderLink?: string | null;
 }
 
-export interface StringStringValuesKeyValuePair {
-  key?: string | null;
-  value?: string[];
+export interface UsedBooksCart {
+  addToCartDate?: string;
+  book?: UsedBook;
+  bookID?: number;
+  id?: number;
+  member?: Member;
+  memberID?: number;
 }
 
 export interface ShippingAddressRecipientDto {
@@ -481,6 +477,17 @@ export interface PointsHistory {
   pointChange?: number;
 }
 
+export interface PdInStock {
+  buyDate?: string;
+  buyPrice?: number;
+  id?: number;
+  product?: Product;
+  productId?: number;
+  qty?: number;
+  supplier?: Bookseller;
+  supplierID?: number | null;
+}
+
 export interface PaymentResponseDto {
   info?: ResponseInfoDto;
   returnCode?: string | null;
@@ -504,13 +511,6 @@ export interface PaymentConfirmResponseDto {
 export interface PaymentConfirmDto {
   amount?: number;
   currency?: string | null;
-}
-
-export interface PackageDto {
-  amount?: number;
-  id?: string | null;
-  name?: string | null;
-  products?: LinePayProductDto[] | null;
 }
 
 export interface OrdersDto {
@@ -657,6 +657,13 @@ export interface LinePayProductDto {
   quantity?: number;
 }
 
+export interface PackageDto {
+  amount?: number;
+  id?: string | null;
+  name?: string | null;
+  products?: LinePayProductDto[] | null;
+}
+
 export interface Keyword {
   id?: number;
   name: string;
@@ -743,6 +750,13 @@ export interface GroupFunction {
   name: string;
 }
 
+export interface GroupPermission {
+  employees?: Employee[] | null;
+  functions?: GroupFunction[] | null;
+  groupName: string;
+  id?: number;
+}
+
 export interface ForgotPasswordDto {
   email?: string | null;
 }
@@ -778,13 +792,6 @@ export interface Employee {
   verificationCodeExpiration?: string | null;
 }
 
-export interface GroupPermission {
-  employees?: Employee[] | null;
-  functions?: GroupFunction[] | null;
-  groupName: string;
-  id?: number;
-}
-
 export interface EBook {
   eBooksPermissions?: EBooksPermission[] | null;
   fileLink: string;
@@ -802,14 +809,6 @@ export interface EBooksPermission {
   member?: Member;
   memberID?: number;
   permissionType?: string | null;
-}
-
-export interface CouponRedemption {
-  coupon?: Coupon;
-  couponId?: number;
-  memberId?: number;
-  redemptionDate?: string;
-  usageId?: number;
 }
 
 export interface CouponDTO {
@@ -858,6 +857,14 @@ export interface Coupon {
   startDate?: string;
   usingStatus?: string | null;
   valid?: boolean;
+}
+
+export interface CouponRedemption {
+  coupon?: Coupon;
+  couponId?: number;
+  memberId?: number;
+  redemptionDate?: string;
+  usageId?: number;
 }
 
 export interface CouponAPIResponse {
@@ -950,17 +957,6 @@ export interface Bookseller {
   name: string;
   pdInStocks?: PdInStock[] | null;
   phone: string;
-}
-
-export interface PdInStock {
-  buyDate?: string;
-  buyPrice?: number;
-  id?: number;
-  product?: Product;
-  productId?: number;
-  qty?: number;
-  supplier?: Bookseller;
-  supplierID?: number | null;
 }
 
 export interface BookReview {
@@ -1076,10 +1072,6 @@ export interface AnalyzeOneBook {
   id?: number;
   quantity?: number;
   salesAmount?: number;
-}
-
-export interface AccountInfoDTO {
-  merchantTradeNo?: string | null;
 }
 
 
@@ -2243,102 +2235,6 @@ export const useGetCouponByCode = <TData = Awaited<ReturnType<typeof getCouponBy
 
 
 
-
-export const postAddPayInfoId = (
-  id: string,
-  postAddPayInfoIdBody: PostAddPayInfoIdBody, options?: AxiosRequestConfig
-): Promise<AxiosResponse<string>> => {
-  const formData = new FormData();
-  if (postAddPayInfoIdBody.PayInfo !== undefined) {
-    postAddPayInfoIdBody.PayInfo.forEach(value => formData.append('PayInfo', value));
-  }
-
-
-  return axios.post(
-    `/AddPayInfo/${id}`,
-    formData, options
-  );
-}
-
-
-
-export const getPostAddPayInfoIdMutationOptions = <TError = AxiosError<unknown>,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postAddPayInfoId>>, TError, { id: string; data: PostAddPayInfoIdBody }, TContext>, axios?: AxiosRequestConfig }
-  ): UseMutationOptions<Awaited<ReturnType<typeof postAddPayInfoId>>, TError, { id: string; data: PostAddPayInfoIdBody }, TContext> => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
-
-
-
-
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof postAddPayInfoId>>, { id: string; data: PostAddPayInfoIdBody }> = (props) => {
-    const { id, data } = props ?? {};
-
-    return postAddPayInfoId(id, data, axiosOptions)
-  }
-
-
-
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type PostAddPayInfoIdMutationResult = NonNullable<Awaited<ReturnType<typeof postAddPayInfoId>>>
-export type PostAddPayInfoIdMutationBody = PostAddPayInfoIdBody
-export type PostAddPayInfoIdMutationError = AxiosError<unknown>
-
-export const usePostAddPayInfoId = <TError = AxiosError<unknown>,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postAddPayInfoId>>, TError, { id: string; data: PostAddPayInfoIdBody }, TContext>, axios?: AxiosRequestConfig }
-  ) => {
-
-  const mutationOptions = getPostAddPayInfoIdMutationOptions(options);
-
-  return useMutation(mutationOptions);
-}
-
-export const postApiECPayAddAccountInfo = (
-  accountInfoDTO: AccountInfoDTO, options?: AxiosRequestConfig
-): Promise<AxiosResponse<string>> => {
-
-  return axios.post(
-    `/api/ECPay/AddAccountInfo`,
-    accountInfoDTO, options
-  );
-}
-
-
-
-export const getPostApiECPayAddAccountInfoMutationOptions = <TError = AxiosError<unknown>,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postApiECPayAddAccountInfo>>, TError, { data: AccountInfoDTO }, TContext>, axios?: AxiosRequestConfig }
-  ): UseMutationOptions<Awaited<ReturnType<typeof postApiECPayAddAccountInfo>>, TError, { data: AccountInfoDTO }, TContext> => {
-  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
-
-
-
-
-  const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiECPayAddAccountInfo>>, { data: AccountInfoDTO }> = (props) => {
-    const { data } = props ?? {};
-
-    return postApiECPayAddAccountInfo(data, axiosOptions)
-  }
-
-
-
-
-  return { mutationFn, ...mutationOptions }
-}
-
-export type PostApiECPayAddAccountInfoMutationResult = NonNullable<Awaited<ReturnType<typeof postApiECPayAddAccountInfo>>>
-export type PostApiECPayAddAccountInfoMutationBody = AccountInfoDTO
-export type PostApiECPayAddAccountInfoMutationError = AxiosError<unknown>
-
-export const usePostApiECPayAddAccountInfo = <TError = AxiosError<unknown>,
-  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postApiECPayAddAccountInfo>>, TError, { data: AccountInfoDTO }, TContext>, axios?: AxiosRequestConfig }
-  ) => {
-
-  const mutationOptions = getPostApiECPayAddAccountInfoMutationOptions(options);
-
-  return useMutation(mutationOptions);
-}
 
 export const postApiEmailSendResetPassword = (
   resetPasswordDto: ResetPasswordDto, options?: AxiosRequestConfig
@@ -4631,6 +4527,53 @@ export const useGetApiUsedBookOrdersApi = <TData = Awaited<ReturnType<typeof get
 
 
 
+
+export const putApiUsedBookOrdersApi = (
+  params?: PutApiUsedBookOrdersApiParams, options?: AxiosRequestConfig
+): Promise<AxiosResponse<string>> => {
+
+  return axios.put(
+    `/api/UsedBookOrdersApi`, undefined, {
+    ...options,
+    params: { ...params, ...options?.params },
+  }
+  );
+}
+
+
+
+export const getPutApiUsedBookOrdersApiMutationOptions = <TError = AxiosError<unknown>,
+  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof putApiUsedBookOrdersApi>>, TError, { params?: PutApiUsedBookOrdersApiParams }, TContext>, axios?: AxiosRequestConfig }
+  ): UseMutationOptions<Awaited<ReturnType<typeof putApiUsedBookOrdersApi>>, TError, { params?: PutApiUsedBookOrdersApiParams }, TContext> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+
+
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiUsedBookOrdersApi>>, { params?: PutApiUsedBookOrdersApiParams }> = (props) => {
+    const { params } = props ?? {};
+
+    return putApiUsedBookOrdersApi(params, axiosOptions)
+  }
+
+
+
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PutApiUsedBookOrdersApiMutationResult = NonNullable<Awaited<ReturnType<typeof putApiUsedBookOrdersApi>>>
+
+export type PutApiUsedBookOrdersApiMutationError = AxiosError<unknown>
+
+export const usePutApiUsedBookOrdersApi = <TError = AxiosError<unknown>,
+  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof putApiUsedBookOrdersApi>>, TError, { params?: PutApiUsedBookOrdersApiParams }, TContext>, axios?: AxiosRequestConfig }
+  ) => {
+
+  const mutationOptions = getPutApiUsedBookOrdersApiMutationOptions(options);
+
+  return useMutation(mutationOptions);
+}
 
 export const getApiUsedBookOrdersApiBookIdBookId = (
   bookId: number, options?: AxiosRequestConfig
