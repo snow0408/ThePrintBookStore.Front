@@ -8,12 +8,17 @@ import defaultImage2 from '../../../assets/images/no image available.png';
 import backgroundImage from '../../../assets/images/main-slider/about.jpg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import decorate from '../../../assets/images/resource/decorate.jpg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   faSearch,
   faCheck,
   faUser,
-  faBook
+  faBook,
+  faLightbulb,
+  faPhotoFilm,
+  faImage,
+  faStar,
+  faXmark
 } from '@fortawesome/free-solid-svg-icons';
 import '../UseBookCreate/Creatstyle.css';
 import '../../../assets/css/style.css';
@@ -25,6 +30,7 @@ import Step from '@mui/material/Step';
 import StepButton from '@mui/material/StepButton';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import DiscountCardContainer from '../../../components/DiscountCardContainer/DiscountCardContainer';
 
 const steps = [
   'Select campaign settings',
@@ -54,8 +60,9 @@ const AddUsedBook: React.FC = () => {
   const [price, setPrice] = useState<string>('');
   const [selectedOption, setSelectedOption] = useState('');
   const [otherText, setOtherText] = useState('');
-  const [activeStep, setActiveStep] = useState(0); // 增加此行来声明 activeStep
-  const [completed, setCompleted] = useState<{ [k: number]: boolean }>({});
+  const [isSubmit, setIsSubmit] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   //步驟
   const getStepContent = (stepIndex) => {
@@ -79,11 +86,7 @@ const AddUsedBook: React.FC = () => {
     refetch
   } = useGetApiUsedBooksIsbnIsbn(isbn);
   //新增書籍API
-  const {
-    mutate: addUsedBook,
-    isLoading: isAdding,
-    error: addError
-  } = usePostApiUsedBooks();
+  const addUsedBook = usePostApiUsedBooks();
 
   //下拉選單選擇書況
 
@@ -108,6 +111,15 @@ const AddUsedBook: React.FC = () => {
     }
   }, [image]);
 
+  useEffect(() => {
+    if (addUsedBook.data?.data) {
+      if (isSubmit) {
+        alert(addUsedBook.data?.data);
+        setIsSubmit(false);
+        navigate(-1);
+      }
+    }
+  }, [isSubmit, addUsedBook.data?.data]);
   //點擊div圖片上傳
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -123,30 +135,34 @@ const AddUsedBook: React.FC = () => {
   //表單提交
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!data?.data || !image) {
-      console.error('必要的資訊不完整');
-      return;
+    if (!isSubmit) {
+      // if (!data?.data || !image) {
+      //   console.error('必要的資訊不完整');
+      //   return;
+      // }
+
+      if (isbn === '') {
+        alert('請輸入ISBN');
+        return;
+      }
+      if (selectedOption === '') {
+        alert('請選擇書況');
+        return;
+      }
+      if (image === null) {
+        alert('請上傳書況圖片');
+        return;
+      }
+
+      const uploadData: PostApiUsedBooksBody = {
+        BookStatus: selectedOption === '其他' ? otherText : selectedOption,
+        ISBN: isbn,
+        Price: Number(price),
+        ImageFile: image as Blob
+      };
+      addUsedBook.mutate({ data: uploadData });
+      setIsSubmit(true);
     }
-
-    const formData = new FormData(e.currentTarget);
-    console.log('price', formData.get('price'));
-    console.log('isbn', formData.get('isbn'));
-    console.log('imageFile', formData.get('imageFile'));
-
-    const uploadData: PostApiUsedBooksBody = {};
-
-    // 根據實際 API 需求添加其他必要資訊
-
-    // addUsedBook(formData, {
-    //   onSuccess: () => {
-    //     // 處理成功情況
-    //     console.log('二手書添加成功');
-    //   },
-    //   onError: (error) => {
-    //     // 處理錯誤情況
-    //     console.error('添加二手書失敗', error);
-    //   }
-    // });
   };
   function addNewLines(str, maxLineLength) {
     let result = '';
@@ -235,11 +251,28 @@ const AddUsedBook: React.FC = () => {
                       color: 'white',
                       fontSize: '18px',
                       fontWeight: 'normal',
-                      margin: '50px',
+                      margin: '25px',
+                      marginLeft: '50px',
                       justifyContent: 'center'
                     }}
                   >
-                    請先輸入ISBN碼，不需要輸入書籍名稱系統會自動帶出書籍資訊
+                    <FontAwesomeIcon
+                      icon={faLightbulb}
+                      style={{ color: '#ffffff' }}
+                    />
+                    &ensp;1.請先輸入ISBN碼，系統會自動帶出書籍資訊
+                    <br />
+                    <FontAwesomeIcon
+                      icon={faLightbulb}
+                      style={{ color: '#ffffff' }}
+                    />
+                    &ensp;2.輸入二手書販售金額及書況
+                    <br />
+                    <FontAwesomeIcon
+                      icon={faLightbulb}
+                      style={{ color: '#ffffff' }}
+                    />
+                    &ensp;3.上傳書況圖片
                   </p>
                 </div>
               </div>
@@ -289,60 +322,24 @@ const AddUsedBook: React.FC = () => {
                     </li>
                   </ul>
                   <div
-                    className={`text-two ${
+                    className={`text-two text-description ${
                       data?.data?.description &&
                       data.data.description.length > 200
                         ? 'text-scrollable'
                         : ''
                     }`}
-                    style={{ whiteSpace: 'pre-wrap' }}
+                    style={{
+                      whiteSpace: 'pre-wrap',
+                      backgroundColor: '#f8f8f8',
+                      borderRadius: '10px'
+                    }}
                   >
-                    {data?.data?.description || '書籍描述'}
+                    {data?.data?.description || '    書籍描述'}
                   </div>
-
-                  <input
-                    onChange={(e) => setPrice(e.target.value)}
-                    type='text'
-                    className='form-control'
-                    name='price'
-                    value={price}
-                    placeholder='輸入二手書販售金額'
-                    required
-                  ></input>
-
-                  <select
-                    className='select-style'
-                    name='statue'
-                    value={selectedOption}
-                    onChange={handleSelectChange}
-                  >
-                    <option value=''>請選擇書況</option>
-                    <option value='option1'>全新</option>
-                    <option value='option2'>九成新</option>
-                    <option value='option2'>有污漬、折損</option>
-                    <option value='option3'>有做筆記</option>
-                    <option value='option3'>有作家簽名</option>
-                    <option value='other'>其他</option>
-                  </select>
-                  {selectedOption === 'other' && (
-                    <input
-                      name='otherText'
-                      type='text'
-                      value={otherText}
-                      onChange={handleOtherInputChange}
-                      placeholder='請說明其他書況'
-                    />
-                  )}
-
-                  <button
-                    style={{ marginTop: '20px' }}
-                    type='submit'
-                    className='btn-style-one'
-                  >
-                    <FontAwesomeIcon icon={faCheck} /> SEND OUT
-                  </button>
                 </div>
               </div>
+
+              {/* 書籍封面 */}
               <div
                 className='col-lg-6'
                 style={{
@@ -371,21 +368,182 @@ const AddUsedBook: React.FC = () => {
             </div>
           </div>
         </section>
-        <section>
-          <div>
-            <div className='upload-area' onClick={handleImageUploadClick}>
-              {preview ? (
-                <img src={preview} alt='預覽圖片' className='image-preview' />
-              ) : (
-                <div className='image-placeholder'>點擊此處上傳圖片</div>
-              )}
-              <input
-                id='fileInput'
-                type='file'
-                name='imageFile'
-                style={{ display: 'none' }}
-                onChange={handleImageUpload}
-              />
+        <section className='section-fourty-eight'>
+          <div className='auto-container'>
+            <div className='row justify-content-center'>
+              <div className='col-lg-6'>
+                <div className='block-fourty-eight'>
+                  <div className='sub-title'>Price & Statue</div>
+                  <div className='sidebar-title'>
+                    <h3>二手書販售訊息</h3>
+                  </div>
+                  {/* 金額 */}
+                  <input
+                    onChange={(e) => setPrice(e.target.value)}
+                    type='text'
+                    className='form-control'
+                    name='price'
+                    value={price}
+                    placeholder='輸入二手書販售金額'
+                    required
+                  ></input>
+                  {/* 書況 */}
+                  {/* <div className='header-search-nav'>
+                    <form className='header-item-search'>
+                      <div className='input-group search-input'>
+                        <select className='default-select'>
+                          <option value=''>請選擇書況</option>
+                          <option value='全新'>全新</option>
+                          <option value='九成新'>九成新</option>
+                          <option value='有污漬、折損'>有污漬、折損</option>
+                          <option value='有做筆記'>有做筆記</option>
+                          <option value='有作家簽名'>有作家簽名</option>
+                          <option value='其他'>其他</option>
+                          <option>Comics</option>
+                          <option>Biographies</option>
+                          <option>Children’s Books</option>
+                          <option>Historical</option>
+                          <option>Contemporary</option>
+                          <option>Classics</option>
+                          <option>Education</option>
+                        </select>
+                        {selectedOption === '其他' && (
+                          <input
+                            className='form-control'
+                            name='otherText'
+                            type='text'
+                            value={otherText}
+                            onChange={handleOtherInputChange}
+                            placeholder='請說明其他書況'
+                          />
+                        )}
+                      </div>
+                    </form>
+                  </div> */}
+                  <select
+                    style={{ marginTop: '20px' }}
+                    className='select-style form-control2'
+                    name='statue'
+                    value={selectedOption}
+                    onChange={handleSelectChange}
+                  >
+                    <option value=''>請選擇書況</option>
+                    <option value='全新'>全新</option>
+                    <option value='九成新'>九成新</option>
+                    <option value='有污漬、折損'>有污漬、折損</option>
+                    <option value='有做筆記'>有做筆記</option>
+                    <option value='有作家簽名'>有作家簽名</option>
+                    <option value='其他'>其他</option>
+                  </select>
+                  {selectedOption === '其他' && (
+                    <input
+                      className='form-control'
+                      name='otherText'
+                      type='text'
+                      value={otherText}
+                      onChange={handleOtherInputChange}
+                      placeholder='請說明其他書況'
+                    />
+                  )}
+                  <div className='block-42c'>
+                    <div
+                      className='icon-two'
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <FontAwesomeIcon
+                        icon={faStar}
+                        style={{
+                          color: '#ffffff',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center'
+                        }}
+                      />
+                    </div>
+                    <div className='cta-box'>
+                      <h6>
+                        請確實選擇書況，與上傳書況圖片
+                        <br />
+                        以免發生後續爭議，販售金額需為正整數!
+                      </h6>
+                      {/* <div className='cta-text'>販售金額需為正整數</div> */}
+                    </div>
+                  </div>
+                  <button
+                    style={{ marginTop: '20px' }}
+                    type='submit'
+                    className='btn-style-one'
+                  >
+                    <FontAwesomeIcon icon={faCheck} /> 確認送出
+                  </button>
+                  &emsp;&emsp;
+                  <Link
+                    to='/usedBook/used-book-list'
+                    style={{ marginTop: '20px' }}
+                    className='btn-style-one'
+                  >
+                    <span>
+                      <FontAwesomeIcon
+                        icon={faXmark}
+                        style={{ color: '#ffffff' }}
+                      />
+                      &nbsp;取消上架
+                    </span>
+                  </Link>
+                </div>
+              </div>
+              <div
+                className=' col-lg-6'
+                style={{
+                  backgroundColor: '#efefef',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '500px',
+                  height: '500px',
+                  borderRadius: '10px',
+                  overflow: 'hidden'
+                }}
+              >
+                <div className='upload-area ' onClick={handleImageUploadClick}>
+                  {preview ? (
+                    <img
+                      src={preview}
+                      alt='預覽圖片'
+                      className='image-preview'
+                    />
+                  ) : (
+                    <div className=''>
+                      <FontAwesomeIcon
+                        icon={faImage}
+                        style={{
+                          color: '#7d7d7d',
+                          fontSize: '50px',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          paddingLeft: '60px'
+                        }}
+                      />
+                      <br />
+                      點擊此處上傳書況圖片
+                    </div>
+                  )}
+                  <input
+                    id='fileInput'
+                    type='file'
+                    name='imageFile'
+                    style={{ display: 'none' }}
+                    onChange={handleImageUpload}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </section>

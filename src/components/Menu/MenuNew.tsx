@@ -366,14 +366,14 @@ const PhysicalEBookNav: React.FC = () => {
                       <a
                         className='fab fa-linkedin-in'
                         target='_self'
-                        href='javascript:;'
+                        href=''
                       ></a>
                     </li>
                     <li>
                       <a
                         className='fab fa-instagram'
                         target='_self'
-                        href='javascript:;'
+                        href=''
                       ></a>
                     </li>
                   </ul>
