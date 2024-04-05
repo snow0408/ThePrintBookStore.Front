@@ -6,21 +6,30 @@ import {
   useGetApiUsedBookOrdersApi,
   UsedBookOrderDto,
   useGetApiUsedBookOrderDetails,
-  UsedBookOrderDetailDto
+  UsedBookOrderDetailDto,
+  useGetApiUsedBookBuyerInfomationsApi,
+  UsedBookBuyerInformation
 } from '../../API';
 
 interface OrderDetailProps {
   id: number;
-  type: boolean;
 }
 
 //訂單明細
-const OrderDetail: React.FC<OrderDetailProps> = ({ id, type }) => {
+const OrderDetail: React.FC<OrderDetailProps> = ({ id }) => {
+  //取得訂單明細
   const orderDetailData = useGetApiUsedBookOrderDetails({ orderId: id });
   const [orderDetail, setOrderDetail] = useState<UsedBookOrderDetailDto[]>([]);
   useEffect(() => {
     setOrderDetail(orderDetailData.data?.data as UsedBookOrderDto[]);
   }, [orderDetailData.data?.data]);
+
+  const buyerInfomationData = useGetApiUsedBookBuyerInfomationsApi({ orderId: id });
+  const [buyerInfomation, setBuyerInfomation] = useState<UsedBookBuyerInformation>();
+  useEffect(() => {
+    setBuyerInfomation(buyerInfomationData.data?.data)
+  }, [buyerInfomationData.data?.data])
+
   return (
     <div className='modal-body'>
       <table className='table'>
@@ -42,26 +51,24 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ id, type }) => {
             })}
         </tbody>
       </table>
-      {type && (
-        <>
-          <hr className='my-4' />
-          <div className="card">
-            <ul className="list-group list-group-flush">
-              <li className="list-group-item">收件人姓名：CC</li>
-              <li className="list-group-item">收件人電話：0912345678</li>
-              <li className="list-group-item">收件人地址：新竹市東區民主路31號</li>
-              <li className="list-group-item">備註：</li>
-            </ul>
-          </div>
-        </>
-      )}
+
+      <hr className='my-4' />
+      <div className="card">
+        <ul className="list-group list-group-flush">
+          <li className="list-group-item">收件人姓名：{buyerInfomation?.recipientName}</li>
+          <li className="list-group-item">收件人電話：{buyerInfomation?.recipientPhone}</li>
+          <li className="list-group-item">收件人地址：{buyerInfomation?.recipientAddress}</li>
+          <li className="list-group-item">備註：{buyerInfomation?.remark}</li>
+        </ul>
+      </div>
+
     </div>
   );
 };
 
 //訂單管理頁面
 const UsedBooksOrder: React.FC = () => {
-  const [memberId, setMemberId] = useState<number>(11);
+  const [memberId, setMemberId] = useState<number>(28);
 
   //購買訂單
   const buyerOrderData = useGetApiUsedBookOrdersApi({
@@ -106,11 +113,9 @@ const UsedBooksOrder: React.FC = () => {
 
   //訂單明細
   const [detailIndex, setDetailIndex] = useState<number>(0);
-  const [orderType, setOrderType] = useState<boolean>(false);
   const [orderDetailModal, setOrderDetailModal] = useState<boolean>(false);
-  const showOrderDetail = (id: number, type: boolean) => {
+  const showOrderDetail = (id: number) => {
     setDetailIndex(id);
-    setOrderType(type);
     setOrderDetailModal(true);
   };
   const closeOrderDetail = () => {
@@ -140,7 +145,7 @@ const UsedBooksOrder: React.FC = () => {
               <tbody key={item.id}>
                 <tr>
                   <td style={{ textAlign: 'left' }}>
-                    <a href='#' onClick={() => showOrderDetail(item.id!, false)}>
+                    <a href='#' onClick={() => showOrderDetail(item.id!)}>
                       #{item.id}
                     </a>
                   </td>
@@ -194,7 +199,7 @@ const UsedBooksOrder: React.FC = () => {
               <tbody key={item.id}>
                 <tr>
                   <td style={{ textAlign: 'left' }}>
-                    <a href='#' onClick={() => showOrderDetail(item.id!, true)}>
+                    <a href='#' onClick={() => showOrderDetail(item.id!)}>
                       #{item.id}
                     </a>
                   </td>
@@ -301,7 +306,7 @@ const UsedBooksOrder: React.FC = () => {
                 </button>
               </div>
               <div className='modal-body'>
-                <OrderDetail id={detailIndex} type={orderType} />
+                <OrderDetail id={detailIndex} />
               </div>
             </div>
           </div>

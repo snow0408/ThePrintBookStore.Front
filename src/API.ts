@@ -90,6 +90,14 @@ export type GetApiUsedBookCartsApiParams = {
   memberId?: number;
 };
 
+export type PostApiUsedBookBuyerInfomationsApiOrderRecipientParams = {
+  paymentId?: string;
+};
+
+export type GetApiUsedBookBuyerInfomationsApiParams = {
+  orderId?: number;
+};
+
 export type GetApiProductsParams = {
   Keyword?: string;
   BookSearch?: number;
@@ -152,15 +160,6 @@ export interface VerifyCodeDto {
   email?: string | null;
 }
 
-export interface UsedBooksOrderDetail {
-  book?: UsedBook;
-  bookID?: number;
-  id?: number;
-  order?: UsedBooksOrder;
-  orderID?: number;
-  unitPrice?: number;
-}
-
 export interface UsedBooksLogisticsOrder {
   actualDeliveryDate?: string | null;
   estimateDeliveryDate?: string;
@@ -178,17 +177,6 @@ export interface UsedBooksLogisticsOrder {
   trackingNumber: string;
 }
 
-export interface UsedBooksAllocationRecord {
-  allocationAccount: string;
-  allocationAmount?: number;
-  id?: number;
-  member?: Member;
-  memberID?: number;
-  order?: UsedBooksOrder;
-  orderID?: number;
-  platformShareAmount?: number;
-}
-
 export interface UsedBooksOrder {
   buyer?: Member;
   buyerId?: number;
@@ -203,6 +191,35 @@ export interface UsedBooksOrder {
   usedBooksAllocationRecords?: UsedBooksAllocationRecord[] | null;
   usedBooksLogisticsOrders?: UsedBooksLogisticsOrder[] | null;
   usedBooksOrderDetails?: UsedBooksOrderDetail[] | null;
+}
+
+export interface UsedBooksOrderDetail {
+  book?: UsedBook;
+  bookID?: number;
+  id?: number;
+  order?: UsedBooksOrder;
+  orderID?: number;
+  unitPrice?: number;
+}
+
+export interface UsedBooksCart {
+  addToCartDate?: string;
+  book?: UsedBook;
+  bookID?: number;
+  id?: number;
+  member?: Member;
+  memberID?: number;
+}
+
+export interface UsedBooksAllocationRecord {
+  allocationAccount: string;
+  allocationAmount?: number;
+  id?: number;
+  member?: Member;
+  memberID?: number;
+  order?: UsedBooksOrder;
+  orderID?: number;
+  platformShareAmount?: number;
 }
 
 export interface UsedBookPaymentRecord {
@@ -269,6 +286,16 @@ export interface UsedBookCartsDto {
   unitPrice?: number;
 }
 
+export interface UsedBookBuyerInformation {
+  id?: number;
+  orderId: string;
+  recipientAddress: string;
+  recipientEmail?: string | null;
+  recipientName: string;
+  recipientPhone: string;
+  remark?: string | null;
+}
+
 export interface UsedBook {
   authors?: string | null;
   bookStatus: string;
@@ -293,15 +320,6 @@ export interface UsedBook {
   usedBooksCarts?: UsedBooksCart[] | null;
   usedBooksOrderDetails?: UsedBooksOrderDetail[] | null;
   webReaderLink?: string | null;
-}
-
-export interface UsedBooksCart {
-  addToCartDate?: string;
-  book?: UsedBook;
-  bookID?: number;
-  id?: number;
-  member?: Member;
-  memberID?: number;
 }
 
 export interface ShippingAddressRecipientDto {
@@ -369,6 +387,27 @@ export interface RedirectUrlsDto {
   confirmUrl?: string | null;
 }
 
+export interface QtyflawBook {
+  book?: Product;
+  bookID?: number;
+  handler: string;
+  handlingDate?: string;
+  handlingMethod: string;
+  id?: number;
+  reason: string;
+  status: string;
+}
+
+export interface QtyBookInventory {
+  buyPrice?: number;
+  id?: number;
+  product?: Product;
+  productId?: number;
+  remark?: string | null;
+  state: string;
+  totalQty?: number;
+}
+
 export interface Promotion {
   coupons?: Coupon[] | null;
   endDate?: string;
@@ -376,6 +415,12 @@ export interface Promotion {
   promotionName?: string | null;
   startDate?: string;
   type?: string | null;
+}
+
+export interface ProductsPagingDto {
+  productDetailsCategories?: ProductDetailsCategoryDto[] | null;
+  productsReslut?: BookProductDto[] | null;
+  totalPages?: number;
 }
 
 export interface ProductPicture {
@@ -396,12 +441,6 @@ export interface ProductKeywordDto {
 export interface ProductDetailsCategoryDto {
   id?: number;
   name?: string | null;
-}
-
-export interface ProductsPagingDto {
-  productDetailsCategories?: ProductDetailsCategoryDto[] | null;
-  productsReslut?: BookProductDto[] | null;
-  totalPages?: number;
 }
 
 export interface Product {
@@ -430,27 +469,6 @@ export interface Product {
   realPrice?: number | null;
   stock?: number;
   writeBookReviews?: WriteBookReview[] | null;
-}
-
-export interface QtyflawBook {
-  book?: Product;
-  bookID?: number;
-  handler: string;
-  handlingDate?: string;
-  handlingMethod: string;
-  id?: number;
-  reason: string;
-  status: string;
-}
-
-export interface QtyBookInventory {
-  buyPrice?: number;
-  id?: number;
-  product?: Product;
-  productId?: number;
-  remark?: string | null;
-  state: string;
-  totalQty?: number;
 }
 
 export interface ProductKeyword {
@@ -4177,6 +4195,154 @@ export const useDeleteApiProductsCategoryId = <TError = AxiosError<unknown>,
   ) => {
 
   const mutationOptions = getDeleteApiProductsCategoryIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+}
+
+export const getApiUsedBookBuyerInfomationsApi = (
+  params?: GetApiUsedBookBuyerInfomationsApiParams, options?: AxiosRequestConfig
+): Promise<AxiosResponse<UsedBookBuyerInformation>> => {
+
+  return axios.get(
+    `/api/UsedBookBuyerInfomationsApi`, {
+    ...options,
+    params: { ...params, ...options?.params },
+  }
+  );
+}
+
+
+export const getGetApiUsedBookBuyerInfomationsApiQueryKey = (params?: GetApiUsedBookBuyerInfomationsApiParams,) => {
+  return [`/api/UsedBookBuyerInfomationsApi`, ...(params ? [params] : [])] as const;
+}
+
+
+export const getGetApiUsedBookBuyerInfomationsApiQueryOptions = <TData = Awaited<ReturnType<typeof getApiUsedBookBuyerInfomationsApi>>, TError = AxiosError<unknown>>(params?: GetApiUsedBookBuyerInfomationsApiParams, options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof getApiUsedBookBuyerInfomationsApi>>, TError, TData>, axios?: AxiosRequestConfig }
+) => {
+
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetApiUsedBookBuyerInfomationsApiQueryKey(params);
+
+
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiUsedBookBuyerInfomationsApi>>> = ({ signal }) => getApiUsedBookBuyerInfomationsApi(params, { signal, ...axiosOptions });
+
+
+
+
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<Awaited<ReturnType<typeof getApiUsedBookBuyerInfomationsApi>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetApiUsedBookBuyerInfomationsApiQueryResult = NonNullable<Awaited<ReturnType<typeof getApiUsedBookBuyerInfomationsApi>>>
+export type GetApiUsedBookBuyerInfomationsApiQueryError = AxiosError<unknown>
+
+export const useGetApiUsedBookBuyerInfomationsApi = <TData = Awaited<ReturnType<typeof getApiUsedBookBuyerInfomationsApi>>, TError = AxiosError<unknown>>(
+  params?: GetApiUsedBookBuyerInfomationsApiParams, options?: { query?: UseQueryOptions<Awaited<ReturnType<typeof getApiUsedBookBuyerInfomationsApi>>, TError, TData>, axios?: AxiosRequestConfig }
+
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+
+  const queryOptions = getGetApiUsedBookBuyerInfomationsApiQueryOptions(params, options)
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+}
+
+
+
+
+export const postApiUsedBookBuyerInfomationsApi = (
+  usedBookBuyerInformation: UsedBookBuyerInformation, options?: AxiosRequestConfig
+): Promise<AxiosResponse<string>> => {
+
+  return axios.post(
+    `/api/UsedBookBuyerInfomationsApi`,
+    usedBookBuyerInformation, options
+  );
+}
+
+
+
+export const getPostApiUsedBookBuyerInfomationsApiMutationOptions = <TError = AxiosError<unknown>,
+  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApi>>, TError, { data: UsedBookBuyerInformation }, TContext>, axios?: AxiosRequestConfig }
+  ): UseMutationOptions<Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApi>>, TError, { data: UsedBookBuyerInformation }, TContext> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+
+
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApi>>, { data: UsedBookBuyerInformation }> = (props) => {
+    const { data } = props ?? {};
+
+    return postApiUsedBookBuyerInfomationsApi(data, axiosOptions)
+  }
+
+
+
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PostApiUsedBookBuyerInfomationsApiMutationResult = NonNullable<Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApi>>>
+export type PostApiUsedBookBuyerInfomationsApiMutationBody = UsedBookBuyerInformation
+export type PostApiUsedBookBuyerInfomationsApiMutationError = AxiosError<unknown>
+
+export const usePostApiUsedBookBuyerInfomationsApi = <TError = AxiosError<unknown>,
+  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApi>>, TError, { data: UsedBookBuyerInformation }, TContext>, axios?: AxiosRequestConfig }
+  ) => {
+
+  const mutationOptions = getPostApiUsedBookBuyerInfomationsApiMutationOptions(options);
+
+  return useMutation(mutationOptions);
+}
+
+export const postApiUsedBookBuyerInfomationsApiOrderRecipient = (
+  params?: PostApiUsedBookBuyerInfomationsApiOrderRecipientParams, options?: AxiosRequestConfig
+): Promise<AxiosResponse<string>> => {
+
+  return axios.post(
+    `/api/UsedBookBuyerInfomationsApi/orderRecipient`, undefined, {
+    ...options,
+    params: { ...params, ...options?.params },
+  }
+  );
+}
+
+
+
+export const getPostApiUsedBookBuyerInfomationsApiOrderRecipientMutationOptions = <TError = AxiosError<unknown>,
+  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApiOrderRecipient>>, TError, { params?: PostApiUsedBookBuyerInfomationsApiOrderRecipientParams }, TContext>, axios?: AxiosRequestConfig }
+  ): UseMutationOptions<Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApiOrderRecipient>>, TError, { params?: PostApiUsedBookBuyerInfomationsApiOrderRecipientParams }, TContext> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+
+
+
+  const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApiOrderRecipient>>, { params?: PostApiUsedBookBuyerInfomationsApiOrderRecipientParams }> = (props) => {
+    const { params } = props ?? {};
+
+    return postApiUsedBookBuyerInfomationsApiOrderRecipient(params, axiosOptions)
+  }
+
+
+
+
+  return { mutationFn, ...mutationOptions }
+}
+
+export type PostApiUsedBookBuyerInfomationsApiOrderRecipientMutationResult = NonNullable<Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApiOrderRecipient>>>
+
+export type PostApiUsedBookBuyerInfomationsApiOrderRecipientMutationError = AxiosError<unknown>
+
+export const usePostApiUsedBookBuyerInfomationsApiOrderRecipient = <TError = AxiosError<unknown>,
+  TContext = unknown>(options?: { mutation?: UseMutationOptions<Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApiOrderRecipient>>, TError, { params?: PostApiUsedBookBuyerInfomationsApiOrderRecipientParams }, TContext>, axios?: AxiosRequestConfig }
+  ) => {
+
+  const mutationOptions = getPostApiUsedBookBuyerInfomationsApiOrderRecipientMutationOptions(options);
 
   return useMutation(mutationOptions);
 }

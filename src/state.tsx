@@ -11,6 +11,7 @@ export const usepaymentAmountStore = create<paymentAmountstate>()((set) => ({
   setCount: (by) => set((state) => ({ count: by }))
 }));
 
+//二手書購物車資料
 export interface usedBookCartState {
   orderFee: number;
   orderTotal: number;
@@ -27,6 +28,34 @@ export const usedUsedBookCartStore = create<usedBookCartState>()((set) => ({
   setOrderTotal: (by) => set((state) => ({ orderTotal: by })),
   setOrderItem: (by) => set((state) => ({ orderItem: by }))
 }));
+
+//二手書收件人資料
+export interface buyerInformationState {
+  BuyerName: string;
+  BuyerPhone: string;
+  BuyerAddress: string;
+  BuyerEmail: string;
+  remark: string;
+  setBuyerName: (by: string) => void;
+  setBuyerPhone: (by: string) => void;
+  setBuyerAddress: (by: string) => void;
+  setBuyerEmail: (by: string) => void;
+  setRemark: (by: string) => void;
+}
+export const usedBuyerInformationStore = create<buyerInformationState>()((set) => ({
+  BuyerName: '',
+  BuyerPhone: '',
+  BuyerAddress: '',
+  BuyerEmail: '',
+  remark: '',
+  setBuyerName: (by) => set((state) => ({ BuyerName: by })),
+  setBuyerPhone: (by) => set((state) => ({ BuyerPhone: by })),
+  setBuyerAddress: (by) => set((state) => ({ BuyerAddress: by })),
+  setBuyerEmail: (by) => set((state) => ({ BuyerEmail: by })),
+  setRemark: (by) => set((state) => ({ remark: by }))
+}));
+
+//
 
 export interface searchDataState {
   searchData: ProductsPagingDto;

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../../App.css';
-import { usePutApiUsedBookPaymentRecordsApi, useGetApiUsedBookPaymentRecordsApi, usePutApiUsedBookOrdersApi } from '../../API';
+import { usePutApiUsedBookPaymentRecordsApi, useGetApiUsedBookPaymentRecordsApi, usePutApiUsedBookOrdersApi, usePostApiUsedBookBuyerInfomationsApiOrderRecipient } from '../../API';
 
 const LinePay: React.FC = () => {
   const navigate = useNavigate(); // useNavigate在函式組件的主體使用
@@ -17,6 +17,11 @@ const LinePay: React.FC = () => {
   const { mutate: putUsedBookPaymentRecord } = usePutApiUsedBookPaymentRecordsApi();
   function updatePaymentStatus(orderId: string, paymentStatus: boolean) {
     putUsedBookPaymentRecord({ params: { paymentNumber: orderId, status: paymentStatus } });
+  }
+
+  const { mutate: postOrderRecipient } = usePostApiUsedBookBuyerInfomationsApiOrderRecipient();
+  function createOrderRecipient(paymentId: string) {
+    postOrderRecipient({ params: { paymentId: paymentId } })
   }
 
   useEffect(() => {
@@ -76,6 +81,8 @@ const LinePay: React.FC = () => {
         orderIdArray.forEach((orderId) => {
           updateUsedBookOrder(orderId, '已付款');
         });
+        //提交收件人資訊
+        createOrderRecipient(orderId);
       } else {
         console.log('付款失敗');
       }
