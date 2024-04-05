@@ -13,6 +13,7 @@ const MemberCenter: React.FC = () => {
   const [memberInfo, setMemberInfo] = useState<MemberInfoType | null>(null);
   // const [activeTab, setActiveTab] = useState("profile");
 
+  //useEffect為
   useEffect(() => {
     const fetchMemberInfo = async () => {
       const token = localStorage.getItem("token");

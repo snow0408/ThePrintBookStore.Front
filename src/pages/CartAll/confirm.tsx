@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "../assets/css/app.css";
+import "../../assets/css/app.css";
 import { useCartStore, CartState } from "./CountMath";
-import { Order, useGetApiCartsMemberId, useGetApiOrder, usePutApiOrderId } from "../API";
+import {
+  Order,
+  useGetApiCartsMemberId,
+  useGetApiOrder,
+  usePutApiOrderId,
+} from "../../API";
 import { useNavigate } from "react-router-dom";
+import logo from "../../assets/images/logo.png";
+import uc from "../../picture/uc.jpg";
 
 const LinePayPage: React.FC = () => {
   const [transactionId, setTransactionId] = useState<string>("");
@@ -25,14 +32,19 @@ const LinePayPage: React.FC = () => {
       setOrderId(orderIdParam);
     }
     const interval = setInterval(() => {
-      setNaviSeconds(prevSeconds => prevSeconds - 1); // 每秒減少一秒
-    }, 2000); // 1000 毫秒 = 1 秒
+      setNaviSeconds((prevSeconds) => prevSeconds - 1); // 每秒減少一秒
+    }, 10000); // 1000 毫秒 = 1 秒
 
     return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    if (transactionId !== "" && orderId !== "" && isConfirm && orderResponse.data?.data) {
+    if (
+      transactionId !== "" &&
+      orderId !== "" &&
+      isConfirm &&
+      orderResponse.data?.data
+    ) {
       setIsConfirm(false);
       Confirm();
     }
@@ -68,7 +80,7 @@ const LinePayPage: React.FC = () => {
 
         setTimeout(() => {
           navigate("/order"); // 跳轉到付款成功頁面路徑
-        }, 5000);
+        }, 10000);
       } else {
         console.log("付款失敗");
       }
@@ -79,7 +91,7 @@ const LinePayPage: React.FC = () => {
 
   return (
     <div className="page-wraper">
-      <div id="loading-area" className="preloader-wrapper-1">
+      {/* <div id="loading-area" className="preloader-wrapper-1">
         <div className="preloader-inner">
           <div className="preloader-shade"></div>
           <div className="preloader-wrap"></div>
@@ -88,18 +100,24 @@ const LinePayPage: React.FC = () => {
           <div className="preloader-wrap wrap4"></div>
           <div className="preloader-wrap wrap5"></div>
         </div>
-      </div>
+      </div> */}
       <div className="under-construct">
         <div className="inner-box">
           <div className="logo-header logo-dark">
-            <a href="index.html"><img src="assets/picture/logo.png" alt="" /></a>
+            <a href="index.html">
+              <img src={logo} alt="" />
+            </a>
           </div>
           <div className="dz-content">
             <h2 className="dz-title text-primary">付款完成</h2>
-            <p>交易狀態 : 交易已授權<br />畫面將在 {naviSeconds} 秒跳轉...</p>
+            <p>
+              交易狀態 : 交易已授權
+              <br />
+              畫面將在 {naviSeconds} 秒跳轉...
+            </p>
           </div>
         </div>
-        <img src="assets/picture/uc.jpg" className="uc-bg" alt="" />
+        <img src={uc} className="uc-bg" alt="" />
       </div>
     </div>
   );

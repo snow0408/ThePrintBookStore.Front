@@ -1,15 +1,28 @@
-//import React, { useState, useEffect } from 'react';
-import { useEffect } from "react";
-import { CartItemType } from "../App";
-import "../assets/css/app.css";
-import orangeCart from "../picture/orange-cart.png";
+import React, { useState, useEffect } from "react";
+import { CartItemType } from "../../App";
+import "../../assets/css/app.css";
+import { faBook } from "@fortawesome/free-solid-svg-icons";
+import returnIcon from "../../picture/return.png";
+import deliveryIcon from "../../picture/delivery.png";
+import pricingIcon from "../../picture/pricing.png";
+import dealsIcon from "../../picture/deals.png";
+
+import orangeCart from "../../picture/orange-cart.png";
+import backmenu from "../../picture/btn-book.png";
 import { useCartStore, CartState } from "./CountMath";
 import {
   CartDetailsDto,
   useDeleteApiCartsDetailsId,
   usePutApiCartsDetailsId,
-} from "../API";
+  useGetApiCartsDetails,
+} from "../../API";
 import { useNavigate } from "react-router-dom";
+import LoadingMessage from "../../main";
+import b21 from "../../picture/b2-1.png";
+import b22 from "../../picture/b2-2.png";
+import b23 from "../../picture/b2-3.png";
+import b24 from "../../picture/b2-4.png";
+import b25 from "../../picture/b2-5.png";
 
 interface CartProps {
   initialCart: CartDetailsDto[];
@@ -20,6 +33,17 @@ export interface CountQuantity {
   increase: (by: number) => void;
   resetCount: () => void;
 }
+
+const CartPage: React.FC = () => {
+  const memberId = 16;
+  const TestData = useGetApiCartsDetails({ Id: memberId });
+  if (TestData.isLoading) return <LoadingMessage />;
+  return (
+    <div className="container">
+      <CartItem initialCart={TestData.data?.data as CartDetailsDto[]} />
+    </div>
+  );
+};
 
 const CartItem: React.FC<CartProps> = ({ initialCart }) => {
   //const [cart, setCart] = useState<CartItemType[]>(initialCart);
@@ -107,6 +131,10 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
   const clearCart = () => {
     setCart([]);
   };
+
+  const backtoMenu = () => {
+    window.location.href = "/";
+  };
   let totalItems = 0;
 
   if (cart.length > 0) {
@@ -115,6 +143,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
 
   return (
     <div className="cart">
+      <h4 className="widget-title">購物車</h4>
       {cart.length > 0 ? (
         cart.map((item, index) => {
           return index === 0 ? (
@@ -284,50 +313,124 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
           );
         })
       ) : (
-        <div>空的</div>
-      )}
-      {/* <h6 > <button onClick={clearCart} className="clearcart-btn"><i class="fa-regular fa-trash-can">清空購物車</i></button></h6> */}
-      <section className="shipping mb-40">
-        <div className="container">
-          <div className="choose-shipping-mode">
-            <div className="row">
-              <div className="col-xl-6">
-                <div className="shipping-details">
-                  <div className="filter-block"></div>
+        <>
+          <div className="hero-banner-2 bg-lightest-gray pb-40">
+            <div className="container">
+              <div className="banner-2">
+                <div className="banner-images">
+                  <img src={b21} alt="" className="stair-image-1" />
+                  <img src={b22} alt="" className="stair-image-2" />
+                  <img src={b23} alt="" className="stair-image-3" />
+                  <img src={b24} alt="" className="stair-image-4" />
+                  <img src={b25} alt="" className="stair-image-5" />
                 </div>
-              </div>
-              <div className="col-xl-6">
-                <div className="amounts between">
-                  <div className="shipping-charges mb-24">
-                    <h6></h6>
-                  </div>
-
-                  <div className="sub-total mb-24">
-                    <h6>購物車商品總數</h6>
-                    <h6>{totalItems}</h6>
-                  </div>
-
-                  <div className="grand-total mb-24">
-                    <h5>總金額：</h5>
-                    <h5>{total.toFixed(0)}</h5>
-                  </div>
+                <div className="banner-text text-center">
+                  <h1>購物車內尚未有書籍</h1>
+                  <h5 className="dark-gray">快點來購入心儀書籍吧~ </h5>
                   <h6>
                     {" "}
-                    <button onClick={handleCheckout} className="cus-btn">
-                      <span className="icon">
-                        <img src={orangeCart} alt="" />
-                      </span>
-                      去結帳
-                    </button>
+                    <div className="d-flex justify-content-center">
+                      <button
+                        onClick={backtoMenu}
+                        className="cus-btn "
+                        style={{ border: 0 }}
+                      >
+                        <span className="icon">
+                          <img src={backmenu} alt="" />
+                        </span>
+                        返回商城
+                      </button>
+                    </div>
                   </h6>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+
+          <div className="m-40">
+            <div className="container">
+              <div className="benifits bg-lightest-gray">
+                <div className="row">
+                  <div className="col-xl-3 col-sm-6">
+                    <div className="benifits-block mb-32 mb-xl-0">
+                      <img src={returnIcon} alt="" />
+                      <h5>Easy Return</h5>
+                    </div>
+                  </div>
+                  <div className="col-xl-3 col-sm-6">
+                    <div className="benifits-block mb-32 mb-xl-0">
+                      <img src={deliveryIcon} alt="" />
+                      <h5>Free Delivery</h5>
+                    </div>
+                  </div>
+                  <div className="col-xl-3 col-sm-6">
+                    <div className="benifits-block mb-32 mb-sm-0">
+                      <img src={pricingIcon} alt="" />
+                      <h5>Best Price and Offer</h5>
+                    </div>
+                  </div>
+                  <div className="col-xl-3 col-sm-6">
+                    <div className="benifits-block">
+                      <img src={dealsIcon} alt="" />
+                      <h5>Great Daily Deal</h5>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+      {/* <h6 > <button onClick={clearCart} className="clearcart-btn"><i class="fa-regular fa-trash-can">清空購物車</i></button></h6> */}
+      {cart.length > 0 ? (
+        <section className="shipping mb-40">
+          <div className="container">
+            <div className="choose-shipping-mode">
+              <div className="row">
+                <div className="col-xl-6">
+                  <div className="shipping-details">
+                    <div className="filter-block"></div>
+                  </div>
+                </div>
+                <div className="col-xl-6">
+                  <div className="amounts between">
+                    <div className="shipping-charges mb-24">
+                      <h6></h6>
+                    </div>
+
+                    <div className="sub-total mb-24">
+                      <h6>購物車商品總數</h6>
+                      <h6>{totalItems}</h6>
+                    </div>
+
+                    <div className="grand-total mb-24">
+                      <h5>總金額：</h5>
+                      <h5>{total.toFixed(0)}</h5>
+                    </div>
+                    <h6>
+                      {" "}
+                      <button
+                        onClick={handleCheckout}
+                        className="cus-btn"
+                        style={{ border: 0 }}
+                      >
+                        <span className="icon">
+                          <img src={orangeCart} alt="" />
+                        </span>
+                        去結帳
+                      </button>
+                    </h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 };
 
-export default CartItem;
+export default CartPage;

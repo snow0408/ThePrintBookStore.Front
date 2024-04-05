@@ -1,6 +1,6 @@
 // OrderConfirmation.tsx
 import React, { useState, useRef, useEffect } from "react";
-import "../assets/css/app.css";
+import "../../assets/css/app.css";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { useCartStore, CartState } from "./CountMath";
 import { CartItemType } from "../../API";
@@ -12,10 +12,8 @@ import {
   useGetApiOrderMemberId,
   useGetApiOrder,
 } from "../../API";
-import LinePay from "../picture/LinePay.png";
-import Ecpay from "../picture/ECPay.png";
-
-
+import LinePay from "../../picture/LinePay.png";
+import Ecpay from "../../picture/ECPay.png";
 
 // 擴展訂單介面以包含買家資訊
 
@@ -44,7 +42,6 @@ export const Step1: React.FC<CartProps> = ({ initialCart }) => {
 
   useEffect(() => {
     if (data?.data) {
-
       navigate("/list/Step2", { state: { orderId: data?.data } });
     }
   }, [data?.data]);
@@ -106,10 +103,10 @@ export const Step1: React.FC<CartProps> = ({ initialCart }) => {
     const formattedDateTime = `${year}-${month
       .toString()
       .padStart(2, "0")}-${day.toString().padStart(2, "0")}T${hours
-        .toString()
-        .padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds
-          .toString()
-          .padStart(2, "0")}`;
+      .toString()
+      .padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
 
     const formData = new FormData(formRef.current as HTMLFormElement);
     const orderBody: OrdersDto = {
@@ -124,15 +121,14 @@ export const Step1: React.FC<CartProps> = ({ initialCart }) => {
       discountAmount: 0, //折扣 todo
     };
 
-
     if (!phone || !address) {
       alert("請填寫完整的客戶資料");
       return;
     }
 
-
-    await createOrder({ data: { ordersDto: orderBody, orderDetailsDto: cart } });
-
+    await createOrder({
+      data: { ordersDto: orderBody, orderDetailsDto: cart },
+    });
   };
 
   return (
@@ -212,7 +208,6 @@ export const Step2 = () => {
   const { cart } = useCartStore<CartState>((state) => state);
   const location = useLocation();
   const orderId = location.state.orderId;
-
 
   const orderTotalResponse = useGetApiOrder({ orderId: orderId });
 
@@ -362,7 +357,11 @@ export const YourOrder: React.FC = () => {
           <hr />
           <h6>選擇折價券</h6>
           <div className="find-books-input">
-            <select name="coupon" id="coupon" className="search-input dark-gray">
+            <select
+              name="coupon"
+              id="coupon"
+              className="search-input dark-gray"
+            >
               <option value="">選擇折價券</option>
               <option value="coupon1">折價券1</option>
               <option value="coupon2">折價券2</option>

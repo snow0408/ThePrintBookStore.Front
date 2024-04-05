@@ -9,6 +9,18 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import "../../assets/css/app.css";
+import returnIcon from "../../picture/return.png";
+import deliveryIcon from "../../picture/delivery.png";
+import pricingIcon from "../../picture/pricing.png";
+import dealsIcon from "../../picture/deals.png";
+import backmenu from "../../picture/btn-book.png";
+
+import b21 from "../../picture/b2-1.png";
+import b22 from "../../picture/b2-2.png";
+import b23 from "../../picture/b2-3.png";
+import b24 from "../../picture/b2-4.png";
+import b25 from "../../picture/b2-5.png";
 
 interface OrderProp {
   memberId: number;
@@ -70,11 +82,6 @@ const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
 
   const formattedDate = `${year}年${month}月${day}日`;
 
-
-
-  const backtoMenu = () => {
-    window.location.href = "/";
-  };
   return (
     <div className="mb-2">
       {/* 手風琴的開始 */}
@@ -161,15 +168,7 @@ const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
               })
             ) : (
               // 如果沒有訂單詳細資料，顯示提示訊息
-              <div>
-                這個訂單什麼都沒有，資料庫忘了載吼。
-                <h6>
-                  <button onClick={backtoMenu} className="cus-btn">
-                    <span className="icon"></span>
-                    回首頁
-                  </button>
-                </h6>
-              </div>
+              <div>這個訂單什麼都沒有，資料庫忘了載吼。</div>
             )}
           </div>
           <div>
@@ -188,6 +187,9 @@ const OrderPage: React.FC<OrderProp> = ({ memberId }) => {
 
   // 從回應中取得會員訂單資料
   const orderData = orderResponse.data?.data;
+  const backtoMenu = () => {
+    window.location.href = "/";
+  };
 
   return (
     <div className="container">
@@ -200,49 +202,76 @@ const OrderPage: React.FC<OrderProp> = ({ memberId }) => {
               <OneOrder orderId={order.id as number} key={index} />
             ))
           ) : (
-            // 如果沒有訂單資料，顯示提示訊息
-            <div>沒有任何的訂單，哭了，要不要去逛逛呢?</div>
+            <>
+              <div className="hero-banner-2 bg-lightest-gray pb-40">
+                <div className="container">
+                  <div className="banner-2">
+                    <div className="banner-images">
+                      <img src={b21} alt="" className="stair-image-1" />
+                      <img src={b22} alt="" className="stair-image-2" />
+                      <img src={b23} alt="" className="stair-image-3" />
+                      <img src={b24} alt="" className="stair-image-4" />
+                      <img src={b25} alt="" className="stair-image-5" />
+                    </div>
+                    <div className="banner-text text-center">
+                      <h1>訂單內尚未有書籍</h1>
+                      <h5 className="dark-gray">快點來購入心儀書籍吧~ </h5>
+                      <h6>
+                        {" "}
+                        <div className="d-flex justify-content-center">
+                          <button
+                            onClick={backtoMenu}
+                            className="cus-btn "
+                            style={{ border: 0 }}
+                          >
+                            <span className="icon">
+                              <img src={backmenu} alt="" />
+                            </span>
+                            返回商城
+                          </button>
+                        </div>
+                      </h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="m-40">
+                <div className="container">
+                  <div className="benifits bg-lightest-gray">
+                    <div className="row">
+                      <div className="col-xl-3 col-sm-6">
+                        <div className="benifits-block mb-32 mb-xl-0">
+                          <img src={returnIcon} alt="" />
+                          <h5>Easy Return</h5>
+                        </div>
+                      </div>
+                      <div className="col-xl-3 col-sm-6">
+                        <div className="benifits-block mb-32 mb-xl-0">
+                          <img src={deliveryIcon} alt="" />
+                          <h5>Free Delivery</h5>
+                        </div>
+                      </div>
+                      <div className="col-xl-3 col-sm-6">
+                        <div className="benifits-block mb-32 mb-sm-0">
+                          <img src={pricingIcon} alt="" />
+                          <h5>Best Price and Offer</h5>
+                        </div>
+                      </div>
+                      <div className="col-xl-3 col-sm-6">
+                        <div className="benifits-block">
+                          <img src={dealsIcon} alt="" />
+                          <h5>Great Daily Deal</h5>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
-      {/* 右側區域顯示訂單資訊 */}
-      {/* <div className="col-lg-5 mt-5">
-        <form className="shop-form widget">
-          <h4 className="widget-title">訂單資訊</h4>
-          {orderData &&
-            orderData.length > 0 &&
-            orderData.map((order, index) => (
-              <table className="table-bordered check-tbl mb-4" key={index}>
-                <tbody>
-                  <tr>
-                    <td>付款方式</td>
-                    <td className="product-price">信用卡</td>
-                  </tr>
-                  <tr>
-                    <td>下單時間</td>
-                    <td>{order.orderDate}</td>
-                  </tr>
-                  <tr>
-                    <td>運送狀態</td>
-                    <td className="product-price-total">{order.status}</td>
-                  </tr>
-                  <tr>
-                    <td>使用優惠券</td>
-                    <td className="product-price">
-                      {order.discountAmount ? "$0.00" : "未使用"}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>總價格</td>
-                    <td className="product-price-total">
-                      ${order.totalAmount}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            ))}
-        </form>
-      </div> */}
     </div>
   );
 };
