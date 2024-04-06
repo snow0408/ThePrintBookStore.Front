@@ -1,20 +1,20 @@
-import React from 'react';
+import React from "react";
 import {
   CartDetailsDto,
   OrderDetailsDto,
   OrdersDto,
   useGetApiCartsDetails,
   useGetApiOrderMemberId,
-  useGetApiOrdersDetailsId
-} from '../../API';
-import { AxiosError, AxiosResponse } from 'axios';
-import { UseQueryResult } from '@tanstack/react-query';
-import Accordion from '@mui/material/Accordion';
-import AccordionActions from '@mui/material/AccordionActions';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Button from '@mui/material/Button';
+  useGetApiOrdersDetailsId,
+} from "../../API";
+import { AxiosError, AxiosResponse } from "axios";
+import { UseQueryResult } from "@tanstack/react-query";
+import Accordion from "@mui/material/Accordion";
+import AccordionActions from "@mui/material/AccordionActions";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Button from "@mui/material/Button";
 
 interface OrderProp {
   memberId: number;
@@ -22,17 +22,17 @@ interface OrderProp {
 // 定義 SideOrder 組件，接受 orderData 屬性
 const SideOrder: React.FC<{ orderData: OrdersDto[] }> = ({ orderData }) => {
   return (
-    <div className='col-lg-5 mt-5'>
-      <form className='shop-form widget'>
-        <h4 className='widget-title'>訂單資訊</h4>
+    <div className="col-lg-5 mt-5">
+      <form className="shop-form widget">
+        <h4 className="widget-title">訂單資訊</h4>
         {orderData &&
           orderData.length > 0 &&
           orderData.map((order, index) => (
-            <table className='table-bordered check-tbl mb-4' key={index}>
+            <table className="table-bordered check-tbl mb-4" key={index}>
               <tbody>
                 <tr>
                   <td>付款方式</td>
-                  <td className='product-price'>信用卡</td>
+                  <td className="product-price">信用卡</td>
                 </tr>
                 <tr>
                   <td>下單時間</td>
@@ -40,17 +40,17 @@ const SideOrder: React.FC<{ orderData: OrdersDto[] }> = ({ orderData }) => {
                 </tr>
                 <tr>
                   <td>運送狀態</td>
-                  <td className='product-price-total'>{order.status}</td>
+                  <td className="product-price-total">{order.status}</td>
                 </tr>
                 <tr>
                   <td>使用優惠券</td>
-                  <td className='product-price'>
-                    {order.discountAmount ? '$0.00' : '未使用'}
+                  <td className="product-price">
+                    {order.discountAmount ? "$0.00" : "未使用"}
                   </td>
                 </tr>
                 <tr>
                   <td>總價格</td>
-                  <td className='product-price-total'>${order.totalAmount}</td>
+                  <td className="product-price-total">${order.totalAmount}</td>
                 </tr>
               </tbody>
             </table>
@@ -68,28 +68,28 @@ const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
   const orderDetailData = orderDetailResponse.data?.data;
   // console.log(orderId, " ", orderDetailData);
   return (
-    <div className='mb-2'>
+    <div className="mb-2">
       {/* 手風琴的開始 */}
       <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
-          aria-controls='panel1-content'
-          id='panel1-header'
+          aria-controls="panel1-content"
+          id="panel1-header"
         >
           <h5>訂單編號:{orderId}</h5>
         </AccordionSummary>
         {/* 手風琴的詳細內容 */}
         <AccordionDetails>
-          <div className='mb-2'>
+          <div className="mb-2">
             {/* 如果有訂單詳細資料，則顯示訂單內容 */}
             {orderDetailData && orderDetailData.length > 0 ? (
               orderDetailData.map((item, index) => {
                 return index === 0 ? (
                   // 如果是第一個商品，顯示完整的表格標題
-                  <div key={index} className='col-lg-12'>
-                    <div className='widget'>
-                      <table className='table-bordered check-tbl'>
-                        <thead className='text-center'>
+                  <div key={index} className="col-lg-12">
+                    <div className="widget">
+                      <table className="table-bordered check-tbl">
+                        <thead className="text-center">
                           <tr>
                             <th></th>
                             <th>商品名稱</th>
@@ -100,20 +100,20 @@ const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
                         <tbody>
                           {/* 顯示商品詳細資訊 */}
                           <tr>
-                            <td className='product-item-img col-2'>
+                            <td className="product-item-img col-2">
                               {/* 顯示商品圖片 */}
-                              <img src={item.imgSrc} alt={'圖片謀去啊'} />
+                              <img src={item.imgSrc} alt={"圖片謀去啊"} />
                             </td>
                             {/* 顯示商品名稱 */}
-                            <td className='product-item-name col-6'>
+                            <td className="product-item-name col-6">
                               {item.productName}
                             </td>
                             {/* 顯示商品數量 */}
-                            <td className='product-item-name col-2'>
+                            <td className="product-item-name col-2">
                               {item.quantity}
                             </td>
                             {/* 顯示商品單價 */}
-                            <td className='product-price col-2'>
+                            <td className="product-price col-2">
                               ${item.unitPrice}
                             </td>
                           </tr>
@@ -123,21 +123,21 @@ const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
                   </div>
                 ) : (
                   // 如果不是第一個商品，僅顯示商品詳細資訊
-                  <div key={index} className='col-lg-12'>
-                    <div className='widget'>
-                      <table className='table-bordered check-tbl'>
+                  <div key={index} className="col-lg-12">
+                    <div className="widget">
+                      <table className="table-bordered check-tbl">
                         <tbody>
                           <tr>
-                            <td className='product-item-img col-2'>
-                              <img src={item.imgSrc} alt={'圖片謀去啊'} />
+                            <td className="product-item-img col-2">
+                              <img src={item.imgSrc} alt={"圖片謀去啊"} />
                             </td>
-                            <td className='product-item-name  col-6'>
+                            <td className="product-item-name  col-6">
                               {item.productName}
                             </td>
-                            <td className='product-item-name col-2'>
+                            <td className="product-item-name col-2">
                               {item.quantity}
                             </td>
-                            <td className='product-price col-2'>
+                            <td className="product-price col-2">
                               ${item.unitPrice}
                             </td>
                           </tr>
@@ -167,11 +167,11 @@ const OrderPage: React.FC<OrderProp> = ({ memberId }) => {
   const orderData = orderResponse.data?.data;
 
   return (
-    <div className='container'>
-      <div className='row '>
+    <div className="container">
+      <div className="row ">
         {/* 左側區域顯示會員的訂單列表 */}
-        <div className='col-lg-7 widget mt-5'>
-          <h4 className='widget-title'>您的訂單</h4>
+        <div className="col-lg-7 widget mt-5">
+          <h4 className="widget-title">您的訂單</h4>
           {orderData && orderData.length > 0 ? (
             orderData.map((order, index) => (
               <OneOrder orderId={order.id as number} key={index} />
@@ -183,17 +183,17 @@ const OrderPage: React.FC<OrderProp> = ({ memberId }) => {
         </div>
 
         {/* 右側區域顯示訂單資訊 */}
-        <div className='col-lg-5 mt-5'>
-          <form className='shop-form widget'>
-            <h4 className='widget-title'>訂單資訊</h4>
+        <div className="col-lg-5 mt-5">
+          <form className="shop-form widget">
+            <h4 className="widget-title">訂單資訊</h4>
             {orderData &&
               orderData.length > 0 &&
               orderData.map((order, index) => (
-                <table className='table-bordered check-tbl mb-4'>
+                <table className="table-bordered check-tbl mb-4">
                   <tbody>
                     <tr>
                       <td>付款方式</td>
-                      <td className='product-price'>信用卡</td>
+                      <td className="product-price">信用卡</td>
                     </tr>
                     <tr>
                       <td>下單時間</td>
@@ -201,17 +201,17 @@ const OrderPage: React.FC<OrderProp> = ({ memberId }) => {
                     </tr>
                     <tr>
                       <td>運送狀態</td>
-                      <td className='product-price-total'>{order.status}</td>
+                      <td className="product-price-total">{order.status}</td>
                     </tr>
                     <tr>
                       <td>使用優惠券</td>
-                      <td className='product-price'>
-                        {order.discountAmount ? '$0.00' : '未使用'}
+                      <td className="product-price">
+                        {order.discountAmount ? "$0.00" : "未使用"}
                       </td>
                     </tr>
                     <tr>
                       <td>總價格</td>
-                      <td className='product-price-total'>
+                      <td className="product-price-total">
                         ${order.totalAmount}
                       </td>
                     </tr>

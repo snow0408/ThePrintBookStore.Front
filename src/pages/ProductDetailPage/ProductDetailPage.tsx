@@ -14,6 +14,7 @@ import { useCartState } from "../../state";
 import { useQueryClient } from "@tanstack/react-query";
 import Snackbar from "@mui/material/Snackbar";
 import pdDetailsStyle from "./ProductDetailPage.module.css";
+import Alert from "@mui/material/Alert";
 
 const ProductDetail: React.FC = () => {
   const { productId } = useParams();
@@ -24,7 +25,7 @@ const ProductDetail: React.FC = () => {
 
   const queryClient = useQueryClient();
   const productResponse = useGetApiProductsId(Number(productId));
-  const cartDetailResponse = useGetApiCartsDetails({ Id: 2 }); //todo 會員ID
+  const cartDetailResponse = useGetApiCartsDetails({ Id: 2 }); //TODO: 會員ID
   const sameCategoryBookResponse =
     useGetApiProductsGetByDetailsCategoryProductId(Number(productId));
   const { mutate: addCart } = usePostApiCartsDetails();
@@ -46,9 +47,10 @@ const ProductDetail: React.FC = () => {
     if (product === undefined) {
       setOpen(true);
       setBarMessage("找不到商品。");
+      return;
     } else if (cartDetailData === undefined) setCartCount(1);
     else if (
-      cartDetailData.find((item) => item.productId! === product.productId!) ===
+      cartDetailData.find((item) => item.productId === product.productId) ===
       undefined
     )
       setCartCount(1);
@@ -60,13 +62,23 @@ const ProductDetail: React.FC = () => {
       setBarMessage("此商品超過購買數量限制。");
       return;
     }
-    addCart({ params: { memberId: 2, productId: product?.productId } }); //TODO: 會員ID
-    queryClient.invalidateQueries({
-      queryKey: getGetApiCartsDetailsQueryKey({ Id: 2 }), //TODO: 會員ID
-    });
-    queryClient.invalidateQueries({
-      queryKey: getGetApiCartsDetailsQueryKey({ Id: 2 }),
-    });
+
+    addCart(
+      { params: { memberId: 2, productId: product?.productId } }, //TODO: 會員ID
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: getGetApiCartsDetailsQueryKey({ Id: 2 }), //TODO: 會員ID
+          });
+          setOpen(true);
+          setBarMessage("成功加入購物車。");
+        },
+        onError: () => {
+          setOpen(true);
+          setBarMessage("加入購物車失敗。");
+        },
+      }
+    );
   };
   const handleClose = () => {
     setOpen(false);
@@ -79,7 +91,18 @@ const ProductDetail: React.FC = () => {
         open={open}
         onClose={handleClose}
         message={barMesaage}
-      />
+        autoHideDuration={3000}
+        sx={{ zIndex: 9999, mt: 9 }}
+      >
+        <Alert
+          onClose={handleClose}
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {barMesaage}
+        </Alert>
+      </Snackbar>
       <section className="content-inner-1">
         <div className="container">
           <div className="row book-grid-row style-4 m-b60">
@@ -189,7 +212,9 @@ const ProductDetail: React.FC = () => {
                         </li>
                       </ul>
                     </div>
-                    <p className="text-1">{product?.description}</p>
+                    <p className="text-1" style={{ textAlign: "justify" }}>
+                      {product?.description}
+                    </p>
                     <div className="book-footer">
                       <div className="price">
                         <h5>
@@ -326,7 +351,7 @@ const ProductDetail: React.FC = () => {
                           key={book.productId}
                         >
                           <div className="dz-shop-card style-5">
-                            <div className="dz-media">
+                            <div className="dz-media d-flex justify-content-center align-items-center">
                               <Link to={`/ProductDetail/${book.productId}`}>
                                 <img
                                   src={book?.imageUrl![0] ?? noImage}
@@ -341,7 +366,11 @@ const ProductDetail: React.FC = () => {
                             </div>
                             <div className="dz-content">
                               <Link to={`/ProductDetail/${book.productId}`}>
-                                <h5 className="subtitle">{book.productName}</h5>
+                                <h5
+                                  className={`subtitle ${pdDetailsStyle.clampTitle}`}
+                                >
+                                  {book.productName}
+                                </h5>
                               </Link>
 
                               <ul className="dz-tags">
