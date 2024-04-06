@@ -1,9 +1,31 @@
+import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../assets/css/app.css';
 import orangeCart from '../../picture/orange-cart.png';
-import { useGetApiUsedBookCartsApi, UsedBookCartsDto } from '../../API';
+import defaultImage2 from '../../assets/images/no image available.jpg';
+import {
+  useGetApiUsedBookCartsApi,
+  UsedBookCartsDto,
+  useGetApiUsedBooksIdId
+} from '../../API';
+import Preloader from '../../components/Preloader/Preloader';
 //import { usedBookCartState, usedUsedBookCartStore } from '../../state';
+
+const UsedBookPicture: React.FC<{ UsedBookId: number }> = ({ UsedBookId }) => {
+  const UsedBooksResponse = useGetApiUsedBooksIdId(UsedBookId);
+  if (UsedBooksResponse.isLoading) return <Preloader />;
+  return (
+    <img
+      style={{ width: '100px', height: '100px' }}
+      src={
+        `data:image/png;base64,${UsedBooksResponse.data?.data.picture}` ||
+        defaultImage2
+      }
+      alt='book'
+    />
+  );
+};
 
 const UsedBooksCart: React.FC = () => {
   const [memberId, setMemberId] = useState<number>(2);
@@ -130,7 +152,9 @@ const UsedBooksCart: React.FC = () => {
                         <td>
                           <div className='product-detail-box'>
                             <div className='img-block'>
-                              <img src={item.picture!} />
+                              <UsedBookPicture
+                                UsedBookId={item.bookID as number}
+                              />
                             </div>
                             <div>
                               <h5 className='dark-gray'>{item.name}</h5>
