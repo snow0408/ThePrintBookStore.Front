@@ -164,13 +164,13 @@ input.input-style {
 }
 
 /* .upload-area {
-
-  overflow: hidden; 
-
-  width: 480px; 
-  height: 480px; 
-  border-radius: 10px;
-} */
+  
+    overflow: hidden; 
+  
+    width: 480px; 
+    height: 480px; 
+    border-radius: 10px;
+  } */
 
 .block-42c {
   display: flex;

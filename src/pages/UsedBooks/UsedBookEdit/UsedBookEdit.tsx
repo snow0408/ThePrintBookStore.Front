@@ -1,8 +1,13 @@
+import { useParams, useHistory } from 'react-router-dom';
+
 import React, { useState, useEffect } from 'react';
 import {
   usePostApiUsedBooks,
   useGetApiUsedBooksIsbnIsbn,
-  PostApiUsedBooksBody
+  PostApiUsedBooksBody,
+  useGetApiUsedBooksIdId,
+  usePatchApiUsedBooksId,
+  PatchApiUsedBooksIdBody
 } from '../../../API';
 import defaultImage2 from '../../../assets/images/no image available.png';
 import backgroundImage from '../../../assets/images/main-slider/about.jpg';
@@ -20,41 +25,19 @@ import {
   faStar,
   faXmark
 } from '@fortawesome/free-solid-svg-icons';
-import '../UseBookCreate/Creatstyle.css';
+import '../UsedBookEdit/Creatstyle.css';
 import '../../../assets/css/style.css';
 import '../../../assets/css/responsive.css';
 import '../../../assets/css/color.css';
-import Box from '@mui/material/Box';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepButton from '@mui/material/StepButton';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import DiscountCardContainer from '../../../components/DiscountCardContainer/DiscountCardContainer';
 
-const steps = [
-  'Select campaign settings',
-  'Create an ad group',
-  'Create an ad'
-];
+const EditUsedBook: React.FC = () => {
+  const { UsedBookId } = useParams();
 
-const StepContent1 = () => {
-  // 第一步的内容
-  return <div>第一步的内容...</div>;
-};
+  //新增書籍API
+  const addUsedBook = usePatchApiUsedBooksId();
+  const UsedBooksResponse = useGetApiUsedBooksIdId(Number(UsedBookId));
 
-const StepContent2 = () => {
-  // 第二步的内容
-  return <div>第二步的内容...</div>;
-};
-
-const StepContent3 = () => {
-  // 第三步的内容
-  return <div>第三步的内容...</div>;
-};
-
-const AddUsedBook: React.FC = () => {
-  const [isbn, setIsbn] = useState<string>('');
+  const [isbn, setIsbn] = useState<string>();
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>('');
   const [price, setPrice] = useState<string>('');
@@ -63,31 +46,30 @@ const AddUsedBook: React.FC = () => {
   const [selectedOption, setSelectedOption] = useState('');
   const [isSubmit, setIsSubmit] = useState<boolean>(false);
 
-  const navigate = useNavigate();
-
-  //步驟
-  const getStepContent = (stepIndex) => {
-    switch (stepIndex) {
-      case 0:
-        return <StepContent1 />;
-      case 1:
-        return <StepContent2 />;
-      case 2:
-        return <StepContent3 />;
-      default:
-        return <div>未知步骤</div>;
-    }
-  };
-
   //取得書籍API
   const {
     data,
     isLoading: isDataLoading,
     error: dataError,
     refetch
-  } = useGetApiUsedBooksIsbnIsbn(isbn);
-  //新增書籍API
-  const addUsedBook = usePostApiUsedBooks();
+  } = useGetApiUsedBooksIsbnIsbn(isbn as string);
+
+  useEffect(() => {
+    if (UsedBooksResponse.data?.data) {
+      setIsbn(UsedBooksResponse.data?.data.identifier as string);
+      setPrice(UsedBooksResponse.data?.data.price?.toString() as string);
+      setSelectedOption(UsedBooksResponse.data?.data.bookStatus as string);
+      setSelectedcategory(
+        UsedBooksResponse.data?.data.categoryId
+          ? UsedBooksResponse.data?.data.categoryId.toString()
+          : ''
+      );
+      console.log(UsedBooksResponse.data?.data.picture);
+      setPreview(UsedBooksResponse.data?.data.picture || '');
+    }
+  }, [UsedBooksResponse.data?.data]);
+
+  const navigate = useNavigate();
 
   const handleSelectCategoryChange = (event) => {
     setSelectedcategory(event.target.value);
@@ -145,33 +127,18 @@ const AddUsedBook: React.FC = () => {
       //   return;
       // }
 
-      if (isbn === '') {
-        alert('請輸入ISBN');
-        return;
-      }
-      if (selectedOption === '') {
-        alert('請選擇書況');
-        return;
-      }
-      if (image === null) {
-        alert('請上傳書況圖片');
+      if (price === null) {
+        alert('請輸入書籍價格');
         return;
       }
 
-      if (category === null) {
-        alert('請選擇書籍類別');
-        return;
-      }
-
-      const uploadData: PostApiUsedBooksBody = {
-        BookStatus: selectedOption === '其他' ? otherText : selectedOption,
-        ISBN: isbn,
+      const uploadData: PatchApiUsedBooksIdBody = {
         Price: Number(price),
-        ImageFile: image as Blob,
-        CategoryId: Number(category)
+        ImageFile: image as Blob
       };
-      addUsedBook.mutate({ data: uploadData });
+      addUsedBook.mutate({ id: Number(UsedBookId), data: uploadData });
       setIsSubmit(true);
+      navigate(-1);
     }
   };
   function addNewLines(str, maxLineLength) {
@@ -190,6 +157,7 @@ const AddUsedBook: React.FC = () => {
     }
     return addNewLines(usedbook.description, 50);
   }
+
   return (
     <div>
       <div className='grid-line'>
@@ -229,11 +197,12 @@ const AddUsedBook: React.FC = () => {
                     <input
                       name='isbn'
                       style={{ backgroundColor: '#ffff' }}
-                      placeholder='請輸入書籍ISBN碼'
+                      placeholder='ISBN碼'
                       type='text'
                       value={isbn}
                       onChange={(e) => setIsbn(e.target.value)}
                       onBlur={() => refetch()}
+                      disabled
                     />
                     <button
                       name='search'
@@ -313,9 +282,7 @@ const AddUsedBook: React.FC = () => {
                     {data?.data?.title || '書籍名稱'}
                   </h4>
                   <br />
-                  {/* <div className='text'>
-                    Check out Hotels Downtown Seattle. Save Time, and Find it{' '}
-                  </div> */}
+
                   <ul style={{ padding: '0px' }}>
                     <li>
                       <FontAwesomeIcon icon={faUser} />
@@ -403,7 +370,8 @@ const AddUsedBook: React.FC = () => {
                     className='select-style form-control2'
                     name='statue'
                     value={selectedOption}
-                    onChange={handleSelectChange}
+                    disabled
+                    // onChange={handleSelectChange}
                   >
                     <option value=''>請選擇書況</option>
                     <option value='全新'>全新</option>
@@ -428,7 +396,8 @@ const AddUsedBook: React.FC = () => {
                     className='select-style form-control2'
                     name='category'
                     value={category}
-                    onChange={handleSelectCategoryChange}
+                    disabled
+                    // onChange={handleSelectCategoryChange}
                   >
                     <option value=''>請選擇書籍類別</option>
                     <option value='1'>文學小說</option>
@@ -472,7 +441,7 @@ const AddUsedBook: React.FC = () => {
                     type='submit'
                     className='btn-style-one'
                   >
-                    <FontAwesomeIcon icon={faCheck} /> 確認送出
+                    <FontAwesomeIcon icon={faCheck} /> 確認更改
                   </button>
                   &emsp;&emsp;
                   <Link
@@ -485,7 +454,7 @@ const AddUsedBook: React.FC = () => {
                         icon={faXmark}
                         style={{ color: '#ffffff' }}
                       />
-                      &nbsp;取消上架
+                      &nbsp;取消編輯
                     </span>
                   </Link>
                 </div>
@@ -508,7 +477,7 @@ const AddUsedBook: React.FC = () => {
                 <div className='upload-area ' onClick={handleImageUploadClick}>
                   {preview ? (
                     <img
-                      src={preview}
+                      src={`data:image/png;base64,${preview}`}
                       alt='預覽圖片'
                       className='image-preview'
                     />
@@ -546,4 +515,4 @@ const AddUsedBook: React.FC = () => {
   );
 };
 
-export default AddUsedBook;
+export default EditUsedBook;

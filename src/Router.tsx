@@ -27,8 +27,9 @@ import OtherErrorPage from "./pages/ErrorPage/OtherErrorPage.tsx";
 
 import { lazy } from "react";
 
-import OrderPage from "./pages/OrderAll/Orderpage.tsx";
-import Test from "./Test.tsx";
+import OrderPage from './pages/OrderAll/Orderpage.tsx';
+import UsedBookEdit from './pages/UsedBooks/UsedBookEdit/UsedBookEdit.tsx';
+
 
 // #region 懶加載元件匯入
 
@@ -105,53 +106,39 @@ const router = createBrowserRouter(
             <Route path="/usedBook" element={<PublicLayout />}>
                 <Route index element={<HomePage />} />
 
-                <Route
-                    path="/usedBook/add-used-book"
-                    element={<AddUsedBook />}
-                />
-                <Route
-                    path="/usedBook/used-book-list"
-                    element={<UserBooksList userId={2} />}
-                />
-                <Route
-                    path="/usedBook/usedBookAllBook"
-                    element={<UsedBookAllBook />}
-                />
-                <Route
-                    path="/usedBook/:UsedBookId"
-                    element={<UsedBookInside />}
-                />
-                <Route
-                    path="/usedBook/usedBookCart"
-                    element={<UsedBooksCart />}
-                ></Route>
-                <Route
-                    path="/usedBook/checkOut"
-                    element={<UsedBooksCheckOutForm />}
-                >
-                    <Route index element={<CheckOutStep1 />} />
-                    <Route
-                        path="/usedBook/checkOut/Step2"
-                        element={<CheckOutStep2 />}
-                    />
-                </Route>
-                <Route
-                    path="/usedBook/usedBookPayment/linepay"
-                    element={<LinePay />}
-                />
-                <Route
-                    path="/usedBook/UsedBooksOrderConfirmation"
-                    element={<UsedBooksOrderConfirmation />}
-                ></Route>
-                <Route
-                    path="/usedBook/usedBookOrder"
-                    element={<UsedBooksOrder />}
-                ></Route>
-            </Route>
-            <Route path="/test" element={<Test />} />
-            <Route path="*" element={<Error404Page />} />
-        </>
-    )
+        <Route path='/usedBook/add-used-book' element={<AddUsedBook />} />
+        <Route
+          path='/usedBook/used-book-list'
+          element={<UserBooksList userId={2} />}
+        />
+        <Route
+          path='/usedBook/UsedBookEdit/:UsedBookId'
+          element={<UsedBookEdit />}
+        />
+        <Route path='/usedBook/usedBookAllBook' element={<UsedBookAllBook />} />
+        <Route path='/usedBook/:UsedBookId' element={<UsedBookInside />} />
+        <Route
+          path='/usedBook/usedBookCart'
+          element={<UsedBooksCart />}
+        ></Route>
+        <Route path='/usedBook/checkOut' element={<UsedBooksCheckOutForm />}>
+          <Route index element={<CheckOutStep1 />} />
+          <Route path='/usedBook/checkOut/Step2' element={<CheckOutStep2 />} />
+        </Route>
+        <Route path='/usedBook/usedBookPayment/linepay' element={<LinePay />} />
+        <Route
+          path='/usedBook/UsedBooksOrderConfirmation'
+          element={<UsedBooksOrderConfirmation />}
+        ></Route>
+        <Route
+          path='/usedBook/usedBookOrder'
+          element={<UsedBooksOrder />}
+        ></Route>
+      </Route>
+      <Route path='*' element={<Error404Page />} />
+    </>
+  )
+
 );
 
 export default router;

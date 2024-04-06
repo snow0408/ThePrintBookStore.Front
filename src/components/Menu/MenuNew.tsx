@@ -245,12 +245,12 @@ const PhysicalEBookNav: React.FC = () => {
                       <span>關於我們</span>
                     </Link>
                   </li>
-                  <li className='sub-menu-down'>
+                  <li>
                     <Link to='/usedBook/usedBookAllBook'>
-                      &emsp;/&emsp;<span>二手書島</span>
+                      /&emsp;&emsp;<span>二手書島</span>
                     </Link>
-                    <ul className='sub-menu'>
-                      {/* <li>
+                    {/* <ul className='sub-menu'>
+                      <li>
                         <a href='my-profile.html'>My Profile</a>
                       </li>
                       <li>
@@ -276,13 +276,13 @@ const PhysicalEBookNav: React.FC = () => {
                       </li>
                       <li>
                         <a href='error-404.html'>Error 404</a>
-                      </li> */}
-                    </ul>
+                      </li>
+                    </ul> */}
                   </li>
                   &emsp;/&emsp;
-                  <li className='sub-menu-down'>
+                  <li>
                     <Link to='/usedBook/used-book-list'>
-                      &emsp;/&emsp; <span>我的二手書</span>
+                      /&emsp;&emsp; <span>我的二手書</span>
                     </Link>
                     {/* <ul className='sub-menu'>
                       <li>
@@ -321,9 +321,9 @@ const PhysicalEBookNav: React.FC = () => {
                       </li>
                     </ul> */}
                   </li>
-                  <li className='sub-menu-down'>
+                  <li>
                     <Link to='#'>
-                      &emsp;/&emsp;<span>文章</span>
+                      /&emsp;&emsp;<span>文章</span>
                     </Link>
                     <ul className='sub-menu'>
                       <li>
@@ -342,7 +342,7 @@ const PhysicalEBookNav: React.FC = () => {
                   </li>
                   <li>
                     <Link to='#'>
-                      &emsp;/&emsp; <span>聯絡我們</span>
+                      /&emsp; <span>聯絡我們</span>
                     </Link>
                   </li>
                 </ul>
@@ -366,14 +366,14 @@ const PhysicalEBookNav: React.FC = () => {
                       <a
                         className='fab fa-linkedin-in'
                         target='_self'
-                        href='javascript:;'
+                        href=''
                       ></a>
                     </li>
                     <li>
                       <a
                         className='fab fa-instagram'
                         target='_self'
-                        href='javascript:;'
+                        href=''
                       ></a>
                     </li>
                   </ul>

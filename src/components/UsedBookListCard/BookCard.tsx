@@ -90,20 +90,45 @@ const BookCard: React.FC<BookCardProps> = ({ usedbook }) => {
       data: newStatus
     });
   };
+
+  // 限制字數
   function addNewLines(str, maxLineLength) {
     let result = '';
-    while (str.length > maxLineLength) {
-      result += str.substring(0, maxLineLength) + '\n';
-      str = str.substring(maxLineLength);
+    let position = 0; // 當前位置
+
+    while (position < str.length) {
+      let nextBreak = position + maxLineLength; // 下一個斷行點
+      if (nextBreak < str.length) {
+        // 確保不是字符串的結尾
+        // 如果下一個字符是標點符號，則向前移動斷行點
+        while (
+          nextBreak > position &&
+          '，。；、！？,.;!?'.includes(str[nextBreak])
+        )
+          nextBreak--;
+      }
+
+      // 如果調整後的斷行點仍然大於最大行長，則將斷行點設置為最大行長
+      if (nextBreak - position > maxLineLength)
+        nextBreak = position + maxLineLength;
+
+      // 添加文本到結果中
+      result += str.substring(position, nextBreak);
+
+      // 如果不是最後一段，則添加換行符
+      if (nextBreak < str.length) result += '\n';
+
+      // 更新當前位置
+      position = nextBreak;
     }
-    result += str; // 添加剩餘的字符串（如果有）
+
     return result;
   }
 
   function getDescription(usedbook) {
     if (!usedbook.description) return '沒有書籍介紹';
     if (usedbook.description.length > 150) {
-      return addNewLines(usedbook.description.substring(0, 100), 50) + '...';
+      return addNewLines(usedbook.description.substring(0, 100), 43) + '...';
     }
     return addNewLines(usedbook.description, 50);
   }
@@ -158,12 +183,15 @@ const BookCard: React.FC<BookCardProps> = ({ usedbook }) => {
                   </ul>
                 </div>
                 <h3>
-                  {usedbook.title.length > 32
-                    ? `${usedbook.title.substring(0, 32)}...`
+                  {usedbook.title.length > 25
+                    ? `${usedbook.title.substring(0, 25)}...`
                     : usedbook.title}
                 </h3>
 
-                <div className='text-two' style={{ whiteSpace: 'pre-wrap' }}>
+                <div
+                  className='text-two'
+                  style={{ whiteSpace: 'pre-wrap', textAlign: 'justify' }}
+                >
                   {getDescription(usedbook)}
                 </div>
                 <div className='inner-box'>
@@ -179,7 +207,7 @@ const BookCard: React.FC<BookCardProps> = ({ usedbook }) => {
                   </Stack>
 
                   <Link
-                    to='/UsedBook/add-used-book'
+                    to={`/usedBook/UsedBookEdit/${usedbook.id}`}
                     className='btn-style-one'
                     style={{ marginTop: '30px' }}
                   >
