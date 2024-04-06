@@ -6,6 +6,7 @@ import returnIcon from "../../picture/return.png";
 import deliveryIcon from "../../picture/delivery.png";
 import pricingIcon from "../../picture/pricing.png";
 import dealsIcon from "../../picture/deals.png";
+import ProductPictrue from "../OrderAll/ProductPictrue";
 
 import orangeCart from "../../picture/orange-cart.png";
 import backmenu from "../../picture/btn-book.png";
@@ -15,6 +16,8 @@ import {
   useDeleteApiCartsDetailsId,
   usePutApiCartsDetailsId,
   useGetApiCartsDetails,
+  useGetApiProductsId,
+  BookProductDto,
 } from "../../API";
 import { useNavigate } from "react-router-dom";
 import LoadingMessage from "../../main";
@@ -23,9 +26,12 @@ import b22 from "../../picture/b2-2.png";
 import b23 from "../../picture/b2-3.png";
 import b24 from "../../picture/b2-4.png";
 import b25 from "../../picture/b2-5.png";
+import { UseQueryResult, useQueries } from "@tanstack/react-query";
+import axios, { AxiosError } from "axios";
 
 interface CartProps {
   initialCart: CartDetailsDto[];
+  produtDetail: BookProductDto[];
 }
 
 export interface CountQuantity {
@@ -34,23 +40,59 @@ export interface CountQuantity {
   resetCount: () => void;
 }
 
+// 假設這是你從某個地方獲得的 API 調用函數
+async function fetchProductDetails(productId: number): Promise<BookProductDto> {
+  try {
+    const response = await axios.get(
+      `https://localhost:7236/api/Products/${productId}`
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to fetch product details");
+  }
+}
+
+function useProductDetails(cartDetails: CartDetailsDto[] = []) {
+  const results = useQueries({
+    queries: cartDetails.map((item) => ({
+      queryKey: ["productDetails", item.productId],
+      queryFn: () => fetchProductDetails(item.productId!),
+      enabled: !!item.productId,
+    })),
+  }) as UseQueryResult<BookProductDto, AxiosError>[];
+
+  const books: BookProductDto[] = results.map((result) => result.data!);
+
+  return books;
+}
+
 const CartPage: React.FC = () => {
-  const memberId = 16;
+  //todo會員Id
+  const memberId = 2;
   const TestData = useGetApiCartsDetails({ Id: memberId });
+  const ProductsDataArray = useProductDetails(
+    TestData.data?.data as CartDetailsDto[]
+  );
+
   if (TestData.isLoading) return <LoadingMessage />;
+  if (TestData.data?.data && ProductsDataArray.length === 0)
+    return <LoadingMessage />;
   return (
     <div className="container">
-      <CartItem initialCart={TestData.data?.data as CartDetailsDto[]} />
+      <CartItem
+        initialCart={TestData.data?.data as CartDetailsDto[]}
+        produtDetail={ProductsDataArray}
+      />
     </div>
   );
 };
 
-const CartItem: React.FC<CartProps> = ({ initialCart }) => {
+const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
   //const [cart, setCart] = useState<CartItemType[]>(initialCart);
   const navigate = useNavigate();
-  const { cart, setCart, total, calculateTotal } = useCartStore<CartState>(
-    (state) => state
-  );
+  const { cart, setCart, total, calculateTotal, realPrice, setRealPrice } =
+    useCartStore<CartState>((state) => state);
+  console.log("pdd", realPrice);
   const { mutate: updateDetail } = usePutApiCartsDetailsId();
   const { mutate: deleteDetail } = useDeleteApiCartsDetailsId();
   const handleCheckout = () => {
@@ -58,15 +100,17 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
   };
 
   useEffect(() => {
-    if (initialCart) {
-      // 在這裡處理獲取的資料，例如設定初始購物車內容
+    if (initialCart && produtDetail && produtDetail.every((item) => item)) {
+      setRealPrice(produtDetail);
       setCart(initialCart || []);
       calculateTotal();
     }
-  }, []);
+  }, [produtDetail]);
 
   const removeFromCart = (itemId: number) => {
     if (cart.length > 0) {
+      window.confirm("是否要刪除此商品？");
+      deleteDetail({ id: itemId });
       setCart(cart.filter((item) => item.id !== itemId));
     }
     calculateTotal();
@@ -110,6 +154,9 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
         if (shouldDelete) {
           deleteDetail({ id: itemId });
           setCart(cart.filter((item) => item.id !== itemId));
+          setRealPrice(
+            realPrice.filter((item) => item.productId !== targetItem.productId)
+          );
         }
       } else {
         setCart(
@@ -162,8 +209,10 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
                     <tr className="col-md-12 mb-5">
                       <td className="pd">
                         <div className="product-detail-box">
-                          <div className="img-block">
-                            <img src={item.imgSrc} alt={item.productName} />
+                          <div className="img-block product-item-img col-2">
+                            <ProductPictrue
+                              productId={item.productId as number}
+                            />
                           </div>
                           <div>
                             <h5 className="dark-gray">{item.productName}</h5>
@@ -171,7 +220,21 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
                         </div>
                       </td>
                       <td>
-                        <h5 className="dark-gray">${item.unitPrice}</h5>
+                        <h5 className="dark-gray">
+                          $
+                          {Math.ceil(
+                            produtDetail.find(
+                              (pditem) =>
+                                (pditem?.productId as number) ===
+                                (item?.productId as number)
+                            ).realPrice as number
+                          ) ||
+                            produtDetail.find(
+                              (pditem) =>
+                                (pditem?.productId as number) ===
+                                (item?.productId as number)
+                            ).price}
+                        </h5>
                       </td>
                       <td>
                         <div className="quantity quantity-wrap">
@@ -220,11 +283,30 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
                         </div>
                       </td>
                       <td>
-                        <h5>${(item.unitPrice * item.quantity).toFixed(0)}</h5>
+                        <h5>
+                          $
+                          {(
+                            Math.ceil(
+                              produtDetail.find(
+                                (pditem) =>
+                                  (pditem?.productId as number) ===
+                                  (item?.productId as number)
+                              ).realPrice
+                            ) * item.quantity ||
+                            produtDetail.find(
+                              (pditem) =>
+                                (pditem?.productId as number) ===
+                                (item?.productId as number)
+                            ).price * item.quantity
+                          ).toFixed(0)}
+                        </h5>
                       </td>
                       <td>
                         <a href="#">
-                          <i onClick={() => removeFromCart(item.id)}>刪除</i>
+                          <i
+                            className="fa-solid fa-trash-can"
+                            onClick={() => deleteDetail(item.id)}
+                          ></i>
                         </a>
                       </td>
                     </tr>
@@ -240,8 +322,10 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
                     <tr className="col-md-12 mb-5">
                       <td className="pd">
                         <div className="product-detail-box">
-                          <div className="img-block">
-                            <img src={item.imgSrc} alt={item.productName} />
+                          <div className="img-block product-item-img col-2">
+                            <ProductPictrue
+                              productId={item.productId as number}
+                            />
                           </div>
                           <div>
                             <h5 className="dark-gray">{item.productName}</h5>
@@ -249,7 +333,20 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
                         </div>
                       </td>
                       <td>
-                        <h5 className="dark-gray">${item.unitPrice}</h5>
+                        <h5 className="dark-gray">
+                          {Math.ceil(
+                            produtDetail.find(
+                              (pditem) =>
+                                (pditem?.productId as number) ===
+                                (item?.productId as number)
+                            ).realPrice as number
+                          ) ||
+                            produtDetail.find(
+                              (pditem) =>
+                                (pditem?.productId as number) ===
+                                (item?.productId as number)
+                            ).price}
+                        </h5>
                       </td>
                       <td>
                         <div className="quantity quantity-wrap">
@@ -298,11 +395,30 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
                         </div>
                       </td>
                       <td>
-                        <h5>${(item.unitPrice * item.quantity).toFixed(0)}</h5>
+                        <h5>
+                          $
+                          {(
+                            Math.ceil(
+                              produtDetail.find(
+                                (pditem) =>
+                                  (pditem?.productId as number) ===
+                                  (item?.productId as number)
+                              ).realPrice
+                            ) * item.quantity ||
+                            produtDetail.find(
+                              (pditem) =>
+                                (pditem?.productId as number) ===
+                                (item?.productId as number)
+                            ).price * item.quantity
+                          ).toFixed(0)}
+                        </h5>
                       </td>
                       <td>
                         <a href="#">
-                          <i onClick={() => removeFromCart(item.id)}>刪除</i>
+                          <i
+                            className="fa-solid fa-trash-can"
+                            onClick={() => deleteDetail(item.id)}
+                          ></i>
                         </a>
                       </td>
                     </tr>
@@ -314,7 +430,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart }) => {
         })
       ) : (
         <>
-          <div className="hero-banner-2 bg-lightest-gray pb-40">
+          <div className="hero-banner-2 pb-40">
             <div className="container">
               <div className="banner-2">
                 <div className="banner-images">
