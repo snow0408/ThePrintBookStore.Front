@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../assets/css/app.css';
-import orangeCart from '../../picture/orange-cart.png';
+import orangeCart from '../../assets/picture/orange-cart2.png';
 import defaultImage2 from '../../assets/images/no image available.jpg';
 import {
   useGetApiUsedBookCartsApi,
@@ -11,6 +11,9 @@ import {
 } from '../../API';
 import Preloader from '../../components/Preloader/Preloader';
 //import { usedBookCartState, usedUsedBookCartStore } from '../../state';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import './UsedBooksOrderPage.css';
 
 const UsedBookPicture: React.FC<{ UsedBookId: number }> = ({ UsedBookId }) => {
   const UsedBooksResponse = useGetApiUsedBooksIdId(UsedBookId);
@@ -122,16 +125,79 @@ const UsedBooksCart: React.FC = () => {
           <div className='col-lg-12'>
             <table className='cart-table mb-24'>
               <thead>
-                <tr>
-                  <th style={{ paddingLeft: '23px' }}>
+                <tr
+                  style={{
+                    backgroundColor: '#c19e7d',
+                    borderRadius: '10px'
+                  }}
+                >
+                  <th
+                    className='col-1 '
+                    style={{
+                      paddingLeft: '25px',
+                      color: '#ffff',
+                      fontWeight: 'bold',
+                      paddingTop: '20px'
+                    }}
+                  >
                     <input type='checkbox' onChange={handleChosedAllItems} />{' '}
                     全選
                   </th>
-                  <th style={{ textAlign: 'center' }}>商品</th>
-                  <th>單價</th>
-                  <th>書況</th>
-                  <th>賣家</th>
-                  <th></th>
+                  <th
+                    className='col-5'
+                    style={{
+                      textAlign: 'center',
+                      color: '#ffff',
+                      fontWeight: 'bold',
+                      paddingTop: '20px'
+                    }}
+                  >
+                    商品
+                  </th>
+                  <th
+                    className='col-2'
+                    style={{
+                      paddingLeft: '25px',
+                      color: '#ffff',
+                      fontWeight: 'bold',
+                      paddingTop: '20px'
+                    }}
+                  >
+                    單價
+                  </th>
+                  <th
+                    className='col-2'
+                    style={{
+                      paddingLeft: '25px',
+                      color: '#ffff',
+                      fontWeight: 'bold',
+                      paddingTop: '20px'
+                    }}
+                  >
+                    書況
+                  </th>
+                  <th
+                    className='col-1'
+                    style={{
+                      paddingLeft: '20px',
+                      color: '#ffff',
+                      fontWeight: 'bold',
+                      paddingTop: '20px'
+                    }}
+                  >
+                    賣家
+                  </th>
+                  <th
+                    className='col-1'
+                    style={{
+                      paddingLeft: '21px',
+                      color: '#ffff',
+                      fontWeight: 'bold',
+                      paddingTop: '20px'
+                    }}
+                  >
+                    刪除
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -157,7 +223,12 @@ const UsedBooksCart: React.FC = () => {
                               />
                             </div>
                             <div>
-                              <h5 className='dark-gray'>{item.name}</h5>
+                              <h5
+                                className='dark-gray'
+                                style={{ textAlign: 'left' }}
+                              >
+                                {item.name}
+                              </h5>
                             </div>
                           </div>
                         </td>
@@ -169,19 +240,28 @@ const UsedBooksCart: React.FC = () => {
                           </h6>
                         </td>
                         <td>
-                          <h6 className='dark-gray'>{item.bookStatus}</h6>
+                          <h6
+                            className='dark-gray'
+                            style={{ textAlign: 'center' }}
+                          >
+                            {item.bookStatus}
+                          </h6>
                         </td>
                         <td>
-                          <h6 className='dark-gray'>{item.sellerName}</h6>
+                          <h6
+                            className='dark-gray'
+                            style={{ textAlign: 'left' }}
+                          >
+                            {item.sellerName}
+                          </h6>
                         </td>
-                        <td>
-                          <a href='#'>
-                            <i
-                              className='fal fa-times'
-                              onClick={() => removeFromCart(item.id!)}
-                            >
-                              刪除
-                            </i>
+                        <td style={{ textAlign: 'center' }}>
+                          <a
+                            href='#'
+                            className='deleteicon'
+                            onClick={() => removeFromCart(item.id!)}
+                          >
+                            <FontAwesomeIcon icon={faTrash} />
                           </a>
                         </td>
                       </tr>
@@ -204,11 +284,11 @@ const UsedBooksCart: React.FC = () => {
         <div className='container'>
           <div className='choose-shipping-mode'>
             <div className='row'>
-              <div className='col-xl-6'>
+              <div className='col-xl-4'>
                 <div className='shipping-details'>
                   <div className='filter-block'>
                     <div className='title mb-32'>
-                      <h4>Choose shipping mode:</h4>
+                      <h4>Choose shipping mode</h4>
                     </div>
                     <ul className='unstyled list'>
                       <li className='cart-list'>
@@ -228,8 +308,7 @@ const UsedBooksCart: React.FC = () => {
                           </label>
                         </div>
                       </li>
-                      <br />
-                      <br />
+
                       <li className='cart-list'>
                         <div className='filter-checkbox'>
                           <input
@@ -251,31 +330,44 @@ const UsedBooksCart: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <div className='col-xl-6'>
-                <div className='amounts'>
-                  <div className='sub-total mb-24 justify-content-end'>
-                    <h5>商品數量：</h5>
-                    <h5>{totalItems}</h5>
+              <div className='col-xl-4 '>
+                <div className=''>
+                  <h4>Total</h4>
+                  <div className='sub-total ' style={{ paddingTop: '35px' }}>
+                    <h5>商品數量：{totalItems}</h5>
                   </div>
-                  <div className='grand-total mb-24 justify-content-end'>
-                    <h5>商品總金額：</h5>
-                    <h5>{total.toFixed(0)}</h5>
+                  <div className='grand-total' style={{ paddingTop: '5px' }}>
+                    <h5>商品總金額：{total.toFixed(0)}</h5>
                   </div>
-                  <h6>
-                    <button onClick={handleCheckout} className='cus-btn'>
-                      <span className='icon'>
-                        <img src={orangeCart} alt='' />
-                      </span>
-                      去結帳
-                    </button>
-                  </h6>
                 </div>
+              </div>
+              <div className='col-xl-4 row'>
+                <div className='col  justify-content-end'>
+                  <button
+                    className='button-fade'
+                    style={{ marginTop: '35px' }}
+                    onClick={clearCart}
+                  >
+                    清空購物車
+                  </button>
+                </div>
+                <h6 className='col  justify-content-end'>
+                  <button
+                    onClick={handleCheckout}
+                    className='cus-btn2'
+                    style={{ marginTop: '35px' }}
+                  >
+                    <span className='icon'>
+                      <img src={orangeCart} alt='' />
+                    </span>
+                    去結帳
+                  </button>
+                </h6>
               </div>
             </div>
           </div>
         </div>
       </section>
-      <button onClick={clearCart}>清空購物車</button>
     </div>
   );
 };
