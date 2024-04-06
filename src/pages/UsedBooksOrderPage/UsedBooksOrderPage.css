@@ -81,3 +81,18 @@
     8px 6px 6px 0px rgba(0, 0, 0, 0.02), 14px 11px 7px 0px rgba(0, 0, 0, 0.01),
     22px 17px 8px 0px rgba(0, 0, 0, 0);
 }
+
+.img-block2 {
+  width: 100px; /* 定義正方形的寬度 */
+  height: 100px; /* 定義正方形的高度 */
+  overflow: hidden; /* 隱藏溢出的內容 */
+  display: flex; /* 使用 flexbox 布局 */
+  justify-content: center; /* 水平置中 */
+  align-items: center; /* 垂直置中 */
+}
+
+.img-block2 img {
+  object-fit: cover; /* 保持圖片的比例，同時填滿元素的整個內容框 */
+  min-width: 100%; /* 確保圖片至少與區塊同寬 */
+  min-height: 100%; /* 確保圖片至少與區塊同高 */
+}
