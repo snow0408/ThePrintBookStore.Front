@@ -29,6 +29,8 @@ import '../UsedBookEdit/Creatstyle.css';
 import '../../../assets/css/style.css';
 import '../../../assets/css/responsive.css';
 import '../../../assets/css/color.css';
+import Preloader from '../../../components/Preloader/Preloader';
+import { red } from '@mui/material/colors';
 
 const EditUsedBook: React.FC = () => {
   const { UsedBookId } = useParams();
@@ -64,8 +66,8 @@ const EditUsedBook: React.FC = () => {
           ? UsedBooksResponse.data?.data.categoryId.toString()
           : ''
       );
-      console.log(UsedBooksResponse.data?.data.picture);
-      setPreview(UsedBooksResponse.data?.data.picture || '');
+
+      setPreview(UsedBooksResponse.data?.data.picture as string);
     }
   }, [UsedBooksResponse.data?.data]);
 
@@ -84,19 +86,6 @@ const EditUsedBook: React.FC = () => {
     setOtherText(event.target.value);
   };
 
-  //圖片處理
-  useEffect(() => {
-    if (image) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreview(reader.result as string);
-      };
-      reader.readAsDataURL(image);
-    } else {
-      setPreview('');
-    }
-  }, [image]);
-
   useEffect(() => {
     if (addUsedBook.data?.data) {
       if (isSubmit) {
@@ -110,6 +99,12 @@ const EditUsedBook: React.FC = () => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setImage(e.target.files[0]);
+      //e.target.files[0]是一個File物件，可以直接轉成base64
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPreview(reader.result?.toString().split(',')[1] as string);
+      };
+      reader.readAsDataURL(e.target.files[0]);
     }
   };
 
@@ -157,7 +152,7 @@ const EditUsedBook: React.FC = () => {
     }
     return addNewLines(usedbook.description, 50);
   }
-
+  if (UsedBooksResponse.isLoading) return <Preloader />;
   return (
     <div>
       <div className='grid-line'>
@@ -475,7 +470,7 @@ const EditUsedBook: React.FC = () => {
                 }}
               >
                 <div className='upload-area ' onClick={handleImageUploadClick}>
-                  {preview ? (
+                  {preview.length >= 1000 ? (
                     <img
                       src={`data:image/png;base64,${preview}`}
                       alt='預覽圖片'

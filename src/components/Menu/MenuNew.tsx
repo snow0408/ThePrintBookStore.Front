@@ -1,5 +1,5 @@
 //React
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 //React-Router
 import { Link } from 'react-router-dom';
 // Material-UI
@@ -16,10 +16,17 @@ import { Dropdown } from 'react-bootstrap';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 import '../Menu/nav.css';
 import MainHeader from '../MainHeader/MainHeader';
+import { useGetApiUsedBookCartsApi, UsedBookCartsDto } from '../../API';
 
 const PhysicalEBookNav: React.FC = () => {
+  const memberId = 2;
+  const cartResponse = useGetApiUsedBookCartsApi({ memberId: memberId });
   const [bookSearch, setBookSearch] = useState<number>(10);
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [cart, setCart] = useState<UsedBookCartsDto[]>([]);
+  useEffect(() => {
+    setCart(cartResponse.data?.data as UsedBookCartsDto[]);
+  }, [cartResponse.data?.data]);
 
   // 定義切換 dropdown 顯示/隱藏的函數
   const toggleDropdown = () => {
@@ -114,10 +121,10 @@ const PhysicalEBookNav: React.FC = () => {
                     </a>
                   </li>
                   <li className='nav-item'>
-                    <button
+                    <Link
+                      to='/usedBook/usedBookCart'
                       type='button'
                       className='nav-link box cart-btn'
-                      onClick={toggleDropdown}
                     >
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
@@ -129,99 +136,29 @@ const PhysicalEBookNav: React.FC = () => {
                         <path d='M0 0h24v24H0V0z' fill='none'></path>
                         <path d='M15.55 13c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.37-.66-.11-1.48-.87-1.48H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.45zM6.16 6h12.15l-2.76 5H8.53L6.16 6zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z'></path>
                       </svg>
-                      <span className='badge'>5</span>
-                    </button>
+                      <span className='badge'>
+                        {cartResponse.data?.data.length}
+                      </span>
+                    </Link>
                     {/* {dropdownVisible && ( */}
 
-                    <ul
+                    {/* <ul
                       className={` dropdown-menu show cart-list ${
                         dropdownVisible ? 'open' : 'close'
                       }`}
                     >
-                      {/* <li className='cart-item'>
-                        <div className='media'>
-                          <div className='media-left'>
-                            <a href='books-detail.html'>
-                              <img
-                                alt=''
-                                className='media-object'
-                                src='assets/picture/pic1.jpg'
-                              />
-                            </a>
-                          </div>
-                          <div className='media-body'>
-                            <h6 className='dz-title'>
-                              <a href='#' className='media-heading'>
-                                Real Life
-                              </a>
-                            </h6>
-                            <span className='dz-price'>$28.00</span>
-                            <span className='item-close'>&times;</span>
-                          </div>
-                        </div>
-                      </li>
-                      <li className='cart-item'>
-                        <div className='media'>
-                          <div className='media-left'>
-                            <a href='#'>
-                              <img
-                                alt=''
-                                className='media-object'
-                                src='assets/picture/pic2.jpg'
-                              />
-                            </a>
-                          </div>
-                          <div className='media-body'>
-                            <h6 className='dz-title'>
-                              <a href='#' className='media-heading'>
-                                Home
-                              </a>
-                            </h6>
-                            <span className='dz-price'>$28.00</span>
-                            <span className='item-close'>&times;</span>
-                          </div>
-                        </div>
-                      </li>
-                      <li className='cart-item'>
-                        <div className='media'>
-                          <div className='media-left'>
-                            <a href='#'>
-                              <img
-                                alt=''
-                                className='media-object'
-                                src='assets/picture/pic3.jpg'
-                              />
-                            </a>
-                          </div>
-                          <div className='media-body'>
-                            <h6 className='dz-title'>
-                              <a href='#' className='media-heading'>
-                                Such a fun age
-                              </a>
-                            </h6>
-                            <span className='dz-price'>$28.00</span>
-                            <span className='item-close'>&times;</span>
-                          </div>
-                        </div>
-                      </li> */}
-                      {/* <li className='cart-item text-center'>
-                        <h6 className='text-secondary'>Totle = $500</h6>
-                      </li> */}
-                      <li className='text-center d-flex'>
+                       <li className='text-center d-flex'>
                         <Link
                           to='/usedBook/usedBookCart'
                           className='btn btn-sm btn-primary me-2 btnhover w-100'
                         >
                           View Cart
                         </Link>
-                        <a
-                          href='#'
-                          className='btn btn-sm btn-outline-primary btnhover w-100'
-                        >
-                          Checkout
-                        </a>
+                        
                       </li>
-                    </ul>
+                     
+                     
+                    </ul> */}
 
                     {/* )} */}
                   </li>

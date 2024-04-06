@@ -19,14 +19,15 @@ const UsedBookPicture: React.FC<{ UsedBookId: number }> = ({ UsedBookId }) => {
   const UsedBooksResponse = useGetApiUsedBooksIdId(UsedBookId);
   if (UsedBooksResponse.isLoading) return <Preloader />;
   return (
-    <img
-      style={{ width: '100px', height: '100px' }}
-      src={
-        `data:image/png;base64,${UsedBooksResponse.data?.data.picture}` ||
-        defaultImage2
-      }
-      alt='book'
-    />
+    <div className='img-block2'>
+      <img
+        src={
+          `data:image/png;base64,${UsedBooksResponse.data?.data.picture}` ||
+          defaultImage2
+        }
+        alt='book'
+      />
+    </div>
   );
 };
 
