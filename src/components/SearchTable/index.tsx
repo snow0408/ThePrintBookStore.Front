@@ -1,10 +1,10 @@
 //react
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef, useCallback } from "react";
 
 //fontAwesome
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import { faMinus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faMinus } from "@fortawesome/free-solid-svg-icons";
 //mui
 import {
   Slider,
@@ -12,17 +12,17 @@ import {
   Select,
   InputLabel,
   MenuItem,
-  FormControl
-} from '@mui/material';
-import { GetApiProductsParams, useGetApiProducts } from '../../API';
+  FormControl,
+} from "@mui/material";
+import { GetApiProductsParams, useGetApiProducts } from "../../API";
 
 //state
 import {
   useDataState,
   searchDataState,
   useSubmitDataState,
-  submitDataState
-} from '../../state';
+  submitDataState,
+} from "../../state";
 
 const SearchTable: React.FC = () => {
   const [value, setValue] = useState<number[]>([10, 10000]);
@@ -44,31 +44,35 @@ const SearchTable: React.FC = () => {
     if (productData.data?.data) setSearchData(productData.data?.data);
   }, [productData.data?.data]);
 
+  useEffect(() => {
+    handleSubmit(event as unknown as React.FormEvent<HTMLFormElement>);
+  }, [detailsCategory]);
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // 阻止表單的默認提交行為
 
     // 模擬表單數據的收集
     const formData = new FormData(formRef.current as HTMLFormElement);
-    formData.append('productDetailsCategoryId', detailsCategory.toString());
+    formData.append("productDetailsCategoryId", detailsCategory.toString());
     // 這裡可以替換為發送數據到後端的代碼
     const apiParams: GetApiProductsParams = {
       // Keyword: formData.get("keyword")?.toString() || undefined,
       // BookSearch: formData.get("bookSearch")
       //     ? Number(formData.get("bookSearch"))
       //     : 10,
-      PhysicalBook: formData.get('PhysicalBook') ? 'on' : 'no',
-      EBook: formData.get('EBook') ? 'on' : 'no',
-      PriceRangeStart: formData.get('PriceRangeStart')
-        ? Number(formData.get('PriceRangeStart'))
+      PhysicalBook: formData.get("PhysicalBook") ? "on" : "no",
+      EBook: formData.get("EBook") ? "on" : "no",
+      PriceRangeStart: formData.get("PriceRangeStart")
+        ? Number(formData.get("PriceRangeStart"))
         : 0,
-      PriceRangeEnd: formData.get('PriceRangeEnd')
-        ? Number(formData.get('PriceRangeEnd'))
+      PriceRangeEnd: formData.get("PriceRangeEnd")
+        ? Number(formData.get("PriceRangeEnd"))
         : 10000,
-      ProductDetailsCategoryId: formData.get('productDetailsCategoryId')
-        ? Number(formData.get('productDetailsCategoryId'))
+      ProductDetailsCategoryId: formData.get("productDetailsCategoryId")
+        ? Number(formData.get("productDetailsCategoryId"))
         : 0,
-      Page: formData.get('page') ? Number(formData.get('page')) : 1,
-      pageSize: formData.get('pageSize') ? Number(formData.get('pageSize')) : 9
+      Page: formData.get("page") ? Number(formData.get("page")) : 1,
+      pageSize: formData.get("pageSize") ? Number(formData.get("pageSize")) : 9,
     };
     //console.log(apiParams);
     const newSubmitData = { ...submitData, ...apiParams };
@@ -100,14 +104,14 @@ const SearchTable: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const newValue = [...value];
-    newValue[0] = event.target.value === '' ? 0 : Number(event.target.value);
+    newValue[0] = event.target.value === "" ? 0 : Number(event.target.value);
     setValue(newValue);
   };
   const handlePrice2InputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const newValue = [...value];
-    newValue[1] = event.target.value === '' ? 0 : Number(event.target.value);
+    newValue[1] = event.target.value === "" ? 0 : Number(event.target.value);
     setValue(newValue);
   };
   const handlePrice1Blur = () => {
@@ -148,7 +152,7 @@ const SearchTable: React.FC = () => {
     (event: MouseEvent) => {
       // 執行需要的操作
       handleSubmit(event as unknown as React.FormEvent<HTMLFormElement>);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener("mouseup", handleMouseUp);
     },
     [submitData, setSubmitData]
   );
@@ -156,104 +160,53 @@ const SearchTable: React.FC = () => {
   // 定義 handleMouseDown
   const handleMouseDown = useCallback(
     (event: React.MouseEvent<HTMLDivElement>) => {
-      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener("mouseup", handleMouseUp);
     },
     [handleMouseUp, submitData, setSubmitData]
   ); // 這裡把 handleMouseUp 作為依賴傳入
 
   return (
-    <div className='sidebar'>
-      <div className='sidebar mb-48'>
-        <div className='sidebar-block'>
-          <div className='filters'>
+    <div className="sidebar">
+      <div className="sidebar mb-48">
+        <div className="sidebar-block">
+          <div className="filters">
             <form ref={formRef} onSubmit={handleSubmit}>
-              {/* <div className="filter-block">
-                                <h4 className="mb-24">搜尋</h4>
-                                <FormControl
-                                    fullWidth
-                                    className="mb-4"
-                                    sx={{
-                                        "& .MuiInputLabel-outlined.Mui-focused":
-                                            {
-                                                color: "#EAA451", // 聚焦時InputLabel的文字顏色
-                                            },
-                                        "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                            {
-                                                borderColor: "#EAA451", // 焦點時Select外框顏色
-                                            },
-                                    }}
-                                >
-                                    <InputLabel id="demo-simple-select-label">
-                                        查詢條件
-                                    </InputLabel>
-                                    <Select
-                                        labelId="demo-simple-select-label"
-                                        id="demo-simple-select"
-                                        value={bookSearch}
-                                        name="bookSearch"
-                                        label="查詢條件"
-                                        onChange={(event) => {
-                                            setBookSearch(
-                                                event.target.value as number
-                                            );
-                                        }}
-                                    >
-                                        <MenuItem value={10}>全部</MenuItem>
-                                        <MenuItem value={20}>書名</MenuItem>
-                                        <MenuItem value={30}>作者</MenuItem>
-                                        <MenuItem value={40}>出版商</MenuItem>
-                                    </Select>
-                                </FormControl>
-                                <div className="form-group has-search">
-                                    <input
-                                        type="text"
-                                        name="keyword"
-                                        className="form-control"
-                                        placeholder="書籍搜尋"
-                                    />
-                                    <button type="submit" className="b-unstyle">
-                                        <i>
-                                            <FontAwesomeIcon icon={faSearch} />
-                                        </i>
-                                    </button>
-                                </div>
-                            </div> */}
               <hr />
-              <div className='filter-block'>
-                <div className='title mb-32'>
+              <div className="filter-block">
+                <div className="title mb-32">
                   <h5>實體書/電子書</h5>
                   <i>
                     <FontAwesomeIcon icon={faMinus} />
                   </i>
                 </div>
-                <ul className='unstyled list'>
-                  <li className='mb-16'>
-                    <div className='filter-checkbox'>
+                <ul className="unstyled list">
+                  <li className="mb-16">
+                    <div className="filter-checkbox">
                       <input
-                        type='checkbox'
-                        name='PhysicalBook'
-                        id='PhysicalBook'
+                        type="checkbox"
+                        name="PhysicalBook"
+                        id="PhysicalBook"
                         checked={isPhysicalBookChecked}
                         onChange={handlePhysicalBookChange}
                       />
                       <label
-                        htmlFor='PhysicalBook'
-                        style={{ userSelect: 'none' }}
+                        htmlFor="PhysicalBook"
+                        style={{ userSelect: "none" }}
                       >
                         實體書
                       </label>
                     </div>
                   </li>
                   <li>
-                    <div className='filter-checkbox'>
+                    <div className="filter-checkbox">
                       <input
-                        type='checkbox'
-                        name='EBook'
-                        id='EBook'
+                        type="checkbox"
+                        name="EBook"
+                        id="EBook"
                         checked={isEBookChecked}
                         onChange={handleEBookChange}
                       />
-                      <label htmlFor='EBook' style={{ userSelect: 'none' }}>
+                      <label htmlFor="EBook" style={{ userSelect: "none" }}>
                         電子書
                       </label>
                     </div>
@@ -261,60 +214,60 @@ const SearchTable: React.FC = () => {
                 </ul>
               </div>
               <hr />
-              <div className='filter-block'>
-                <div className='title mb-32'>
+              <div className="filter-block">
+                <div className="title mb-32">
                   <h5>價格範圍</h5>
                   <i>
                     <FontAwesomeIcon icon={faMinus} />
                   </i>
                 </div>
-                <div className='slider-track'>
-                  <div className='d-flex justify-content-between mb-4p'>
+                <div className="slider-track">
+                  <div className="d-flex justify-content-between mb-4p">
                     <h5>
                       <Input
                         value={value[0]}
-                        size='small'
-                        name='PriceRangeStart'
+                        size="small"
+                        name="PriceRangeStart"
                         onChange={handlePrice1InputChange}
                         onBlur={handlePrice1Blur}
                         inputProps={{
                           min: 0,
                           max: 10000,
-                          type: 'number'
+                          type: "number",
                         }}
                         sx={{
-                          userSelect: 'none',
-                          '&:after': {
+                          userSelect: "none",
+                          "&:after": {
                             // 聚焦時的底線顏色
-                            borderBottomColor: '#EAA451' // 更改為你想要的顏色
-                          }
+                            borderBottomColor: "#EAA451", // 更改為你想要的顏色
+                          },
                         }}
                       />
-                      <span className='me-1' style={{ userSelect: 'none' }}>
+                      <span className="me-1" style={{ userSelect: "none" }}>
                         元
                       </span>
                     </h5>
                     <h5>
                       <Input
                         value={value[1]}
-                        size='small'
-                        name='PriceRangeEnd'
+                        size="small"
+                        name="PriceRangeEnd"
                         onChange={handlePrice2InputChange}
                         onBlur={handlePrice2Blur}
                         inputProps={{
                           min: 0,
                           max: 10000,
-                          type: 'number'
+                          type: "number",
                         }}
                         sx={{
-                          serSelect: 'none',
-                          '&:after': {
+                          serSelect: "none",
+                          "&:after": {
                             // 聚焦時的底線顏色
-                            borderBottomColor: '#EAA451' // 更改為你想要的顏色
-                          }
+                            borderBottomColor: "#EAA451", // 更改為你想要的顏色
+                          },
                         }}
                       />
-                      <span className='me-1' style={{ userSelect: 'none' }}>
+                      <span className="me-1" style={{ userSelect: "none" }}>
                         元
                       </span>
                     </h5>
@@ -323,52 +276,90 @@ const SearchTable: React.FC = () => {
                     value={value}
                     onChange={handleChange}
                     onMouseDown={handleMouseDown}
-                    valueLabelDisplay='auto'
+                    valueLabelDisplay="auto"
                     min={0}
                     max={1000}
                     disableSwap
-                    style={{ color: '#EAA451' }}
+                    style={{ color: "#EAA451" }}
                   />
 
                   {/* <input type="text" className="js-slider form-control" value="0" /> */}
                 </div>
               </div>
               <hr />
-              <div className='filter-block'>
-                <div className='title mb-32'>
+              <div className="filter-block">
+                <div className="title mb-32">
                   <h5>書籍分類</h5>
+                  {detailsCategory != 0 && (
+                    <div className="d-flex justify-content-end">
+                      <button
+                        type="submit"
+                        className="cus-btn small invert"
+                        style={{
+                          paddingRight: "8px",
+                          margin: "0px",
+                          marginLeft: "80px",
+                          borderRadius: "8px",
+                          height: "30px",
+                          boxShadow: "0px 4px 5px 0px rgba(211, 49, 49,0.3)",
+                        }}
+                        onClick={() => handleButtonClick(0)}
+                      >
+                        取消
+                      </button>
+                    </div>
+                  )}
                   <i>
                     <FontAwesomeIcon icon={faMinus} />
                   </i>
                 </div>
-                <ul className='unstyled list'>
-                  <li className='mb-8'>
-                    <button
-                      type='submit'
-                      className='cus-btn small invert'
-                      style={{ paddingRight: '8px' }}
-                      onClick={() => handleButtonClick(0)}
-                    >
-                      全部
-                    </button>
-                  </li>
+                <ul className="unstyled list">
                   {productData.data?.data.productDetailsCategories &&
                     productData.data?.data.productDetailsCategories.map(
-                      (detailsCategory) => {
-                        return (
-                          <li key={detailsCategory.id} className='mb-8'>
+                      (oneDetailsCategory) => {
+                        return oneDetailsCategory.id != detailsCategory ? (
+                          <li key={oneDetailsCategory.id} className="mb-8">
                             <button
-                              type='submit'
-                              className='cus-btn small invert'
+                              type="submit"
+                              className="cus-btn small invert"
                               style={{
-                                paddingRight: '8px',
-                                marginLeft: '32px'
+                                paddingRight: "8px",
+                                margin: "0px",
+                                marginBottom: "16px",
+                                borderRadius: "8px",
+                                // boxShadow: "0px 4px 5px 0px #EAA451",
+                                boxShadow:
+                                  "0px 4px 5px 0px rgba(234, 166, 83, 0.3)",
                               }}
                               onClick={() =>
-                                handleButtonClick(detailsCategory.id as number)
+                                handleButtonClick(
+                                  oneDetailsCategory.id as number
+                                )
                               }
                             >
-                              {detailsCategory.name}
+                              {oneDetailsCategory.name}
+                            </button>
+                          </li>
+                        ) : (
+                          <li key={oneDetailsCategory.id} className="mb-8">
+                            <button
+                              type="submit"
+                              className="cus-btn small invert"
+                              style={{
+                                paddingRight: "8px",
+                                margin: "0px",
+                                marginBottom: "16px",
+                                borderRadius: "8px",
+                                boxShadow:
+                                  "0px 4px 5px 0px rgba(47, 127, 51,0.3)",
+                              }}
+                              onClick={() =>
+                                handleButtonClick(
+                                  oneDetailsCategory.id as number
+                                )
+                              }
+                            >
+                              {oneDetailsCategory.name}
                             </button>
                           </li>
                         );

@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation, EffectFade } from "swiper/modules";
 
 //componets
 import ProductsCarousel from "../../components/ProductsCarousel/index.tsx";
-import { useGetApiProductsGetByPublishDate } from "../../API.ts";
+import {
+  getGetApiCartsDetailsQueryKey,
+  useGetApiCartsDetails,
+  useGetApiProductsGetByPublishDate,
+  usePostApiCartsDetails,
+} from "../../API.ts";
 
 //css
 import "swiper/css";
@@ -14,14 +19,96 @@ import "swiper/css/effect-fade";
 import "./PhysicalEBookHomePage.css";
 import { Link } from "react-router-dom";
 import LoadingMessage from "../../main.tsx";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCartState } from "../../state.tsx";
 
 const PhysicalEBookHomePage: React.FC = () => {
+  //GET API
   const newProductResponse = useGetApiProductsGetByPublishDate();
   const newProducts = newProductResponse.data?.data;
+  //state
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [addStatus, setAddStatus] = useState<string>("success");
+  const [barMesaage, setBarMessage] = useState("");
+  const { cartCount, setCartCount } = useCartState((state) => state);
+
+  //API
+  const cartDetailResponse = useGetApiCartsDetails({ Id: 2 }); //TODO: 會員ID
+  const cartDetailData = cartDetailResponse.data?.data;
+  const { mutate: addCart } = usePostApiCartsDetails();
+
+  const queryClient = useQueryClient();
+  const handleClickAddCart = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    addProductId: number
+  ) => {
+    e.preventDefault();
+    if (addProductId === undefined) {
+      setOpen(true);
+      setBarMessage("找不到商品。");
+      setAddStatus("error");
+      return;
+    } else if (cartDetailData === undefined) setCartCount(1);
+    else if (
+      cartDetailData.find((item) => item.productId === addProductId) ===
+      undefined
+    )
+      setCartCount(1);
+    else if (
+      cartDetailData.find((item) => item.productId === addProductId)
+        ?.quantity >= 10
+    ) {
+      setOpen(true);
+      setBarMessage("此商品超過購買數量限制。");
+      setAddStatus("error");
+      return;
+    }
+
+    addCart(
+      { params: { memberId: 2, productId: addProductId } }, //TODO: 會員ID
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: getGetApiCartsDetailsQueryKey({ Id: 2 }), //TODO: 會員ID
+          });
+          setOpen(true);
+          setBarMessage("成功加入購物車。");
+          setAddStatus("success");
+        },
+        onError: () => {
+          setOpen(true);
+          setBarMessage("加入購物車失敗。");
+          setAddStatus("error");
+        },
+      }
+    );
+  };
+  const handleClose = () => {
+    setOpen(false);
+  };
   if (newProductResponse.isLoading) return <LoadingMessage />;
   return (
     <div className="bg-white">
-      {/* Swiper Banner Start */}
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={open}
+        onClose={handleClose}
+        message={barMesaage}
+        autoHideDuration={3000}
+        sx={{ zIndex: 9999, mt: 9 }}
+      >
+        <Alert
+          onClose={handleClose}
+          severity={addStatus}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {barMesaage}
+        </Alert>
+      </Snackbar>
       <div className="main-slider style-1">
         <div className="main-swiper">
           <Swiper
@@ -43,14 +130,13 @@ const PhysicalEBookHomePage: React.FC = () => {
             slidesPerView={1}
             preventClicks={false}
             preventClicksPropagation={false}
+            onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
           >
             <div className="swiper-wrapper">
-              {/* 書籍一 */}
-
               {newProducts ? (
-                newProducts?.map((product) => {
+                newProducts?.map((product, index) => {
                   return (
-                    <SwiperSlide key={product.productId} className="slideHight">
+                    <SwiperSlide key={index} className="slideHight">
                       <div className="swiper-slide bg-blue ">
                         <div className="container">
                           <div className="banner-content">
@@ -120,24 +206,34 @@ const PhysicalEBookHomePage: React.FC = () => {
                                       className="content-btn"
                                       data-swiper-parallax="-60"
                                     >
-                                      <a
-                                        className="btn btn-primary btnhover"
-                                        href="books-grid-view.html"
-                                        style={{
-                                          pointerEvents: "auto",
-                                        }}
-                                      >
-                                        加入購物車
-                                      </a>
-                                      <Link
-                                        to={`/ProductDetail/${product.productId}`}
-                                        className="btn border btnhover ms-4 text-white"
-                                        style={{
-                                          pointerEvents: "auto",
-                                        }}
-                                      >
-                                        查看商品
-                                      </Link>
+                                      {activeIndex === index && (
+                                        <>
+                                          <a
+                                            className="btn btn-primary btnhover"
+                                            style={{
+                                              pointerEvents: "auto",
+                                            }}
+                                            onClick={(e) =>
+                                              handleClickAddCart(
+                                                e,
+                                                product.productId as number
+                                              )
+                                            }
+                                          >
+                                            {" "}
+                                            加入購物車
+                                          </a>
+                                          <Link
+                                            to={`/ProductDetail/${product.productId}`}
+                                            className="btn border btnhover ms-4 text-white"
+                                            style={{
+                                              pointerEvents: "auto",
+                                            }}
+                                          >
+                                            查看商品
+                                          </Link>
+                                        </>
+                                      )}
                                     </div>
                                   </div>
                                 </div>
@@ -252,165 +348,8 @@ const PhysicalEBookHomePage: React.FC = () => {
             </div>
           </Swiper>
         </div>
-
-        {/* <div className="swiper main-swiper-thumb">
-                    <Swiper
-                        modules={[EffectFade]}
-                        effect="cube" // 這裡可以選擇 'cube', 'fade', 'coverflow' 或 'flip'
-                        loop={true}
-                        spaceBetween={5}
-                        slidesPerView={2}
-                    >
-                        <div className="swiper-wrapper">
-                            <SwiperSlide>
-                                <div className="swiper-slide">
-                                    <div className="books-card">
-                                        <div className="dz-media">
-                                            <img
-                                                src="assets/picture/book16.png"
-                                                alt="book"
-                                            />
-                                        </div>
-                                        <div className="dz-content">
-                                            <h5 className="title mb-0">
-                                                Think and Grow Rich
-                                            </h5>
-                                            <div className="dz-meta">
-                                                <ul>
-                                                    <li>by Napoleon Hill</li>
-                                                </ul>
-                                            </div>
-                                            <div className="book-footer">
-                                                <div className="price">
-                                                    <span className="price-num">
-                                                        $9.5
-                                                    </span>
-                                                </div>
-                                                <div className="rate">
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <div className="swiper-slide">
-                                    <div className="books-card">
-                                        <div className="dz-media">
-                                            <img
-                                                src="assets/picture/book9.jpg"
-                                                alt="book"
-                                            />
-                                        </div>
-                                        <div className="dz-content">
-                                            <h5 className="title mb-0">
-                                                Pushing Clouds
-                                            </h5>
-                                            <div className="dz-meta">
-                                                <ul>
-                                                    <li>by Jamet Sigh</li>
-                                                </ul>
-                                            </div>
-                                            <div className="book-footer">
-                                                <div className="price">
-                                                    <span className="price-num">
-                                                        $5.7
-                                                    </span>
-                                                </div>
-                                                <div className="rate">
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-muted"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <div className="swiper-slide">
-                                    <div className="books-card">
-                                        <div className="dz-media">
-                                            <img
-                                                src="assets/picture/book16.png"
-                                                alt="book"
-                                            />
-                                        </div>
-                                        <div className="dz-content">
-                                            <h5 className="title mb-0">
-                                                Think and Grow Rich
-                                            </h5>
-                                            <div className="dz-meta">
-                                                <ul>
-                                                    <li>by Napoleon Hill</li>
-                                                </ul>
-                                            </div>
-                                            <div className="book-footer">
-                                                <div className="price">
-                                                    <span className="price-num">
-                                                        $9.5
-                                                    </span>
-                                                </div>
-                                                <div className="rate">
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </SwiperSlide>
-                            <SwiperSlide>
-                                <div className="swiper-slide">
-                                    <div className="books-card">
-                                        <div className="dz-media">
-                                            <img
-                                                src="assets/picture/book9.jpg"
-                                                alt="book"
-                                            />
-                                        </div>
-                                        <div className="dz-content">
-                                            <h5 className="title mb-0">
-                                                Pushing Clouds
-                                            </h5>
-                                            <div className="dz-meta">
-                                                <ul>
-                                                    <li>by Jamet Sigh</li>
-                                                </ul>
-                                            </div>
-                                            <div className="book-footer">
-                                                <div className="price">
-                                                    <span className="price-num">
-                                                        $5.7
-                                                    </span>
-                                                </div>
-                                                <div className="rate">
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-yellow"></i>
-                                                    <i className="flaticon-star text-muted"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </SwiperSlide>
-                        </div>
-                    </Swiper>
-                </div> */}
       </div>
-      {/*Swiper Banner End*/}
+
       <ProductsCarousel />
     </div>
   );
