@@ -1,5 +1,7 @@
 import React from 'react';
 import logo from '../../assets/images/footer/logo.png';
+import bookStoreLogo from '../../assets/images/thePrint/logo_dark.png';
+import usedbookLogo from '../../assets/images/footer/logo.png';
 import arrow from '../../assets/images/footer/arrow.png';
 import callIcon from '../../assets/images/footer/footer-callicon.png';
 import locationIcon from '../../assets/images/footer/footer-locationicon.png';
@@ -28,12 +30,17 @@ const Footer: React.FC = () => {
               <div className='logo-content'>
                 <a href='./index.html'>
                   <figure className='footer-logo'>
-                    <img src={logo} className='img-fluid' alt='' />
+                    <img src={usedbookLogo} className='img-fluid' alt='' />
                   </figure>
                 </a>
-                <h3 className='text-white'>
+                <a href='/'>
+                  <figure className='footer-logo'>
+                    <img src={bookStoreLogo} className='img-fluid' alt='' />
+                  </figure>
+                </a>
+                {/* <h3 className='text-white'>
                   Want monthly book recommendations?
-                </h3>
+                </h3> */}
                 <div className='footer-button'>
                   <a
                     className='get_started text-decoration-none'

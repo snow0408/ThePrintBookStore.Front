@@ -1,6 +1,14 @@
 .description-text {
   max-height: 200px;
+  overflow-x: hidden; /* 隐藏水平滚动条 */
   overflow-y: auto;
+  white-space: normal; /* 允许正常换行 */
+  overflow-wrap: break-word; /* 单词太长时允许换行 */
+}
+
+.description-text-scrollable {
+  max-height: 200px; /* 可以调整这个值 */
+  overflow-y: 200px; /* 当内容超过时显示滚动条 */
 }
 
 /* Center.css */
