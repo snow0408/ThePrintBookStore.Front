@@ -367,6 +367,27 @@ export interface RedirectUrlsDto {
   confirmUrl?: string | null;
 }
 
+export interface QtyflawBook {
+  book?: Product;
+  bookID?: number;
+  handler: string;
+  handlingDate?: string;
+  handlingMethod: string;
+  id?: number;
+  reason: string;
+  status: string;
+}
+
+export interface QtyBookInventory {
+  buyPrice?: number;
+  id?: number;
+  product?: Product;
+  productId?: number;
+  remark?: string | null;
+  state: string;
+  totalQty?: number;
+}
+
 export interface Promotion {
   coupons?: Coupon[] | null;
   endDate?: string;
@@ -374,6 +395,20 @@ export interface Promotion {
   promotionName?: string | null;
   startDate?: string;
   type?: string | null;
+}
+
+export interface ProductsPagingDto {
+  productDetailsCategories?: ProductDetailsCategoryDto[] | null;
+  productsReslut?: BookProductDto[] | null;
+  totalPages?: number;
+}
+
+export interface ProductPicture {
+  displayOrder?: number;
+  id?: number;
+  name: string;
+  product?: Product;
+  productId?: number;
 }
 
 export interface ProductKeywordDto {
@@ -386,12 +421,6 @@ export interface ProductKeywordDto {
 export interface ProductDetailsCategoryDto {
   id?: number;
   name?: string | null;
-}
-
-export interface ProductsPagingDto {
-  productDetailsCategories?: ProductDetailsCategoryDto[] | null;
-  productsReslut?: BookProductDto[] | null;
-  totalPages?: number;
 }
 
 export interface Product {
@@ -422,35 +451,6 @@ export interface Product {
   writeBookReviews?: WriteBookReview[] | null;
 }
 
-export interface QtyflawBook {
-  book?: Product;
-  bookID?: number;
-  handler: string;
-  handlingDate?: string;
-  handlingMethod: string;
-  id?: number;
-  reason: string;
-  status: string;
-}
-
-export interface QtyBookInventory {
-  buyPrice?: number;
-  id?: number;
-  product?: Product;
-  productId?: number;
-  remark?: string | null;
-  state: string;
-  totalQty?: number;
-}
-
-export interface ProductPicture {
-  displayOrder?: number;
-  id?: number;
-  name: string;
-  product?: Product;
-  productId?: number;
-}
-
 export interface ProductKeyword {
   id?: number;
   keyword?: Keyword;
@@ -464,6 +464,15 @@ export interface ProductDetailsCategory {
   id?: number;
   name: string;
   products?: Product[] | null;
+}
+
+export interface PointsHistory {
+  changeDate?: string;
+  changeReason: string;
+  id?: number;
+  member?: Member;
+  memberId?: number;
+  pointChange?: number;
 }
 
 export interface PdInStock {
@@ -500,6 +509,13 @@ export interface PaymentConfirmResponseDto {
 export interface PaymentConfirmDto {
   amount?: number;
   currency?: string | null;
+}
+
+export interface PackageDto {
+  amount?: number;
+  id?: string | null;
+  name?: string | null;
+  products?: LinePayProductDto[] | null;
 }
 
 export interface OrdersDto {
@@ -609,15 +625,6 @@ export interface Member {
   writeBookReviews?: WriteBookReview[] | null;
 }
 
-export interface PointsHistory {
-  changeDate?: string;
-  changeReason: string;
-  id?: number;
-  member?: Member;
-  memberId?: number;
-  pointChange?: number;
-}
-
 export interface LogisticsOrder {
   actualDeliveryDate?: string;
   estimatedDeliveryDate?: string;
@@ -653,13 +660,6 @@ export interface LinePayProductDto {
   name?: string | null;
   price?: number;
   quantity?: number;
-}
-
-export interface PackageDto {
-  amount?: number;
-  id?: string | null;
-  name?: string | null;
-  products?: LinePayProductDto[] | null;
 }
 
 export interface Keyword {
@@ -748,13 +748,6 @@ export interface GroupFunction {
   name: string;
 }
 
-export interface GroupPermission {
-  employees?: Employee[] | null;
-  functions?: GroupFunction[] | null;
-  groupName: string;
-  id?: number;
-}
-
 export interface ForgotPasswordDto {
   email?: string | null;
 }
@@ -790,6 +783,13 @@ export interface Employee {
   verificationCodeExpiration?: string | null;
 }
 
+export interface GroupPermission {
+  employees?: Employee[] | null;
+  functions?: GroupFunction[] | null;
+  groupName: string;
+  id?: number;
+}
+
 export interface EBook {
   eBooksPermissions?: EBooksPermission[] | null;
   fileLink: string;
@@ -807,6 +807,14 @@ export interface EBooksPermission {
   member?: Member;
   memberID?: number;
   permissionType?: string | null;
+}
+
+export interface CouponRedemption {
+  coupon?: Coupon;
+  couponId?: number;
+  memberId?: number;
+  redemptionDate?: string;
+  usageId?: number;
 }
 
 export interface CouponDTO {
@@ -855,14 +863,6 @@ export interface Coupon {
   startDate?: string;
   usingStatus?: string | null;
   valid?: boolean;
-}
-
-export interface CouponRedemption {
-  coupon?: Coupon;
-  couponId?: number;
-  memberId?: number;
-  redemptionDate?: string;
-  usageId?: number;
 }
 
 export interface CouponAPIResponse {
@@ -1070,6 +1070,11 @@ export interface AnalyzeOneBook {
   id?: number;
   quantity?: number;
   salesAmount?: number;
+}
+
+export interface AddUsedBookToCartDto {
+  bookID: number;
+  memberID: number;
 }
 
 type AwaitedInput<T> = PromiseLike<T> | T;
@@ -5133,10 +5138,10 @@ export const useGetApiUsedBookCartsApi = <
 };
 
 export const postApiUsedBookCartsApi = (
-  usedBooksCart: UsedBooksCart,
+  addUsedBookToCartDto: AddUsedBookToCartDto,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<string>> => {
-  return axios.post(`/api/UsedBookCartsApi`, usedBooksCart, options);
+  return axios.post(`/api/UsedBookCartsApi`, addUsedBookToCartDto, options);
 };
 
 export const getPostApiUsedBookCartsApiMutationOptions = <
@@ -5146,21 +5151,21 @@ export const getPostApiUsedBookCartsApiMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof postApiUsedBookCartsApi>>,
     TError,
-    { data: UsedBooksCart },
+    { data: AddUsedBookToCartDto },
     TContext
   >;
   axios?: AxiosRequestConfig;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof postApiUsedBookCartsApi>>,
   TError,
-  { data: UsedBooksCart },
+  { data: AddUsedBookToCartDto },
   TContext
 > => {
   const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof postApiUsedBookCartsApi>>,
-    { data: UsedBooksCart }
+    { data: AddUsedBookToCartDto }
   > = (props) => {
     const { data } = props ?? {};
 
@@ -5173,7 +5178,7 @@ export const getPostApiUsedBookCartsApiMutationOptions = <
 export type PostApiUsedBookCartsApiMutationResult = NonNullable<
   Awaited<ReturnType<typeof postApiUsedBookCartsApi>>
 >;
-export type PostApiUsedBookCartsApiMutationBody = UsedBooksCart;
+export type PostApiUsedBookCartsApiMutationBody = AddUsedBookToCartDto;
 export type PostApiUsedBookCartsApiMutationError = AxiosError<unknown>;
 
 export const usePostApiUsedBookCartsApi = <
@@ -5183,7 +5188,7 @@ export const usePostApiUsedBookCartsApi = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof postApiUsedBookCartsApi>>,
     TError,
-    { data: UsedBooksCart },
+    { data: AddUsedBookToCartDto },
     TContext
   >;
   axios?: AxiosRequestConfig;

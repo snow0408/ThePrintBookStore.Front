@@ -1,7 +1,8 @@
 import { useParams, useHistory } from 'react-router-dom';
 import {
   useGetApiUsedBooksIdId,
-  useGetApiUsedBooksCategoryBookId
+  useGetApiUsedBooksCategoryBookId,
+  usePostApiUsedBookCartsApi
 } from '../../API';
 // import LoadingMessage from '../../main';
 //images
@@ -25,7 +26,11 @@ import {
 
 const UsedBookInside: React.FC = () => {
   const { UsedBookId } = useParams();
+  const memberId = 2; //TODO:
   const [publishDate, setPublishDate] = useState<Date | null>(null);
+
+  //加入購物車
+  const addBookToCartMutation = usePostApiUsedBookCartsApi();
 
   const UsedBooksResponse = useGetApiUsedBooksIdId(Number(UsedBookId));
   const UsedBooks = UsedBooksResponse.data?.data;
@@ -58,6 +63,52 @@ const UsedBookInside: React.FC = () => {
   //   if (productResponse.isLoading || sameCategoryBookResponse.isLoading) {
   //     return <LoadingMessage />;
   //   }
+
+  //加入購物車
+  const handleAddToCart = () => {
+    const bookID = Number(UsedBookId);
+    if (!memberId || !bookID) {
+      console.error('無效的 memberId 或 bookID');
+      return;
+    }
+    console.log('memberId:', memberId);
+    console.log('bookID:', bookID);
+    addBookToCartMutation.mutate(
+      {
+        data: {
+          memberID: memberId,
+          bookID: bookID
+        }
+      },
+      {
+        onSuccess: (data) => {
+          console.log('回應數據:', data);
+          alert('書籍已加入購物車！');
+        },
+        onError: (error) => {
+          console.error('請求錯誤:', error);
+          alert('加入購物車時出現錯誤。');
+        }
+      }
+    );
+  };
+
+  // const handleAddToCart = async () => {
+  //   try {
+  //     // 調用API來添加書籍到購物車
+  //     addBookToCartMutation.mutate({
+  //       data: {
+  //         memberID: memberId,
+  //         bookID: Number(UsedBookId)
+  //       }
+  //     });
+
+  //     alert('書籍已加入購物車！');
+  //   } catch (error) {
+  //     console.error('加入購物車失敗', error);
+  //     alert('加入購物車時出現錯誤。');
+  //   }
+  // };
 
   return (
     <div className='bg-grey'>
@@ -179,10 +230,14 @@ const UsedBookInside: React.FC = () => {
                         <p className='p-lr10'>{UsedBooks?.price} 元</p>
                       </div>
                       <div className='product-num'>
-                        <a href='' className='btn btnhover btn-custom '>
+                        <button
+                          type='button'
+                          onClick={handleAddToCart}
+                          className='btn btnhover btn-custom '
+                        >
                           <i className='flaticon-shopping-cart-1'></i>{' '}
                           <span>加入購物車</span>
-                        </a>
+                        </button>
                         <div className='bookmark-btn style-1 d-none d-sm-block'>
                           <input
                             className='form-check-input'
@@ -234,7 +289,7 @@ const UsedBookInside: React.FC = () => {
                       </tr>
                       <tr>
                         <th>ISBN</th>
-                        <td>{UsedBooks?.id}</td>
+                        <td>{UsedBooks?.identifier}</td>
                       </tr>
 
                       <tr>
@@ -299,13 +354,15 @@ const UsedBookInside: React.FC = () => {
                                 </span>
                                 <del>{book.price}</del>
                               </div>
-                              <a
-                                href=''
+                              <button
+                                name='addToCart'
+                                type='button'
                                 className='btn btn-outline-primary btn-sm btnhover btnhover2'
+                                onClick={handleAddToCart} // 現在直接調用函數，無需額外的箭頭函數
                               >
-                                <i className='flaticon-shopping-cart-1 me-2'></i>{' '}
+                                <i className='flaticon-shopping-cart-1 me-2'></i>
                                 加入購物車
-                              </a>
+                              </button>
                             </div>
                           </div>
                         </div>
