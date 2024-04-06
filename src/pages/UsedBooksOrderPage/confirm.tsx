@@ -1,18 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { usepaymentAmountStore, paymentAmountstate } from '../../state';
 import '../../App.css';
-import { usePutApiUsedBookPaymentRecordsApi, useGetApiUsedBookPaymentRecordsApi } from '../../API';
+import { usePutApiUsedBookPaymentRecordsApi, useGetApiUsedBookPaymentRecordsApi, usePutApiUsedBookOrdersApi, usePostApiUsedBookBuyerInfomationsApiOrderRecipient } from '../../API';
 
 const LinePay: React.FC = () => {
   const navigate = useNavigate(); // useNavigate在函式組件的主體使用
   const [transactionId, setTransactionId] = useState<string>('');
   const [orderId, setOrderId] = useState<string>('');
 
+  const { mutate: putUsedBookOrder } = usePutApiUsedBookOrdersApi();
+  function updateUsedBookOrder(id: number, status: string) {
+    putUsedBookOrder({ params: { Id: id, status: status } });
+  }
+
   const { mutate: putUsedBookPaymentRecord } = usePutApiUsedBookPaymentRecordsApi();
   function updatePaymentStatus(orderId: string, paymentStatus: boolean) {
     putUsedBookPaymentRecord({ params: { paymentNumber: orderId, status: paymentStatus } });
+  }
+
+  const { mutate: postOrderRecipient } = usePostApiUsedBookBuyerInfomationsApiOrderRecipient();
+  function createOrderRecipient(paymentId: string) {
+    postOrderRecipient({ params: { paymentId: paymentId } })
   }
 
   useEffect(() => {
@@ -27,14 +36,17 @@ const LinePay: React.FC = () => {
   }, []);
 
   const [amount, setAmount] = useState<number>(0)
+  const [orderIdString, setOrderIdString] = useState<string>('');
   const getPaymentRecord = useGetApiUsedBookPaymentRecordsApi({ paymentNumber: orderId });
   const paymentRecord = getPaymentRecord.data?.data;
   useEffect(() => {
     if (paymentRecord && paymentRecord.length > 0) {
       const firstPaymentRecord = paymentRecord[0];
       setAmount(firstPaymentRecord.paymentAmount!);
+      setOrderIdString(firstPaymentRecord.orderId);
     }
   }, [paymentRecord]);
+  const orderIdArray = orderIdString.split(',').map(Number);
 
   const baseLoginPayUrl = 'https://localhost:7236/api/LinePay/';
   const confirmPayment = async () => {
@@ -65,6 +77,12 @@ const LinePay: React.FC = () => {
 
         //更新付款紀錄
         updatePaymentStatus(orderId, true);
+        //更新訂單狀態
+        orderIdArray.forEach((orderId) => {
+          updateUsedBookOrder(orderId, '已付款');
+        });
+        //提交收件人資訊
+        createOrderRecipient(orderId);
       } else {
         console.log('付款失敗');
       }
@@ -77,9 +95,9 @@ const LinePay: React.FC = () => {
   };
 
   return (
-    //todo這一段不需要餒
+
     <div className='cart'>
-      {/* 最上方的 bar */}
+
       <center>
         <table className='mt-5'>
           <tbody>

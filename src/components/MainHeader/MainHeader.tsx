@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
+// import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from 'react-router-dom';
+import userImage from '../../assets/images/profile1.jpg';
 
 const MainHeader: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -19,6 +20,7 @@ const MainHeader: React.FC = () => {
   };
 
   const handleNavigation = (path: string) => {
+    console.log(isLoggedIn);
     if (!isLoggedIn && path === '/MemberCenter') {
       alert('您還沒有登入，請先登入！');
       navigate('/member-login');
@@ -29,7 +31,7 @@ const MainHeader: React.FC = () => {
   return (
     <Dropdown as='li' className='nav-item dropdown profile-dropdown ms-4'>
       <Dropdown.Toggle as='a' className='nav-link' id='dropdown-profile'>
-        <img src='src/assets/picture/profile1.jpg' alt='Profile' />
+        <img src={userImage} alt='Profile' />
         <div className='profile-info'>
           <h6 className='title'>Brian</h6>
           <span>info@gmail.com</span>

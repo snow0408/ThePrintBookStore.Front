@@ -1,12 +1,34 @@
+import { useParams } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../../assets/css/app.css';
 import orangeCart from '../../picture/orange-cart.png';
-import { useGetApiUsedBookCartsApi, UsedBookCartsDto } from '../../API';
+import defaultImage2 from '../../assets/images/no image available.jpg';
+import {
+  useGetApiUsedBookCartsApi,
+  UsedBookCartsDto,
+  useGetApiUsedBooksIdId
+} from '../../API';
+import Preloader from '../../components/Preloader/Preloader';
 //import { usedBookCartState, usedUsedBookCartStore } from '../../state';
 
+const UsedBookPicture: React.FC<{ UsedBookId: number }> = ({ UsedBookId }) => {
+  const UsedBooksResponse = useGetApiUsedBooksIdId(UsedBookId);
+  if (UsedBooksResponse.isLoading) return <Preloader />;
+  return (
+    <img
+      style={{ width: '100px', height: '100px' }}
+      src={
+        `data:image/png;base64,${UsedBooksResponse.data?.data.picture}` ||
+        defaultImage2
+      }
+      alt='book'
+    />
+  );
+};
+
 const UsedBooksCart: React.FC = () => {
-  const [memberId, setMemberId] = useState<number>(28);
+  const [memberId, setMemberId] = useState<number>(2);
   const cartData = useGetApiUsedBookCartsApi({ memberId: memberId });
   const [cart, setCart] = useState<UsedBookCartsDto[]>([]);
   useEffect(() => {
@@ -95,14 +117,15 @@ const UsedBooksCart: React.FC = () => {
 
   return (
     <div className='cart'>
-      <div className="container">
+      <div className='container'>
         <div className='row'>
           <div className='col-lg-12'>
             <table className='cart-table mb-24'>
               <thead>
                 <tr>
                   <th style={{ paddingLeft: '23px' }}>
-                    <input type='checkbox' onChange={handleChosedAllItems} /> 全選
+                    <input type='checkbox' onChange={handleChosedAllItems} />{' '}
+                    全選
                   </th>
                   <th style={{ textAlign: 'center' }}>商品</th>
                   <th>單價</th>
@@ -129,7 +152,9 @@ const UsedBooksCart: React.FC = () => {
                         <td>
                           <div className='product-detail-box'>
                             <div className='img-block'>
-                              <img src={item.picture!} />
+                              <UsedBookPicture
+                                UsedBookId={item.bookID as number}
+                              />
                             </div>
                             <div>
                               <h5 className='dark-gray'>{item.name}</h5>

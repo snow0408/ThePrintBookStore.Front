@@ -4,19 +4,20 @@
  * BackendForFrontend
  * OpenAPI spec version: 1.0
  */
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   MutationFunction,
   QueryFunction,
   QueryKey,
   UseMutationOptions,
   UseQueryOptions,
-  UseQueryResult,
-} from "@tanstack/react-query";
-import axios from "axios";
-axios.defaults.baseURL = "https://localhost:7236";
+  UseQueryResult
+} from '@tanstack/react-query';
+import axios from 'axios';
+import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
-import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+axios.defaults.baseURL = 'https://localhost:7236';
+
 export type PatchApiUsedBooksIdBody = {
   ImageFile?: Blob;
   Price?: number;
@@ -39,6 +40,19 @@ export type GetApiUsedBookPaymentRecordsApiParams = {
   paymentNumber?: string;
 };
 
+export type PostApiUsedBookOrdersCreateApiParams = {
+  buyerId?: number;
+  fee?: number;
+  method?: string;
+  paymentNumber?: string;
+  paymentAmount?: number;
+};
+
+export type PutApiUsedBookOrdersApiParams = {
+  Id?: number;
+  status?: string;
+};
+
 export type GetApiUsedBookOrdersApiParams = {
   memberId?: number;
   type?: string;
@@ -50,6 +64,14 @@ export type GetApiUsedBookOrderDetailsParams = {
 
 export type GetApiUsedBookCartsApiParams = {
   memberId?: number;
+};
+
+export type PostApiUsedBookBuyerInfomationsApiOrderRecipientParams = {
+  paymentId?: string;
+};
+
+export type GetApiUsedBookBuyerInfomationsApiParams = {
+  orderId?: number;
 };
 
 export type GetApiProductsParams = {
@@ -239,15 +261,26 @@ export interface UsedBookCartsDto {
   name?: string | null;
   picture?: string | null;
   productStatus?: boolean;
+  sellerID?: number;
   sellerName?: string | null;
   unitPrice?: number;
+}
+
+export interface UsedBookBuyerInformation {
+  id?: number;
+  orderId: string;
+  recipientAddress: string;
+  recipientEmail?: string | null;
+  recipientName: string;
+  recipientPhone: string;
+  remark?: string | null;
 }
 
 export interface UsedBook {
   authors?: string | null;
   bookStatus: string;
   category?: Category;
-  categoryId?: number;
+  categoryId?: number | null;
   description?: string | null;
   id?: number;
   isbn: string;
@@ -364,6 +397,20 @@ export interface Promotion {
   type?: string | null;
 }
 
+export interface ProductsPagingDto {
+  productDetailsCategories?: ProductDetailsCategoryDto[] | null;
+  productsReslut?: BookProductDto[] | null;
+  totalPages?: number;
+}
+
+export interface ProductPicture {
+  displayOrder?: number;
+  id?: number;
+  name: string;
+  product?: Product;
+  productId?: number;
+}
+
 export interface ProductKeywordDto {
   id?: number;
   keywordId?: number;
@@ -374,12 +421,6 @@ export interface ProductKeywordDto {
 export interface ProductDetailsCategoryDto {
   id?: number;
   name?: string | null;
-}
-
-export interface ProductsPagingDto {
-  productDetailsCategories?: ProductDetailsCategoryDto[] | null;
-  productsReslut?: BookProductDto[] | null;
-  totalPages?: number;
 }
 
 export interface Product {
@@ -408,14 +449,6 @@ export interface Product {
   realPrice?: number | null;
   stock?: number;
   writeBookReviews?: WriteBookReview[] | null;
-}
-
-export interface ProductPicture {
-  displayOrder?: number;
-  id?: number;
-  name: string;
-  product?: Product;
-  productId?: number;
 }
 
 export interface ProductKeyword {
@@ -478,10 +511,17 @@ export interface PaymentConfirmDto {
   currency?: string | null;
 }
 
+export interface PackageDto {
+  amount?: number;
+  id?: string | null;
+  name?: string | null;
+  products?: LinePayProductDto[] | null;
+}
+
 export interface OrdersDto {
   address?: string | null;
   discountAmount?: number | null;
-  id?: number;
+  id?: number | null;
   memberId?: number;
   memberName?: string | null;
   message?: string | null;
@@ -493,8 +533,8 @@ export interface OrdersDto {
 }
 
 export interface OrderDetailsDto {
-  orderId?: number;
-  price?: number;
+  orderId?: number | null;
+  price?: number | null;
   productId?: number;
   productName?: string | null;
   quantity?: number;
@@ -512,7 +552,7 @@ export interface OrderDetail {
 }
 
 export interface OrderCreationDto {
-  orderDetailsDto?: OrderDetailsDto[] | null;
+  orderDetailsDto?: CartDetailsDto[] | null;
   ordersDto?: OrdersDto;
 }
 
@@ -622,13 +662,6 @@ export interface LinePayProductDto {
   quantity?: number;
 }
 
-export interface PackageDto {
-  amount?: number;
-  id?: string | null;
-  name?: string | null;
-  products?: LinePayProductDto[] | null;
-}
-
 export interface Keyword {
   id?: number;
   name: string;
@@ -706,20 +739,13 @@ export const HttpStatusCode = {
   NUMBER_507: 507,
   NUMBER_508: 508,
   NUMBER_510: 510,
-  NUMBER_511: 511,
+  NUMBER_511: 511
 } as const;
 
 export interface GroupFunction {
   groups?: GroupPermission[] | null;
   id?: number;
   name: string;
-}
-
-export interface GroupPermission {
-  employees?: Employee[] | null;
-  functions?: GroupFunction[] | null;
-  groupName: string;
-  id?: number;
 }
 
 export interface ForgotPasswordDto {
@@ -757,6 +783,13 @@ export interface Employee {
   verificationCodeExpiration?: string | null;
 }
 
+export interface GroupPermission {
+  employees?: Employee[] | null;
+  functions?: GroupFunction[] | null;
+  groupName: string;
+  id?: number;
+}
+
 export interface EBook {
   eBooksPermissions?: EBooksPermission[] | null;
   fileLink: string;
@@ -774,6 +807,14 @@ export interface EBooksPermission {
   member?: Member;
   memberID?: number;
   permissionType?: string | null;
+}
+
+export interface CouponRedemption {
+  coupon?: Coupon;
+  couponId?: number;
+  memberId?: number;
+  redemptionDate?: string;
+  usageId?: number;
 }
 
 export interface CouponDTO {
@@ -822,14 +863,6 @@ export interface Coupon {
   startDate?: string;
   usingStatus?: string | null;
   valid?: boolean;
-}
-
-export interface CouponRedemption {
-  coupon?: Coupon;
-  couponId?: number;
-  memberId?: number;
-  redemptionDate?: string;
-  usageId?: number;
 }
 
 export interface CouponAPIResponse {
@@ -883,7 +916,7 @@ export interface CartsDto {
 
 export interface CartDetailsDto {
   cartId?: number;
-  id?: number;
+  id?: number | null;
   productId?: number | null;
   productName?: string | null;
   quantity?: number;
@@ -1039,6 +1072,11 @@ export interface AnalyzeOneBook {
   salesAmount?: number;
 }
 
+export interface AddUsedBookToCartDto {
+  bookID: number;
+  memberID: number;
+}
+
 type AwaitedInput<T> = PromiseLike<T> | T;
 
 type Awaited<O> = O extends AwaitedInput<infer T> ? T : never;
@@ -1146,7 +1184,7 @@ export const getGetApiCartsMemberIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!memberId,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiCartsMemberId>>,
     TError,
@@ -1252,7 +1290,7 @@ export const putTotalAmountId = (
 ): Promise<AxiosResponse<string>> => {
   return axios.put(`/totalAmount/${id}`, undefined, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -1439,7 +1477,7 @@ export const getApiCartsDetails = (
 ): Promise<AxiosResponse<CartDetailsDto[]>> => {
   return axios.get(`/api/CartsDetails`, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -1515,7 +1553,7 @@ export const postApiCartsDetails = (
 ): Promise<AxiosResponse<string>> => {
   return axios.post(`/api/CartsDetails`, undefined, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -1580,7 +1618,7 @@ export const putApiCartsDetailsId = (
 ): Promise<AxiosResponse<string>> => {
   return axios.put(`/api/CartsDetails/${id}`, undefined, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -1725,7 +1763,7 @@ export const getGetAllCouponQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetAllCouponQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getAllCoupon>>> = ({
-    signal,
+    signal
   }) => getAllCoupon({ signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
@@ -1853,14 +1891,14 @@ export const getGetCouponByIdQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetCouponByIdQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getCouponById>>> = ({
-    signal,
+    signal
   }) => getCouponById(id, { signal, ...axiosOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getCouponById>>,
     TError,
@@ -2051,14 +2089,14 @@ export const getGetCouponByCodeQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetCouponByCodeQueryKey(code);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getCouponByCode>>> = ({
-    signal,
+    signal
   }) => getCouponByCode(code, { signal, ...axiosOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!code,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getCouponByCode>>,
     TError,
@@ -2225,7 +2263,7 @@ export const postApiEmailSendAAA = (
 ): Promise<AxiosResponse<void>> => {
   return axios.post(`/api/EmailSend/AAA`, undefined, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -2386,7 +2424,7 @@ export const getGetApiEmailSendIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiEmailSendId>>,
     TError,
@@ -2491,7 +2529,7 @@ export const postGentoken = (
 ): Promise<AxiosResponse<void>> => {
   return axios.post(`/gentoken`, undefined, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -2571,7 +2609,7 @@ export const getGetClaimsQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetClaimsQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getClaims>>> = ({
-    signal,
+    signal
   }) => getClaims({ signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
@@ -2630,7 +2668,7 @@ export const getGetUsernameQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetUsernameQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsername>>> = ({
-    signal,
+    signal
   }) => getUsername({ signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
@@ -2689,7 +2727,7 @@ export const getGetJwtidQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetJwtidQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getJwtid>>> = ({
-    signal,
+    signal
   }) => getJwtid({ signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
@@ -2790,7 +2828,7 @@ export const postApiLinePayConfirm = (
 ): Promise<AxiosResponse<PaymentConfirmResponseDto>> => {
   return axios.post(`/api/LinePay/Confirm`, paymentConfirmDto, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -2854,7 +2892,7 @@ export const getApiLinePayCancel = (
 ): Promise<AxiosResponse<void>> => {
   return axios.get(`/api/LinePay/Cancel`, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -3137,7 +3175,7 @@ export const getGetApiMembersQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetApiMembersQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMembers>>> = ({
-    signal,
+    signal
   }) => getApiMembers({ signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
@@ -3265,14 +3303,14 @@ export const getGetApiMembersIdQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetApiMembersIdQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMembersId>>> = ({
-    signal,
+    signal
   }) => getApiMembersId(id, { signal, ...axiosOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiMembersId>>,
     TError,
@@ -3501,7 +3539,7 @@ export const getApiOrder = (
 ): Promise<AxiosResponse<OrdersDto>> => {
   return axios.get(`/api/Order`, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -3528,7 +3566,7 @@ export const getGetApiOrderQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetApiOrderQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOrder>>> = ({
-    signal,
+    signal
   }) => getApiOrder(params, { signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
@@ -3668,7 +3706,7 @@ export const getGetApiOrderMemberIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!memberId,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiOrderMemberId>>,
     TError,
@@ -3806,7 +3844,7 @@ export const getGetApiOrdersDetailsIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiOrdersDetailsId>>,
     TError,
@@ -3973,7 +4011,7 @@ export const getApiProducts = (
 ): Promise<AxiosResponse<ProductsPagingDto>> => {
   return axios.get(`/api/Products`, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -4000,7 +4038,7 @@ export const getGetApiProductsQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetApiProductsQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiProducts>>> = ({
-    signal,
+    signal
   }) => getApiProducts(params, { signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
@@ -4138,7 +4176,7 @@ export const getGetApiProductsIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiProductsId>>,
     TError,
@@ -4339,14 +4377,14 @@ export const getGetApiProductsGetByDetailsCategoryProductIdQueryOptions = <
   > = ({ signal }) =>
     getApiProductsGetByDetailsCategoryProductId(productId, {
       signal,
-      ...axiosOptions,
+      ...axiosOptions
     });
 
   return {
     queryKey,
     queryFn,
     enabled: !!productId,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiProductsGetByDetailsCategoryProductId>>,
     TError,
@@ -4624,7 +4662,7 @@ export const getGetApiProductsCategoryIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiProductsCategoryId>>,
     TError,
@@ -4790,13 +4828,245 @@ export const useDeleteApiProductsCategoryId = <
   return useMutation(mutationOptions);
 };
 
+export const getApiUsedBookBuyerInfomationsApi = (
+  params?: GetApiUsedBookBuyerInfomationsApiParams,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<UsedBookBuyerInformation>> => {
+  return axios.get(`/api/UsedBookBuyerInfomationsApi`, {
+    ...options,
+    params: { ...params, ...options?.params }
+  });
+};
+
+export const getGetApiUsedBookBuyerInfomationsApiQueryKey = (
+  params?: GetApiUsedBookBuyerInfomationsApiParams
+) => {
+  return [
+    `/api/UsedBookBuyerInfomationsApi`,
+    ...(params ? [params] : [])
+  ] as const;
+};
+
+export const getGetApiUsedBookBuyerInfomationsApiQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiUsedBookBuyerInfomationsApi>>,
+  TError = AxiosError<unknown>
+>(
+  params?: GetApiUsedBookBuyerInfomationsApiParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiUsedBookBuyerInfomationsApi>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ??
+    getGetApiUsedBookBuyerInfomationsApiQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiUsedBookBuyerInfomationsApi>>
+  > = ({ signal }) =>
+    getApiUsedBookBuyerInfomationsApi(params, { signal, ...axiosOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiUsedBookBuyerInfomationsApi>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetApiUsedBookBuyerInfomationsApiQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiUsedBookBuyerInfomationsApi>>
+>;
+export type GetApiUsedBookBuyerInfomationsApiQueryError = AxiosError<unknown>;
+
+export const useGetApiUsedBookBuyerInfomationsApi = <
+  TData = Awaited<ReturnType<typeof getApiUsedBookBuyerInfomationsApi>>,
+  TError = AxiosError<unknown>
+>(
+  params?: GetApiUsedBookBuyerInfomationsApiParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiUsedBookBuyerInfomationsApi>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApiUsedBookBuyerInfomationsApiQueryOptions(
+    params,
+    options
+  );
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+export const postApiUsedBookBuyerInfomationsApi = (
+  usedBookBuyerInformation: UsedBookBuyerInformation,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<string>> => {
+  return axios.post(
+    `/api/UsedBookBuyerInfomationsApi`,
+    usedBookBuyerInformation,
+    options
+  );
+};
+
+export const getPostApiUsedBookBuyerInfomationsApiMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApi>>,
+    TError,
+    { data: UsedBookBuyerInformation },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApi>>,
+  TError,
+  { data: UsedBookBuyerInformation },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApi>>,
+    { data: UsedBookBuyerInformation }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postApiUsedBookBuyerInfomationsApi(data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiUsedBookBuyerInfomationsApiMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApi>>
+>;
+export type PostApiUsedBookBuyerInfomationsApiMutationBody =
+  UsedBookBuyerInformation;
+export type PostApiUsedBookBuyerInfomationsApiMutationError =
+  AxiosError<unknown>;
+
+export const usePostApiUsedBookBuyerInfomationsApi = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApi>>,
+    TError,
+    { data: UsedBookBuyerInformation },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions =
+    getPostApiUsedBookBuyerInfomationsApiMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const postApiUsedBookBuyerInfomationsApiOrderRecipient = (
+  params?: PostApiUsedBookBuyerInfomationsApiOrderRecipientParams,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<string>> => {
+  return axios.post(
+    `/api/UsedBookBuyerInfomationsApi/orderRecipient`,
+    undefined,
+    {
+      ...options,
+      params: { ...params, ...options?.params }
+    }
+  );
+};
+
+export const getPostApiUsedBookBuyerInfomationsApiOrderRecipientMutationOptions =
+  <TError = AxiosError<unknown>, TContext = unknown>(options?: {
+    mutation?: UseMutationOptions<
+      Awaited<
+        ReturnType<typeof postApiUsedBookBuyerInfomationsApiOrderRecipient>
+      >,
+      TError,
+      { params?: PostApiUsedBookBuyerInfomationsApiOrderRecipientParams },
+      TContext
+    >;
+    axios?: AxiosRequestConfig;
+  }): UseMutationOptions<
+    Awaited<
+      ReturnType<typeof postApiUsedBookBuyerInfomationsApiOrderRecipient>
+    >,
+    TError,
+    { params?: PostApiUsedBookBuyerInfomationsApiOrderRecipientParams },
+    TContext
+  > => {
+    const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+    const mutationFn: MutationFunction<
+      Awaited<
+        ReturnType<typeof postApiUsedBookBuyerInfomationsApiOrderRecipient>
+      >,
+      { params?: PostApiUsedBookBuyerInfomationsApiOrderRecipientParams }
+    > = (props) => {
+      const { params } = props ?? {};
+
+      return postApiUsedBookBuyerInfomationsApiOrderRecipient(
+        params,
+        axiosOptions
+      );
+    };
+
+    return { mutationFn, ...mutationOptions };
+  };
+
+export type PostApiUsedBookBuyerInfomationsApiOrderRecipientMutationResult =
+  NonNullable<
+    Awaited<ReturnType<typeof postApiUsedBookBuyerInfomationsApiOrderRecipient>>
+  >;
+
+export type PostApiUsedBookBuyerInfomationsApiOrderRecipientMutationError =
+  AxiosError<unknown>;
+
+export const usePostApiUsedBookBuyerInfomationsApiOrderRecipient = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<
+      ReturnType<typeof postApiUsedBookBuyerInfomationsApiOrderRecipient>
+    >,
+    TError,
+    { params?: PostApiUsedBookBuyerInfomationsApiOrderRecipientParams },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions =
+    getPostApiUsedBookBuyerInfomationsApiOrderRecipientMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
 export const getApiUsedBookCartsApi = (
   params?: GetApiUsedBookCartsApiParams,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<UsedBookCartsDto[]>> => {
   return axios.get(`/api/UsedBookCartsApi`, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -4868,10 +5138,10 @@ export const useGetApiUsedBookCartsApi = <
 };
 
 export const postApiUsedBookCartsApi = (
-  usedBooksCart: UsedBooksCart,
+  addUsedBookToCartDto: AddUsedBookToCartDto,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<string>> => {
-  return axios.post(`/api/UsedBookCartsApi`, usedBooksCart, options);
+  return axios.post(`/api/UsedBookCartsApi`, addUsedBookToCartDto, options);
 };
 
 export const getPostApiUsedBookCartsApiMutationOptions = <
@@ -4881,21 +5151,21 @@ export const getPostApiUsedBookCartsApiMutationOptions = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof postApiUsedBookCartsApi>>,
     TError,
-    { data: UsedBooksCart },
+    { data: AddUsedBookToCartDto },
     TContext
   >;
   axios?: AxiosRequestConfig;
 }): UseMutationOptions<
   Awaited<ReturnType<typeof postApiUsedBookCartsApi>>,
   TError,
-  { data: UsedBooksCart },
+  { data: AddUsedBookToCartDto },
   TContext
 > => {
   const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
 
   const mutationFn: MutationFunction<
     Awaited<ReturnType<typeof postApiUsedBookCartsApi>>,
-    { data: UsedBooksCart }
+    { data: AddUsedBookToCartDto }
   > = (props) => {
     const { data } = props ?? {};
 
@@ -4908,7 +5178,7 @@ export const getPostApiUsedBookCartsApiMutationOptions = <
 export type PostApiUsedBookCartsApiMutationResult = NonNullable<
   Awaited<ReturnType<typeof postApiUsedBookCartsApi>>
 >;
-export type PostApiUsedBookCartsApiMutationBody = UsedBooksCart;
+export type PostApiUsedBookCartsApiMutationBody = AddUsedBookToCartDto;
 export type PostApiUsedBookCartsApiMutationError = AxiosError<unknown>;
 
 export const usePostApiUsedBookCartsApi = <
@@ -4918,7 +5188,7 @@ export const usePostApiUsedBookCartsApi = <
   mutation?: UseMutationOptions<
     Awaited<ReturnType<typeof postApiUsedBookCartsApi>>,
     TError,
-    { data: UsedBooksCart },
+    { data: AddUsedBookToCartDto },
     TContext
   >;
   axios?: AxiosRequestConfig;
@@ -4996,7 +5266,7 @@ export const getApiUsedBookOrderDetails = (
 ): Promise<AxiosResponse<UsedBookOrderDetailDto[]>> => {
   return axios.get(`/api/UsedBookOrderDetails`, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -5139,7 +5409,7 @@ export const usePostApiUsedBookOrderDetails = <
 export const postApiUsedBookOrdersApi = (
   usedBooksOrder: UsedBooksOrder,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<string>> => {
+): Promise<AxiosResponse<number>> => {
   return axios.post(`/api/UsedBookOrdersApi`, usedBooksOrder, options);
 };
 
@@ -5203,7 +5473,7 @@ export const getApiUsedBookOrdersApi = (
 ): Promise<AxiosResponse<UsedBookOrderDto[]>> => {
   return axios.get(`/api/UsedBookOrdersApi`, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -5274,6 +5544,70 @@ export const useGetApiUsedBookOrdersApi = <
   return query;
 };
 
+export const putApiUsedBookOrdersApi = (
+  params?: PutApiUsedBookOrdersApiParams,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<string>> => {
+  return axios.put(`/api/UsedBookOrdersApi`, undefined, {
+    ...options,
+    params: { ...params, ...options?.params }
+  });
+};
+
+export const getPutApiUsedBookOrdersApiMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiUsedBookOrdersApi>>,
+    TError,
+    { params?: PutApiUsedBookOrdersApiParams },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putApiUsedBookOrdersApi>>,
+  TError,
+  { params?: PutApiUsedBookOrdersApiParams },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putApiUsedBookOrdersApi>>,
+    { params?: PutApiUsedBookOrdersApiParams }
+  > = (props) => {
+    const { params } = props ?? {};
+
+    return putApiUsedBookOrdersApi(params, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PutApiUsedBookOrdersApiMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putApiUsedBookOrdersApi>>
+>;
+
+export type PutApiUsedBookOrdersApiMutationError = AxiosError<unknown>;
+
+export const usePutApiUsedBookOrdersApi = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiUsedBookOrdersApi>>,
+    TError,
+    { params?: PutApiUsedBookOrdersApiParams },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getPutApiUsedBookOrdersApiMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
 export const getApiUsedBookOrdersApiBookIdBookId = (
   bookId: number,
   options?: AxiosRequestConfig
@@ -5316,7 +5650,7 @@ export const getGetApiUsedBookOrdersApiBookIdBookIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!bookId,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiUsedBookOrdersApiBookIdBookId>>,
     TError,
@@ -5357,13 +5691,79 @@ export const useGetApiUsedBookOrdersApiBookIdBookId = <
   return query;
 };
 
+export const postApiUsedBookOrdersCreateApi = (
+  usedBookCartsDto: UsedBookCartsDto[],
+  params?: PostApiUsedBookOrdersCreateApiParams,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<string>> => {
+  return axios.post(`/api/UsedBookOrdersCreateApi`, usedBookCartsDto, {
+    ...options,
+    params: { ...params, ...options?.params }
+  });
+};
+
+export const getPostApiUsedBookOrdersCreateApiMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiUsedBookOrdersCreateApi>>,
+    TError,
+    { data: UsedBookCartsDto[]; params?: PostApiUsedBookOrdersCreateApiParams },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiUsedBookOrdersCreateApi>>,
+  TError,
+  { data: UsedBookCartsDto[]; params?: PostApiUsedBookOrdersCreateApiParams },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiUsedBookOrdersCreateApi>>,
+    { data: UsedBookCartsDto[]; params?: PostApiUsedBookOrdersCreateApiParams }
+  > = (props) => {
+    const { data, params } = props ?? {};
+
+    return postApiUsedBookOrdersCreateApi(data, params, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiUsedBookOrdersCreateApiMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiUsedBookOrdersCreateApi>>
+>;
+export type PostApiUsedBookOrdersCreateApiMutationBody = UsedBookCartsDto[];
+export type PostApiUsedBookOrdersCreateApiMutationError = AxiosError<unknown>;
+
+export const usePostApiUsedBookOrdersCreateApi = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiUsedBookOrdersCreateApi>>,
+    TError,
+    { data: UsedBookCartsDto[]; params?: PostApiUsedBookOrdersCreateApiParams },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions =
+    getPostApiUsedBookOrdersCreateApiMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
 export const getApiUsedBookPaymentRecordsApi = (
   params?: GetApiUsedBookPaymentRecordsApiParams,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<UsedBookPaymentRecord[]>> => {
   return axios.get(`/api/UsedBookPaymentRecordsApi`, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -5372,7 +5772,7 @@ export const getGetApiUsedBookPaymentRecordsApiQueryKey = (
 ) => {
   return [
     `/api/UsedBookPaymentRecordsApi`,
-    ...(params ? [params] : []),
+    ...(params ? [params] : [])
   ] as const;
 };
 
@@ -5514,7 +5914,7 @@ export const putApiUsedBookPaymentRecordsApi = (
 ): Promise<AxiosResponse<string>> => {
   return axios.put(`/api/UsedBookPaymentRecordsApi`, undefined, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -5612,7 +6012,7 @@ export const getGetApiUsedBooksIsbnIsbnQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!isbn,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiUsedBooksIsbnIsbn>>,
     TError,
@@ -5687,7 +6087,7 @@ export const getGetApiUsedBooksIdIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiUsedBooksIdId>>,
     TError,
@@ -5764,7 +6164,7 @@ export const getGetApiUsedBooksCategoryBookIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiUsedBooksCategoryBookId>>,
     TError,
@@ -5831,7 +6231,7 @@ export const getGetApiUsedBooksQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetApiUsedBooksQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiUsedBooks>>> = ({
-    signal,
+    signal
   }) => getApiUsedBooks({ signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
@@ -5871,22 +6271,22 @@ export const useGetApiUsedBooks = <
 export const postApiUsedBooks = (
   postApiUsedBooksBody: PostApiUsedBooksBody,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<void>> => {
+): Promise<AxiosResponse<string>> => {
   const formData = new FormData();
   if (postApiUsedBooksBody.ISBN !== undefined) {
-    formData.append("ISBN", postApiUsedBooksBody.ISBN);
+    formData.append('ISBN', postApiUsedBooksBody.ISBN);
   }
   if (postApiUsedBooksBody.BookStatus !== undefined) {
-    formData.append("BookStatus", postApiUsedBooksBody.BookStatus);
+    formData.append('BookStatus', postApiUsedBooksBody.BookStatus);
   }
   if (postApiUsedBooksBody.CategoryId !== undefined) {
-    formData.append("CategoryId", postApiUsedBooksBody.CategoryId.toString());
+    formData.append('CategoryId', postApiUsedBooksBody.CategoryId.toString());
   }
   if (postApiUsedBooksBody.ImageFile !== undefined) {
-    formData.append("ImageFile", postApiUsedBooksBody.ImageFile);
+    formData.append('ImageFile', postApiUsedBooksBody.ImageFile);
   }
   if (postApiUsedBooksBody.Price !== undefined) {
-    formData.append("Price", postApiUsedBooksBody.Price.toString());
+    formData.append('Price', postApiUsedBooksBody.Price.toString());
   }
 
   return axios.post(`/api/UsedBooks`, formData, options);
@@ -5985,7 +6385,7 @@ export const getGetApiUsedBooksUserIdUserIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!userId,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiUsedBooksUserIdUserId>>,
     TError,
@@ -6095,10 +6495,10 @@ export const patchApiUsedBooksId = (
 ): Promise<AxiosResponse<void>> => {
   const formData = new FormData();
   if (patchApiUsedBooksIdBody.Price !== undefined) {
-    formData.append("Price", patchApiUsedBooksIdBody.Price.toString());
+    formData.append('Price', patchApiUsedBooksIdBody.Price.toString());
   }
   if (patchApiUsedBooksIdBody.ImageFile !== undefined) {
-    formData.append("ImageFile", patchApiUsedBooksIdBody.ImageFile);
+    formData.append('ImageFile', patchApiUsedBooksIdBody.ImageFile);
   }
 
   return axios.patch(`/api/UsedBooks/${id}`, formData, options);

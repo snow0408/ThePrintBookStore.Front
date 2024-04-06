@@ -1,9 +1,36 @@
 .description-text {
   max-height: 200px;
+  overflow-x: hidden; /* 隐藏水平滚动条 */
   overflow-y: auto;
+  white-space: normal; /* 允许正常换行 */
+  overflow-wrap: break-word; /* 单词太长时允许换行 */
 }
 
-.tabs-site-button2 .nav-tabs2 a:after {
+.description-text-scrollable {
+  max-height: 200px; /* 可以调整这个值 */
+  overflow-y: 200px; /* 当内容超过时显示滚动条 */
+}
+
+/* Center.css */
+.btn-custom {
+  background-color: #a38061; /* 初始背景色 */
+  color: white; /* 文字顏色 */
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  outline: none;
+}
+
+.btn-custom:hover {
+  background-color: #846e4b;
+  color: white; /* 文字顏色 */ /* 滑過時的背景色 */
+}
+
+.btn-custom:active {
+  background-color: #a98d70; /* 按下時的背景色 */
+}
+
+/* .tabs-site-button2 .nav-tabs2 a:after {
   content: '';
   bottom: 0;
   left: 50%;
@@ -46,7 +73,7 @@
 .woocommerce #place_order {
   border-color: #a38867;
   background-color: #a38867;
-}
+} */
 
 .content-inner-1 {
   padding-top: 100px;
