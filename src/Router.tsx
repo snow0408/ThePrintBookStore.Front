@@ -31,6 +31,7 @@ import OrderPage from './pages/OrderAll/Orderpage.tsx';
 import UsedBookEdit from './pages/UsedBooks/UsedBookEdit/UsedBookEdit.tsx';
 
 // #region 懶加載元件匯入
+
 const UsedBookInside = lazy(
   () => import('./pages/UsedBookInside/UsedBookInside.tsx')
 );
@@ -84,7 +85,7 @@ const router = createBrowserRouter(
         <Route path='/MemberCenter' element={<MemberCenter />} />
         <Route path='/CouponOverview' element={<CouponOverview />} />
         <Route path='/productSearch' element={<ProductSearchPage />} />
-        <Route path='/order' element={<OrderPage memberId={16} />} />
+        <Route path='/order' element={<OrderPage memberId={2} />} />
         <Route path='/cart' element={<CartPage />} />
         <Route path='/list' element={<OrderConfirmation />}>
           <Route index element={<Step1 />} />
