@@ -36,3 +36,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.slideHight {
+    height: 700px !important;
+}
