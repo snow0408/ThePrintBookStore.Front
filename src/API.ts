@@ -4,30 +4,48 @@
  * BackendForFrontend
  * OpenAPI spec version: 1.0
  */
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from '@tanstack/react-query';
 import type {
   MutationFunction,
   QueryFunction,
   QueryKey,
   UseMutationOptions,
   UseQueryOptions,
-  UseQueryResult,
-} from "@tanstack/react-query";
-import axios from "axios";
-axios.defaults.baseURL = "https://localhost:7236";
+  UseQueryResult
+} from '@tanstack/react-query';
+import axios from 'axios';
+import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 
-import type { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+axios.defaults.baseURL = 'https://localhost:7236';
+
 export type PatchApiUsedBooksIdBody = {
   ImageFile?: Blob;
   Price?: number;
 };
 
 export type PostApiUsedBooksBody = {
+  Authors?: string[];
+  BookName?: string;
   BookStatus?: string;
   CategoryId?: number;
+  CategoryName?: string;
+  Description?: string;
+  Id?: number;
   ImageFile?: Blob;
+  'ImageLinks.SmallPicture'?: string;
+  'ImageLinks.SmallThumbnailPicture'?: string;
+  'ImageLinks.ThumbnailPicture'?: string;
   ISBN?: string;
+  IsDeleted?: boolean;
+  MemberEmail?: string;
+  MemberId?: number;
+  Picture?: string;
   Price?: number;
+  ProductStatus?: boolean;
+  PublishDate?: string;
+  PublisherName?: string;
+  ReleaseDate?: string;
+  WebReaderLink?: string;
 };
 
 export type PutApiUsedBookPaymentRecordsApiParams = {
@@ -62,10 +80,6 @@ export type GetApiProductsParams = {
   ProductDetailsCategoryId?: number;
   Page?: number;
   pageSize?: number;
-};
-
-export type GetApiOrderParams = {
-  orderId?: number;
 };
 
 export type GetApiLinePayCancelParams = {
@@ -706,7 +720,7 @@ export const HttpStatusCode = {
   NUMBER_507: 507,
   NUMBER_508: 508,
   NUMBER_510: 510,
-  NUMBER_511: 511,
+  NUMBER_511: 511
 } as const;
 
 export interface GroupFunction {
@@ -1146,7 +1160,7 @@ export const getGetApiCartsMemberIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!memberId,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiCartsMemberId>>,
     TError,
@@ -1252,7 +1266,7 @@ export const putTotalAmountId = (
 ): Promise<AxiosResponse<string>> => {
   return axios.put(`/totalAmount/${id}`, undefined, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -1433,13 +1447,272 @@ export const useDeleteApiCartsId = <
   return useMutation(mutationOptions);
 };
 
+export const getApiCartsApiId = (
+  id: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<Cart>> => {
+  return axios.get(`/api/CartsApi/${id}`, options);
+};
+
+export const getGetApiCartsApiIdQueryKey = (id: number) => {
+  return [`/api/CartsApi/${id}`] as const;
+};
+
+export const getGetApiCartsApiIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiCartsApiId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiCartsApiId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetApiCartsApiIdQueryKey(id);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiCartsApiId>>
+  > = ({ signal }) => getApiCartsApiId(id, { signal, ...axiosOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiCartsApiId>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetApiCartsApiIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiCartsApiId>>
+>;
+export type GetApiCartsApiIdQueryError = AxiosError<unknown>;
+
+export const useGetApiCartsApiId = <
+  TData = Awaited<ReturnType<typeof getApiCartsApiId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiCartsApiId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApiCartsApiIdQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+export const putApiCartsApiId = (
+  id: number,
+  cart: Cart,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.put(`/api/CartsApi/${id}`, cart, options);
+};
+
+export const getPutApiCartsApiIdMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiCartsApiId>>,
+    TError,
+    { id: number; data: Cart },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putApiCartsApiId>>,
+  TError,
+  { id: number; data: Cart },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putApiCartsApiId>>,
+    { id: number; data: Cart }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return putApiCartsApiId(id, data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PutApiCartsApiIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putApiCartsApiId>>
+>;
+export type PutApiCartsApiIdMutationBody = Cart;
+export type PutApiCartsApiIdMutationError = AxiosError<unknown>;
+
+export const usePutApiCartsApiId = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiCartsApiId>>,
+    TError,
+    { id: number; data: Cart },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getPutApiCartsApiIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const deleteApiCartsApiId = (
+  id: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.delete(`/api/CartsApi/${id}`, options);
+};
+
+export const getDeleteApiCartsApiIdMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiCartsApiId>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteApiCartsApiId>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteApiCartsApiId>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteApiCartsApiId(id, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteApiCartsApiIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteApiCartsApiId>>
+>;
+
+export type DeleteApiCartsApiIdMutationError = AxiosError<unknown>;
+
+export const useDeleteApiCartsApiId = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiCartsApiId>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getDeleteApiCartsApiIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const postApiCartsApi = (
+  cart: Cart,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<string>> => {
+  return axios.post(`/api/CartsApi`, cart, options);
+};
+
+export const getPostApiCartsApiMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiCartsApi>>,
+    TError,
+    { data: Cart },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiCartsApi>>,
+  TError,
+  { data: Cart },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiCartsApi>>,
+    { data: Cart }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postApiCartsApi(data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiCartsApiMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiCartsApi>>
+>;
+export type PostApiCartsApiMutationBody = Cart;
+export type PostApiCartsApiMutationError = AxiosError<unknown>;
+
+export const usePostApiCartsApi = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiCartsApi>>,
+    TError,
+    { data: Cart },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getPostApiCartsApiMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
 export const getApiCartsDetails = (
   params?: GetApiCartsDetailsParams,
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<CartDetailsDto[]>> => {
   return axios.get(`/api/CartsDetails`, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -1515,7 +1788,7 @@ export const postApiCartsDetails = (
 ): Promise<AxiosResponse<string>> => {
   return axios.post(`/api/CartsDetails`, undefined, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -1580,7 +1853,7 @@ export const putApiCartsDetailsId = (
 ): Promise<AxiosResponse<string>> => {
   return axios.put(`/api/CartsDetails/${id}`, undefined, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -1699,6 +1972,266 @@ export const useDeleteApiCartsDetailsId = <
   return useMutation(mutationOptions);
 };
 
+export const getApiCartsDetailsApiId = (
+  id: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<CartDetail>> => {
+  return axios.get(`/api/CartsDetailsApi/${id}`, options);
+};
+
+export const getGetApiCartsDetailsApiIdQueryKey = (id: number) => {
+  return [`/api/CartsDetailsApi/${id}`] as const;
+};
+
+export const getGetApiCartsDetailsApiIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiCartsDetailsApiId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiCartsDetailsApiId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiCartsDetailsApiIdQueryKey(id);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiCartsDetailsApiId>>
+  > = ({ signal }) => getApiCartsDetailsApiId(id, { signal, ...axiosOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiCartsDetailsApiId>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetApiCartsDetailsApiIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiCartsDetailsApiId>>
+>;
+export type GetApiCartsDetailsApiIdQueryError = AxiosError<unknown>;
+
+export const useGetApiCartsDetailsApiId = <
+  TData = Awaited<ReturnType<typeof getApiCartsDetailsApiId>>,
+  TError = AxiosError<unknown>
+>(
+  id: number,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiCartsDetailsApiId>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApiCartsDetailsApiIdQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+export const putApiCartsDetailsApiId = (
+  id: number,
+  cartDetail: CartDetail,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.put(`/api/CartsDetailsApi/${id}`, cartDetail, options);
+};
+
+export const getPutApiCartsDetailsApiIdMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiCartsDetailsApiId>>,
+    TError,
+    { id: number; data: CartDetail },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof putApiCartsDetailsApiId>>,
+  TError,
+  { id: number; data: CartDetail },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof putApiCartsDetailsApiId>>,
+    { id: number; data: CartDetail }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return putApiCartsDetailsApiId(id, data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PutApiCartsDetailsApiIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof putApiCartsDetailsApiId>>
+>;
+export type PutApiCartsDetailsApiIdMutationBody = CartDetail;
+export type PutApiCartsDetailsApiIdMutationError = AxiosError<unknown>;
+
+export const usePutApiCartsDetailsApiId = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof putApiCartsDetailsApiId>>,
+    TError,
+    { id: number; data: CartDetail },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getPutApiCartsDetailsApiIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const deleteApiCartsDetailsApiId = (
+  id: number,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.delete(`/api/CartsDetailsApi/${id}`, options);
+};
+
+export const getDeleteApiCartsDetailsApiIdMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiCartsDetailsApiId>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteApiCartsDetailsApiId>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteApiCartsDetailsApiId>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteApiCartsDetailsApiId(id, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteApiCartsDetailsApiIdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteApiCartsDetailsApiId>>
+>;
+
+export type DeleteApiCartsDetailsApiIdMutationError = AxiosError<unknown>;
+
+export const useDeleteApiCartsDetailsApiId = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApiCartsDetailsApiId>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getDeleteApiCartsDetailsApiIdMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const postApiCartsDetailsApi = (
+  cartDetail: CartDetail,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<string>> => {
+  return axios.post(`/api/CartsDetailsApi`, cartDetail, options);
+};
+
+export const getPostApiCartsDetailsApiMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiCartsDetailsApi>>,
+    TError,
+    { data: CartDetail },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiCartsDetailsApi>>,
+  TError,
+  { data: CartDetail },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiCartsDetailsApi>>,
+    { data: CartDetail }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postApiCartsDetailsApi(data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiCartsDetailsApiMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiCartsDetailsApi>>
+>;
+export type PostApiCartsDetailsApiMutationBody = CartDetail;
+export type PostApiCartsDetailsApiMutationError = AxiosError<unknown>;
+
+export const usePostApiCartsDetailsApi = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiCartsDetailsApi>>,
+    TError,
+    { data: CartDetail },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getPostApiCartsDetailsApiMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
 export const getAllCoupon = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<void>> => {
@@ -1725,7 +2258,7 @@ export const getGetAllCouponQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetAllCouponQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getAllCoupon>>> = ({
-    signal,
+    signal
   }) => getAllCoupon({ signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
@@ -1853,14 +2386,14 @@ export const getGetCouponByIdQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetCouponByIdQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getCouponById>>> = ({
-    signal,
+    signal
   }) => getCouponById(id, { signal, ...axiosOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getCouponById>>,
     TError,
@@ -2051,14 +2584,14 @@ export const getGetCouponByCodeQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetCouponByCodeQueryKey(code);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getCouponByCode>>> = ({
-    signal,
+    signal
   }) => getCouponByCode(code, { signal, ...axiosOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!code,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getCouponByCode>>,
     TError,
@@ -2225,7 +2758,7 @@ export const postApiEmailSendAAA = (
 ): Promise<AxiosResponse<void>> => {
   return axios.post(`/api/EmailSend/AAA`, undefined, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -2386,7 +2919,7 @@ export const getGetApiEmailSendIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiEmailSendId>>,
     TError,
@@ -2491,7 +3024,7 @@ export const postGentoken = (
 ): Promise<AxiosResponse<void>> => {
   return axios.post(`/gentoken`, undefined, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -2571,7 +3104,7 @@ export const getGetClaimsQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetClaimsQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getClaims>>> = ({
-    signal,
+    signal
   }) => getClaims({ signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
@@ -2630,7 +3163,7 @@ export const getGetUsernameQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetUsernameQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getUsername>>> = ({
-    signal,
+    signal
   }) => getUsername({ signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
@@ -2689,7 +3222,7 @@ export const getGetJwtidQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetJwtidQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getJwtid>>> = ({
-    signal,
+    signal
   }) => getJwtid({ signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
@@ -2790,7 +3323,7 @@ export const postApiLinePayConfirm = (
 ): Promise<AxiosResponse<PaymentConfirmResponseDto>> => {
   return axios.post(`/api/LinePay/Confirm`, paymentConfirmDto, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -2854,7 +3387,7 @@ export const getApiLinePayCancel = (
 ): Promise<AxiosResponse<void>> => {
   return axios.get(`/api/LinePay/Cancel`, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -3137,7 +3670,7 @@ export const getGetApiMembersQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetApiMembersQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMembers>>> = ({
-    signal,
+    signal
   }) => getApiMembers({ signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
@@ -3265,14 +3798,14 @@ export const getGetApiMembersIdQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetApiMembersIdQueryKey(id);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiMembersId>>> = ({
-    signal,
+    signal
   }) => getApiMembersId(id, { signal, ...axiosOptions });
 
   return {
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiMembersId>>,
     TError,
@@ -3495,28 +4028,25 @@ export const usePutApiMembersIdMemberEdit = <
   return useMutation(mutationOptions);
 };
 
-export const getApiOrder = (
-  params?: GetApiOrderParams,
+export const getApiOrderMemberId = (
+  memberId: number,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<OrdersDto>> => {
-  return axios.get(`/api/Order`, {
-    ...options,
-    params: { ...params, ...options?.params },
-  });
+): Promise<AxiosResponse<OrdersDto[]>> => {
+  return axios.get(`/api/Order/${memberId}`, options);
 };
 
-export const getGetApiOrderQueryKey = (params?: GetApiOrderParams) => {
-  return [`/api/Order`, ...(params ? [params] : [])] as const;
+export const getGetApiOrderMemberIdQueryKey = (memberId: number) => {
+  return [`/api/Order/${memberId}`] as const;
 };
 
-export const getGetApiOrderQueryOptions = <
-  TData = Awaited<ReturnType<typeof getApiOrder>>,
+export const getGetApiOrderMemberIdQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiOrderMemberId>>,
   TError = AxiosError<unknown>
 >(
-  params?: GetApiOrderParams,
+  memberId: number,
   options?: {
     query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApiOrder>>,
+      Awaited<ReturnType<typeof getApiOrderMemberId>>,
       TError,
       TData
     >;
@@ -3525,39 +4055,46 @@ export const getGetApiOrderQueryOptions = <
 ) => {
   const { query: queryOptions, axios: axiosOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetApiOrderQueryKey(params);
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiOrderMemberIdQueryKey(memberId);
 
-  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiOrder>>> = ({
-    signal,
-  }) => getApiOrder(params, { signal, ...axiosOptions });
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiOrderMemberId>>
+  > = ({ signal }) =>
+    getApiOrderMemberId(memberId, { signal, ...axiosOptions });
 
-  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
-    Awaited<ReturnType<typeof getApiOrder>>,
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!memberId,
+    ...queryOptions
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiOrderMemberId>>,
     TError,
     TData
   > & { queryKey: QueryKey };
 };
 
-export type GetApiOrderQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getApiOrder>>
+export type GetApiOrderMemberIdQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiOrderMemberId>>
 >;
-export type GetApiOrderQueryError = AxiosError<unknown>;
+export type GetApiOrderMemberIdQueryError = AxiosError<unknown>;
 
-export const useGetApiOrder = <
-  TData = Awaited<ReturnType<typeof getApiOrder>>,
+export const useGetApiOrderMemberId = <
+  TData = Awaited<ReturnType<typeof getApiOrderMemberId>>,
   TError = AxiosError<unknown>
 >(
-  params?: GetApiOrderParams,
+  memberId: number,
   options?: {
     query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApiOrder>>,
+      Awaited<ReturnType<typeof getApiOrderMemberId>>,
       TError,
       TData
     >;
     axios?: AxiosRequestConfig;
   }
 ): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetApiOrderQueryOptions(params, options);
+  const queryOptions = getGetApiOrderMemberIdQueryOptions(memberId, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
@@ -3571,7 +4108,7 @@ export const useGetApiOrder = <
 export const postApiOrder = (
   orderCreationDto: OrderCreationDto,
   options?: AxiosRequestConfig
-): Promise<AxiosResponse<number>> => {
+): Promise<AxiosResponse<string>> => {
   return axios.post(`/api/Order`, orderCreationDto, options);
 };
 
@@ -3627,83 +4164,6 @@ export const usePostApiOrder = <
   const mutationOptions = getPostApiOrderMutationOptions(options);
 
   return useMutation(mutationOptions);
-};
-
-export const getApiOrderMemberId = (
-  memberId: number,
-  options?: AxiosRequestConfig
-): Promise<AxiosResponse<OrdersDto[]>> => {
-  return axios.get(`/api/Order/${memberId}`, options);
-};
-
-export const getGetApiOrderMemberIdQueryKey = (memberId: number) => {
-  return [`/api/Order/${memberId}`] as const;
-};
-
-export const getGetApiOrderMemberIdQueryOptions = <
-  TData = Awaited<ReturnType<typeof getApiOrderMemberId>>,
-  TError = AxiosError<unknown>
->(
-  memberId: number,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApiOrderMemberId>>,
-      TError,
-      TData
-    >;
-    axios?: AxiosRequestConfig;
-  }
-) => {
-  const { query: queryOptions, axios: axiosOptions } = options ?? {};
-
-  const queryKey =
-    queryOptions?.queryKey ?? getGetApiOrderMemberIdQueryKey(memberId);
-
-  const queryFn: QueryFunction<
-    Awaited<ReturnType<typeof getApiOrderMemberId>>
-  > = ({ signal }) =>
-    getApiOrderMemberId(memberId, { signal, ...axiosOptions });
-
-  return {
-    queryKey,
-    queryFn,
-    enabled: !!memberId,
-    ...queryOptions,
-  } as UseQueryOptions<
-    Awaited<ReturnType<typeof getApiOrderMemberId>>,
-    TError,
-    TData
-  > & { queryKey: QueryKey };
-};
-
-export type GetApiOrderMemberIdQueryResult = NonNullable<
-  Awaited<ReturnType<typeof getApiOrderMemberId>>
->;
-export type GetApiOrderMemberIdQueryError = AxiosError<unknown>;
-
-export const useGetApiOrderMemberId = <
-  TData = Awaited<ReturnType<typeof getApiOrderMemberId>>,
-  TError = AxiosError<unknown>
->(
-  memberId: number,
-  options?: {
-    query?: UseQueryOptions<
-      Awaited<ReturnType<typeof getApiOrderMemberId>>,
-      TError,
-      TData
-    >;
-    axios?: AxiosRequestConfig;
-  }
-): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
-  const queryOptions = getGetApiOrderMemberIdQueryOptions(memberId, options);
-
-  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
-    queryKey: QueryKey;
-  };
-
-  query.queryKey = queryOptions.queryKey;
-
-  return query;
 };
 
 export const putApiOrderId = (
@@ -3806,7 +4266,7 @@ export const getGetApiOrdersDetailsIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiOrdersDetailsId>>,
     TError,
@@ -3973,7 +4433,7 @@ export const getApiProducts = (
 ): Promise<AxiosResponse<ProductsPagingDto>> => {
   return axios.get(`/api/Products`, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -4000,7 +4460,7 @@ export const getGetApiProductsQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetApiProductsQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiProducts>>> = ({
-    signal,
+    signal
   }) => getApiProducts(params, { signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
@@ -4138,7 +4598,7 @@ export const getGetApiProductsIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiProductsId>>,
     TError,
@@ -4339,14 +4799,14 @@ export const getGetApiProductsGetByDetailsCategoryProductIdQueryOptions = <
   > = ({ signal }) =>
     getApiProductsGetByDetailsCategoryProductId(productId, {
       signal,
-      ...axiosOptions,
+      ...axiosOptions
     });
 
   return {
     queryKey,
     queryFn,
     enabled: !!productId,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiProductsGetByDetailsCategoryProductId>>,
     TError,
@@ -4624,7 +5084,7 @@ export const getGetApiProductsCategoryIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiProductsCategoryId>>,
     TError,
@@ -4796,7 +5256,7 @@ export const getApiUsedBookCartsApi = (
 ): Promise<AxiosResponse<UsedBookCartsDto[]>> => {
   return axios.get(`/api/UsedBookCartsApi`, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -4996,7 +5456,7 @@ export const getApiUsedBookOrderDetails = (
 ): Promise<AxiosResponse<UsedBookOrderDetailDto[]>> => {
   return axios.get(`/api/UsedBookOrderDetails`, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -5203,7 +5663,7 @@ export const getApiUsedBookOrdersApi = (
 ): Promise<AxiosResponse<UsedBookOrderDto[]>> => {
   return axios.get(`/api/UsedBookOrdersApi`, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -5316,7 +5776,7 @@ export const getGetApiUsedBookOrdersApiBookIdBookIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!bookId,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiUsedBookOrdersApiBookIdBookId>>,
     TError,
@@ -5363,7 +5823,7 @@ export const getApiUsedBookPaymentRecordsApi = (
 ): Promise<AxiosResponse<UsedBookPaymentRecord[]>> => {
   return axios.get(`/api/UsedBookPaymentRecordsApi`, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -5372,7 +5832,7 @@ export const getGetApiUsedBookPaymentRecordsApiQueryKey = (
 ) => {
   return [
     `/api/UsedBookPaymentRecordsApi`,
-    ...(params ? [params] : []),
+    ...(params ? [params] : [])
   ] as const;
 };
 
@@ -5514,7 +5974,7 @@ export const putApiUsedBookPaymentRecordsApi = (
 ): Promise<AxiosResponse<string>> => {
   return axios.put(`/api/UsedBookPaymentRecordsApi`, undefined, {
     ...options,
-    params: { ...params, ...options?.params },
+    params: { ...params, ...options?.params }
   });
 };
 
@@ -5612,7 +6072,7 @@ export const getGetApiUsedBooksIsbnIsbnQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!isbn,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiUsedBooksIsbnIsbn>>,
     TError,
@@ -5687,7 +6147,7 @@ export const getGetApiUsedBooksIdIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiUsedBooksIdId>>,
     TError,
@@ -5764,7 +6224,7 @@ export const getGetApiUsedBooksCategoryBookIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!id,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiUsedBooksCategoryBookId>>,
     TError,
@@ -5831,7 +6291,7 @@ export const getGetApiUsedBooksQueryOptions = <
   const queryKey = queryOptions?.queryKey ?? getGetApiUsedBooksQueryKey();
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiUsedBooks>>> = ({
-    signal,
+    signal
   }) => getApiUsedBooks({ signal, ...axiosOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
@@ -5873,20 +6333,85 @@ export const postApiUsedBooks = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<void>> => {
   const formData = new FormData();
-  if (postApiUsedBooksBody.ISBN !== undefined) {
-    formData.append("ISBN", postApiUsedBooksBody.ISBN);
+  if (postApiUsedBooksBody.Id !== undefined) {
+    formData.append('Id', postApiUsedBooksBody.Id.toString());
   }
-  if (postApiUsedBooksBody.BookStatus !== undefined) {
-    formData.append("BookStatus", postApiUsedBooksBody.BookStatus);
+  if (postApiUsedBooksBody.MemberId !== undefined) {
+    formData.append('MemberId', postApiUsedBooksBody.MemberId.toString());
+  }
+  if (postApiUsedBooksBody.BookName !== undefined) {
+    formData.append('BookName', postApiUsedBooksBody.BookName);
   }
   if (postApiUsedBooksBody.CategoryId !== undefined) {
-    formData.append("CategoryId", postApiUsedBooksBody.CategoryId.toString());
+    formData.append('CategoryId', postApiUsedBooksBody.CategoryId.toString());
   }
-  if (postApiUsedBooksBody.ImageFile !== undefined) {
-    formData.append("ImageFile", postApiUsedBooksBody.ImageFile);
+  if (postApiUsedBooksBody.Authors !== undefined) {
+    postApiUsedBooksBody.Authors.forEach((value) =>
+      formData.append('Authors', value)
+    );
+  }
+  if (postApiUsedBooksBody.PublisherName !== undefined) {
+    formData.append('PublisherName', postApiUsedBooksBody.PublisherName);
+  }
+  if (postApiUsedBooksBody.PublishDate !== undefined) {
+    formData.append('PublishDate', postApiUsedBooksBody.PublishDate);
+  }
+  if (postApiUsedBooksBody.ProductStatus !== undefined) {
+    formData.append(
+      'ProductStatus',
+      postApiUsedBooksBody.ProductStatus.toString()
+    );
   }
   if (postApiUsedBooksBody.Price !== undefined) {
-    formData.append("Price", postApiUsedBooksBody.Price.toString());
+    formData.append('Price', postApiUsedBooksBody.Price.toString());
+  }
+  if (postApiUsedBooksBody.Description !== undefined) {
+    formData.append('Description', postApiUsedBooksBody.Description);
+  }
+  if (postApiUsedBooksBody.ISBN !== undefined) {
+    formData.append('ISBN', postApiUsedBooksBody.ISBN);
+  }
+  if (postApiUsedBooksBody['ImageLinks.SmallThumbnailPicture'] !== undefined) {
+    formData.append(
+      'ImageLinks.SmallThumbnailPicture',
+      postApiUsedBooksBody['ImageLinks.SmallThumbnailPicture']
+    );
+  }
+  if (postApiUsedBooksBody['ImageLinks.ThumbnailPicture'] !== undefined) {
+    formData.append(
+      'ImageLinks.ThumbnailPicture',
+      postApiUsedBooksBody['ImageLinks.ThumbnailPicture']
+    );
+  }
+  if (postApiUsedBooksBody['ImageLinks.SmallPicture'] !== undefined) {
+    formData.append(
+      'ImageLinks.SmallPicture',
+      postApiUsedBooksBody['ImageLinks.SmallPicture']
+    );
+  }
+  if (postApiUsedBooksBody.WebReaderLink !== undefined) {
+    formData.append('WebReaderLink', postApiUsedBooksBody.WebReaderLink);
+  }
+  if (postApiUsedBooksBody.Picture !== undefined) {
+    formData.append('Picture', postApiUsedBooksBody.Picture);
+  }
+  if (postApiUsedBooksBody.ImageFile !== undefined) {
+    formData.append('ImageFile', postApiUsedBooksBody.ImageFile);
+  }
+  if (postApiUsedBooksBody.BookStatus !== undefined) {
+    formData.append('BookStatus', postApiUsedBooksBody.BookStatus);
+  }
+  if (postApiUsedBooksBody.MemberEmail !== undefined) {
+    formData.append('MemberEmail', postApiUsedBooksBody.MemberEmail);
+  }
+  if (postApiUsedBooksBody.CategoryName !== undefined) {
+    formData.append('CategoryName', postApiUsedBooksBody.CategoryName);
+  }
+  if (postApiUsedBooksBody.ReleaseDate !== undefined) {
+    formData.append('ReleaseDate', postApiUsedBooksBody.ReleaseDate);
+  }
+  if (postApiUsedBooksBody.IsDeleted !== undefined) {
+    formData.append('IsDeleted', postApiUsedBooksBody.IsDeleted.toString());
   }
 
   return axios.post(`/api/UsedBooks`, formData, options);
@@ -5985,7 +6510,7 @@ export const getGetApiUsedBooksUserIdUserIdQueryOptions = <
     queryKey,
     queryFn,
     enabled: !!userId,
-    ...queryOptions,
+    ...queryOptions
   } as UseQueryOptions<
     Awaited<ReturnType<typeof getApiUsedBooksUserIdUserId>>,
     TError,
@@ -6095,10 +6620,10 @@ export const patchApiUsedBooksId = (
 ): Promise<AxiosResponse<void>> => {
   const formData = new FormData();
   if (patchApiUsedBooksIdBody.Price !== undefined) {
-    formData.append("Price", patchApiUsedBooksIdBody.Price.toString());
+    formData.append('Price', patchApiUsedBooksIdBody.Price.toString());
   }
   if (patchApiUsedBooksIdBody.ImageFile !== undefined) {
-    formData.append("ImageFile", patchApiUsedBooksIdBody.ImageFile);
+    formData.append('ImageFile', patchApiUsedBooksIdBody.ImageFile);
   }
 
   return axios.patch(`/api/UsedBooks/${id}`, formData, options);

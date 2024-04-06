@@ -5,6 +5,7 @@ import {
   GoogleLoginResponseOffline
 } from 'react-google-login';
 import { Link } from 'react-router-dom';
+import bg3 from '../../assets/picture/banner2-1.png';
 
 // import { Link } from "react-router-dom";
 // import FormBookImage from '../../component/Image/sign-up.png';
@@ -233,7 +234,7 @@ function MemberLoginForm() {
     <div className=''>
       <div
         className='dz-bnr-inr overlay-secondary-dark dz-bnr-inr-sm'
-        style={{ backgroundImage: "url('assets/picture/bg3.jpg')" }}
+        style={{ backgroundImage: "url('../../assets/picture/banner2-1.png')" }}
       >
         <div className='container'>
           <div className='dz-bnr-inr-entry'>
