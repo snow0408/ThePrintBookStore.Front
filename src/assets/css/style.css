@@ -121,7 +121,7 @@ h4,
 h5,
 h6 {
   position: relative;
-  font-weight: normal;
+  /* font-weight: normal; */
   line-height: 1.25em;
   margin: 0px;
   background: none;
@@ -5620,7 +5620,7 @@ section.section-fourty-seven {
 
 section.section-fourty-eight {
   position: relative;
-  padding-top: 120px;
+
   padding-bottom: 120px;
 }
 
@@ -7206,7 +7206,7 @@ section.section-thirty-four .video-btn a:hover {
 
 /*Search Box Widget*/
 
-.sidebar .search-box {
+/* .sidebar .search-box {
   position: relative;
 }
 
@@ -7218,7 +7218,7 @@ section.section-thirty-four .video-btn a:hover {
 .sidebar .search-box .form-group {
   position: relative;
   margin: 0px;
-}
+} */
 
 .sidebar .search-box .form-group input[type='text'],
 .sidebar .search-box .form-group input[type='search'] {

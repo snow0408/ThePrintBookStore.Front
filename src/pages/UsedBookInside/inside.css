@@ -3,7 +3,26 @@
   overflow-y: auto;
 }
 
-.tabs-site-button2 .nav-tabs2 a:after {
+/* Center.css */
+.btn-custom {
+  background-color: #a38061; /* 初始背景色 */
+  color: white; /* 文字顏色 */
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  outline: none;
+}
+
+.btn-custom:hover {
+  background-color: #846e4b;
+  color: white; /* 文字顏色 */ /* 滑過時的背景色 */
+}
+
+.btn-custom:active {
+  background-color: #a98d70; /* 按下時的背景色 */
+}
+
+/* .tabs-site-button2 .nav-tabs2 a:after {
   content: '';
   bottom: 0;
   left: 50%;
@@ -46,7 +65,7 @@
 .woocommerce #place_order {
   border-color: #a38867;
   background-color: #a38867;
-}
+} */
 
 .content-inner-1 {
   padding-top: 100px;

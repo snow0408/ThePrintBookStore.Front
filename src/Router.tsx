@@ -13,7 +13,7 @@ import ForgetPassword from './components/ForgetPassword/ForgetPasswordForm';
 import ResetPassword from './components/ResetEmailForm/ResetEmailForm';
 import HomePage from './pages/UsedBooks/HomePage/HomePage';
 import PublicLayout from './layouts/PublicLayout';
-
+import CouponOverview from './components/CouponOverview/CouponOverview.tsx';
 import Ecpay from './pages/Ecpay.tsx';
 import LinePayPage from './pages/CartAll/confirm.tsx';
 import CartPage from './pages/CartAll/CartItem.tsx';
@@ -28,6 +28,7 @@ import OtherErrorPage from './pages/ErrorPage/OtherErrorPage.tsx';
 import { lazy } from 'react';
 
 import OrderPage from './pages/OrderAll/Orderpage.tsx';
+import UsedBookEdit from './pages/UsedBooks/UsedBookEdit/UsedBookEdit.tsx';
 
 // #region 懶加載元件匯入
 const UsedBookInside = lazy(
@@ -81,6 +82,7 @@ const router = createBrowserRouter(
         />
         <Route path='ProductSearch' element={<ProductSearchPage />} />
         <Route path='/MemberCenter' element={<MemberCenter />} />
+        <Route path='/CouponOverview' element={<CouponOverview />} />
         <Route path='/productSearch' element={<ProductSearchPage />} />
         <Route path='/order' element={<OrderPage memberId={16} />} />
         <Route path='/cart' element={<CartPage />} />
@@ -106,6 +108,10 @@ const router = createBrowserRouter(
         <Route
           path='/usedBook/used-book-list'
           element={<UserBooksList userId={2} />}
+        />
+        <Route
+          path='/usedBook/UsedBookEdit/:UsedBookId'
+          element={<UsedBookEdit />}
         />
         <Route path='/usedBook/usedBookAllBook' element={<UsedBookAllBook />} />
         <Route path='/usedBook/:UsedBookId' element={<UsedBookInside />} />
