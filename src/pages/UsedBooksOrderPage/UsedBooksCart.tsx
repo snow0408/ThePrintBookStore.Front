@@ -6,7 +6,7 @@ import { useGetApiUsedBookCartsApi, UsedBookCartsDto } from '../../API';
 //import { usedBookCartState, usedUsedBookCartStore } from '../../state';
 
 const UsedBooksCart: React.FC = () => {
-  const [memberId, setMemberId] = useState<number>(28);
+  const [memberId, setMemberId] = useState<number>(2);
   const cartData = useGetApiUsedBookCartsApi({ memberId: memberId });
   const [cart, setCart] = useState<UsedBookCartsDto[]>([]);
   useEffect(() => {
@@ -95,14 +95,15 @@ const UsedBooksCart: React.FC = () => {
 
   return (
     <div className='cart'>
-      <div className="container">
+      <div className='container'>
         <div className='row'>
           <div className='col-lg-12'>
             <table className='cart-table mb-24'>
               <thead>
                 <tr>
                   <th style={{ paddingLeft: '23px' }}>
-                    <input type='checkbox' onChange={handleChosedAllItems} /> 全選
+                    <input type='checkbox' onChange={handleChosedAllItems} />{' '}
+                    全選
                   </th>
                   <th style={{ textAlign: 'center' }}>商品</th>
                   <th>單價</th>
