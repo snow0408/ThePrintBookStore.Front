@@ -7,7 +7,8 @@ import defaultImage2 from '../../assets/images/no image available.jpg';
 import {
   useGetApiUsedBookCartsApi,
   UsedBookCartsDto,
-  useGetApiUsedBooksIdId
+  useGetApiUsedBooksIdId,
+  useDeleteApiUsedBookCartsApiId
 } from '../../API';
 import Preloader from '../../components/Preloader/Preloader';
 //import { usedBookCartState, usedUsedBookCartStore } from '../../state';
@@ -40,9 +41,15 @@ const UsedBooksCart: React.FC = () => {
   }, [cartData.data?.data]);
 
   // 移除購物車商品
+  const { mutate: deleteCartItem } = useDeleteApiUsedBookCartsApiId();
+  function deleteCartItems(Id: number) {
+    deleteCartItem({ id: Id });
+  }
+
   const removeFromCart = (itemId: number) => {
     setCart((currentCart) => currentCart.filter((item) => item.id !== itemId));
     setChosedItems(chosedItems.filter((item) => item.id !== itemId));
+    deleteCartItems(itemId);
   };
 
   // 清空購物車
