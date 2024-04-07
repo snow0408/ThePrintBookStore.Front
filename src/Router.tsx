@@ -5,62 +5,63 @@ import {
 } from "react-router-dom";
 
 // 舊元件
-import EmployeeLoginForm from './components/EmployeeLoginForm/EmployeeLoginForm';
-import MemberLoginForm from './components/MemberLoginForm/MemberLoginForm';
-import Register from './components/Register/Register';
-import CheckVerificationCode from './components/Register/CheckVerificationCode';
-import ForgetPassword from './components/ForgetPassword/ForgetPasswordForm';
-import ResetPassword from './components/ResetEmailForm/ResetEmailForm';
-import HomePage from './pages/UsedBooks/HomePage/HomePage';
-import PublicLayout from './layouts/PublicLayout';
+import EmployeeLoginForm from "./components/EmployeeLoginForm/EmployeeLoginForm";
+import MemberLoginForm from "./components/MemberLoginForm/MemberLoginForm";
+import Register from "./components/Register/Register";
+import CheckVerificationCode from "./components/Register/CheckVerificationCode";
+import ForgetPassword from "./components/ForgetPassword/ForgetPasswordForm";
+import ResetPassword from "./components/ResetEmailForm/ResetEmailForm";
+import HomePage from "./pages/UsedBooks/HomePage/HomePage";
+import PublicLayout from "./layouts/PublicLayout";
 // import CouponOverview from './components/CouponOverview/CouponOverview.tsx';
-import Ecpay from './pages/Ecpay.tsx';
-import LinePayPage from './pages/CartAll/confirm.tsx';
-import CartPage from './pages/CartAll/CartItem.tsx';
-import OrderConfirmation from './pages/CartAll/CheckoutForm.tsx';
-import { Step1, Step2, Step3 } from './pages/CartAll/CheckoutForm.tsx';
-import MemberCenter from './components/MemberCenter/MemberCenter.tsx';
-import Datatables  from "./components/Datatables/Datatables.tsx";
+import Ecpay from "./pages/Ecpay.tsx";
+import LinePayPage from "./pages/CartAll/confirm.tsx";
+import CartPage from "./pages/CartAll/CartItem.tsx";
+import OrderConfirmation from "./pages/CartAll/CheckoutForm.tsx";
+import { Step1, Step2, Step3 } from "./pages/CartAll/CheckoutForm.tsx";
+import MemberCenter from "./components/MemberCenter/MemberCenter.tsx";
+import Datatables from "./components/Datatables/Datatables.tsx";
 
 //componets
-import App from './App.tsx';
-import Error404Page from './pages/ErrorPage/Error404Page.tsx';
-import OtherErrorPage from './pages/ErrorPage/OtherErrorPage.tsx';
+import App from "./App.tsx";
+import Error404Page from "./pages/ErrorPage/Error404Page.tsx";
+import OtherErrorPage from "./pages/ErrorPage/OtherErrorPage.tsx";
 
-import { lazy } from 'react';
+import { lazy } from "react";
 
-import OrderPage from './pages/OrderAll/Orderpage.tsx';
-import UsedBookEdit from './pages/UsedBooks/UsedBookEdit/UsedBookEdit.tsx';
+import OrderPage from "./pages/OrderAll/Orderpage.tsx";
+import UsedBookEdit from "./pages/UsedBooks/UsedBookEdit/UsedBookEdit.tsx";
+import Test from "./Test.tsx";
 
 // #region 懶加載元件匯入
 
 const UsedBookInside = lazy(
-  () => import('./pages/UsedBookInside/UsedBookInside.tsx')
+  () => import("./pages/UsedBookInside/UsedBookInside.tsx")
 );
 const UsedBooksOrderConfirmation = lazy(
-  () => import('./pages/UsedBooksOrderPage/UsedBooksOrderConfirmation.tsx')
+  () => import("./pages/UsedBooksOrderPage/UsedBooksOrderConfirmation.tsx")
 );
 const UsedBooksOrder = lazy(
-  () => import('./pages/UsedBooksOrderPage/UsedBooksOrder.tsx')
+  () => import("./pages/UsedBooksOrderPage/UsedBooksOrder.tsx")
 );
 const UsedBooksCart = lazy(
-  () => import('./pages/UsedBooksOrderPage/UsedBooksCart')
+  () => import("./pages/UsedBooksOrderPage/UsedBooksCart")
 );
 const UsedBooksCheckOutForm = lazy(
-  () => import('./pages/UsedBooksOrderPage/UsedBooksCheckOutForm.tsx')
+  () => import("./pages/UsedBooksOrderPage/UsedBooksCheckOutForm.tsx")
 );
 const UsedBookAllBook = lazy(
-  () => import('./pages/UsedBooks/UsedBookAllBook/UsedBookAllBook')
+  () => import("./pages/UsedBooks/UsedBookAllBook/UsedBookAllBook")
 );
-const CheckOutStep1 = lazy(() => import('./pages/lazy/CheckOutStep1Lazy.tsx'));
+const CheckOutStep1 = lazy(() => import("./pages/lazy/CheckOutStep1Lazy.tsx"));
 
-const CheckOutStep2 = lazy(() => import('./pages/lazy/CheckOutStep2Lazy.tsx'));
+const CheckOutStep2 = lazy(() => import("./pages/lazy/CheckOutStep2Lazy.tsx"));
 
-const UserBooksList = lazy(() => import('./pages/UsedBooks/UseBookList/index'));
+const UserBooksList = lazy(() => import("./pages/UsedBooks/UseBookList/index"));
 
-const LinePay = lazy(() => import('./pages/UsedBooksOrderPage/confirm.tsx'));
+const LinePay = lazy(() => import("./pages/UsedBooksOrderPage/confirm.tsx"));
 
-const AddUsedBook = lazy(() => import('./pages/UsedBooks/UseBookCreate/index'));
+const AddUsedBook = lazy(() => import("./pages/UsedBooks/UseBookCreate/index"));
 
 const ProductSearchPage = lazy(
   () => import("./pages/ProductSearchPage/ProductSearchPage.tsx")
@@ -83,21 +84,21 @@ const router = createBrowserRouter(
           path="ProductDetail/:productId"
           element={<ProductDetailPage />}
         />
-        <Route path='ProductSearch' element={<ProductSearchPage />} />
-        <Route path='/MemberCenter' element={<MemberCenter />} />
-        <Route path='/Coupons' element={<Datatables />} />
-        <Route path='/productSearch' element={<ProductSearchPage />} />
-        <Route path='/order' element={<OrderPage memberId={2} />} />
-        <Route path='/cart' element={<CartPage />} />
-        <Route path='/list' element={<OrderConfirmation />}>
+        <Route path="ProductSearch" element={<ProductSearchPage />} />
+        <Route path="/MemberCenter" element={<MemberCenter />} />
+        <Route path="/Coupons" element={<Datatables />} />
+        <Route path="/productSearch" element={<ProductSearchPage />} />
+        <Route path="/order" element={<OrderPage memberId={2} />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/list" element={<OrderConfirmation />}>
           <Route index element={<Step1 />} />
           <Route path="/list/Step2" element={<Step2 />} />
         </Route>
         <Route path="/linepay" element={<LinePayPage />} />
       </Route>
-      <Route path='/member-login' element={<MemberLoginForm />} />
-      <Route path='/employee-login' element={<EmployeeLoginForm />} />
-      <Route path='/Register' element={<Register />} />
+      <Route path="/member-login" element={<MemberLoginForm />} />
+      <Route path="/employee-login" element={<EmployeeLoginForm />} />
+      <Route path="/Register" element={<Register />} />
       <Route
         path="/CheckVerificationCode"
         element={<CheckVerificationCode />}
@@ -113,11 +114,11 @@ const router = createBrowserRouter(
           element={<UserBooksList userId={2} />}
         />
         <Route
-          path='/usedBook/UsedBookEdit/:UsedBookId'
+          path="/usedBook/UsedBookEdit/:UsedBookId"
           element={<UsedBookEdit />}
         />
-        <Route path='/usedBook/usedBookAllBook' element={<UsedBookAllBook />} />
-        <Route path='/usedBook/:UsedBookId' element={<UsedBookInside />} />
+        <Route path="/usedBook/usedBookAllBook" element={<UsedBookAllBook />} />
+        <Route path="/usedBook/:UsedBookId" element={<UsedBookInside />} />
         <Route
           path="/usedBook/usedBookCart"
           element={<UsedBooksCart />}
@@ -136,6 +137,7 @@ const router = createBrowserRouter(
           element={<UsedBooksOrder />}
         ></Route>
       </Route>
+      <Route path="/test" element={<Test />} />
       <Route path="*" element={<Error404Page />} />
     </>
   )
