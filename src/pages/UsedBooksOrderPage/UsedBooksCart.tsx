@@ -7,7 +7,8 @@ import defaultImage2 from '../../assets/images/no image available.jpg';
 import {
   useGetApiUsedBookCartsApi,
   UsedBookCartsDto,
-  useGetApiUsedBooksIdId
+  useGetApiUsedBooksIdId,
+  useDeleteApiUsedBookCartsApiId
 } from '../../API';
 import Preloader from '../../components/Preloader/Preloader';
 //import { usedBookCartState, usedUsedBookCartStore } from '../../state';
@@ -19,14 +20,15 @@ const UsedBookPicture: React.FC<{ UsedBookId: number }> = ({ UsedBookId }) => {
   const UsedBooksResponse = useGetApiUsedBooksIdId(UsedBookId);
   if (UsedBooksResponse.isLoading) return <Preloader />;
   return (
-    <img
-      style={{ width: '100px', height: '100px' }}
-      src={
-        `data:image/png;base64,${UsedBooksResponse.data?.data.picture}` ||
-        defaultImage2
-      }
-      alt='book'
-    />
+    <div className='img-block2'>
+      <img
+        src={
+          `data:image/png;base64,${UsedBooksResponse.data?.data.picture}` ||
+          defaultImage2
+        }
+        alt='book'
+      />
+    </div>
   );
 };
 
@@ -39,9 +41,15 @@ const UsedBooksCart: React.FC = () => {
   }, [cartData.data?.data]);
 
   // 移除購物車商品
+  const { mutate: deleteCartItem } = useDeleteApiUsedBookCartsApiId();
+  function deleteCartItems(Id: number) {
+    deleteCartItem({ id: Id });
+  }
+
   const removeFromCart = (itemId: number) => {
     setCart((currentCart) => currentCart.filter((item) => item.id !== itemId));
     setChosedItems(chosedItems.filter((item) => item.id !== itemId));
+    deleteCartItems(itemId);
   };
 
   // 清空購物車

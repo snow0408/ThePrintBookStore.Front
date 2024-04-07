@@ -4,8 +4,20 @@ import '../../assets/css/app.css';
 import { Outlet, Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { Fragment } from 'react/jsx-runtime';
-import { UsedBookCartsDto, usePostApiUsedBookOrdersCreateApi, usePostApiUsedBookBuyerInfomationsApi } from '../../API';
-import { usepaymentAmountStore, paymentAmountstate, usedUsedBookCartStore, usedBookCartState, buyerInformationState, usedBuyerInformationStore } from '../../state';
+import {
+  UsedBookCartsDto,
+  usePostApiUsedBookOrdersCreateApi,
+  usePostApiUsedBookBuyerInfomationsApi,
+  useDeleteApiUsedBookCartsApiId
+} from '../../API';
+import {
+  usepaymentAmountStore,
+  paymentAmountstate,
+  usedUsedBookCartStore,
+  usedBookCartState,
+  buyerInformationState,
+  usedBuyerInformationStore
+} from '../../state';
 import LinePay from '../../picture/LinePay.png';
 
 interface UsedBookOrderProps {
@@ -32,23 +44,23 @@ export const CheckOutStep1 = () => {
     if (e.target.value == '') {
       setNameValid(false);
     }
-  };
+  }
   function handelRecipientPhoneChange(e: ChangeEvent<HTMLInputElement>) {
-    const phoneValue = e.target.value
+    const phoneValue = e.target.value;
     setRecipientPhone(phoneValue);
-  };
+  }
   function handelRecipientAddressChange(e: ChangeEvent<HTMLInputElement>) {
     setRecipientAddress(e.target.value);
     if (e.target.value == '') {
       setAddressValid(false);
     }
-  };
+  }
   function handelRecipientEmailChange(e: ChangeEvent<HTMLInputElement>) {
     setRecipientEmail(e.target.value);
-  };
+  }
   function handelRemarkChange(e: ChangeEvent<HTMLTextAreaElement>) {
     setRemark(e.target.value);
-  };
+  }
 
   useEffect(() => {
     if (recipientPhone !== '') {
@@ -58,34 +70,32 @@ export const CheckOutStep1 = () => {
         setphoneValid(false);
       }
     }
-  }, [recipientPhone])
+  }, [recipientPhone]);
   useEffect(() => {
     if (recipientName != '') {
       setNameValid(true);
     }
-  }, [recipientName])
+  }, [recipientName]);
   useEffect(() => {
     if (recipientAddress != '') {
       setAddressValid(true);
     }
-  }, [recipientAddress])
+  }, [recipientAddress]);
 
-  const { setBuyerName, setBuyerAddress, setBuyerEmail, setBuyerPhone } = usedBuyerInformationStore<buyerInformationState>(
-    (state) => state
-  );
-
+  const { setBuyerName, setBuyerAddress, setBuyerEmail, setBuyerPhone } =
+    usedBuyerInformationStore<buyerInformationState>((state) => state);
 
   const toNextStep = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (!nameValid || !addressValid || !phoneValid) {
       e.preventDefault();
       if (recipientName.trim() === '') {
-        setNameValid(false)
+        setNameValid(false);
       }
       if (recipientPhone.trim() === '') {
-        setphoneValid(false)
+        setphoneValid(false);
       }
       if (recipientAddress.trim() === '') {
-        setAddressValid(false)
+        setAddressValid(false);
       }
     } else {
       setBuyerName(recipientName);
@@ -94,7 +104,7 @@ export const CheckOutStep1 = () => {
       setBuyerEmail(recipientEmail);
       setRemark(remark);
     }
-  }
+  };
 
   return (
     <div id='step-1' role='tabpanel' aria-labelledby='step-1'>
@@ -114,7 +124,7 @@ export const CheckOutStep1 = () => {
               onChange={handelRecipientNameChange}
             />
             {nameValid == false && (
-              <p style={{ color: "#F08080" }}>請輸入收件人姓名</p>
+              <p style={{ color: '#F08080' }}>請輸入收件人姓名</p>
             )}
           </div>
         </div>
@@ -130,7 +140,7 @@ export const CheckOutStep1 = () => {
               onChange={handelRecipientPhoneChange}
             />
             {phoneValid == false && (
-              <p style={{ color: "#F08080" }}>請輸入有效的手機號碼</p>
+              <p style={{ color: '#F08080' }}>請輸入有效的手機號碼</p>
             )}
           </div>
         </div>
@@ -159,7 +169,7 @@ export const CheckOutStep1 = () => {
               onChange={handelRecipientAddressChange}
             />
             {addressValid == false && (
-              <p style={{ color: "#F08080" }}>請輸入寄送地址</p>
+              <p style={{ color: '#F08080' }}>請輸入寄送地址</p>
             )}
           </div>
         </div>
@@ -182,7 +192,11 @@ export const CheckOutStep1 = () => {
             </button>
           </Link>
           <Link to={'/usedBook/checkOut/Step2'} className='nav-link'>
-            <button className='btn sw-btn-next sw-btn' type='button' onClick={toNextStep}>
+            <button
+              className='btn sw-btn-next sw-btn'
+              type='button'
+              onClick={toNextStep}
+            >
               Next
             </button>
           </Link>
@@ -197,9 +211,8 @@ export const CheckOutStep2 = () => {
   const [memberId, setMemberId] = useState<number>(28);
 
   //取得收件人資料
-  const { BuyerName, BuyerPhone, BuyerAddress, BuyerEmail, remark } = usedBuyerInformationStore<buyerInformationState>(
-    (state) => state
-  );
+  const { BuyerName, BuyerPhone, BuyerAddress, BuyerEmail, remark } =
+    usedBuyerInformationStore<buyerInformationState>((state) => state);
 
   //取得付款金額
   const { count, setCount } = usepaymentAmountStore<paymentAmountstate>(
@@ -207,19 +220,59 @@ export const CheckOutStep2 = () => {
   );
 
   //取得商品及運費
-  const { orderItem, setOrderItem, orderFee, setOrderFee } = usedUsedBookCartStore<usedBookCartState>(
-    (state) => state
-  );
+  const { orderItem, setOrderItem, orderFee, setOrderFee } =
+    usedUsedBookCartStore<usedBookCartState>((state) => state);
   const sellers = new Set(orderItem.map((item) => item.sellerID));
 
-  const { mutate: createOrder } = usePostApiUsedBookOrdersCreateApi();
-  function createOrders(orderItem: UsedBookCartsDto[], buyerId: number, fee: number, method: string, paymentNumber: string, paymentAmount: number) {
-    createOrder({ data: orderItem, params: { buyerId: buyerId, fee: fee, method: method, paymentNumber: paymentNumber, paymentAmount: paymentAmount } });
+  //移除購物車商品
+  const { mutate: deleteCartItem } = useDeleteApiUsedBookCartsApiId();
+  function deleteCartItems(Id: number) {
+    deleteCartItem({ id: Id });
   }
 
-  const { mutate: createBuyerInfomation } = usePostApiUsedBookBuyerInfomationsApi();
-  function createInfomation(buyerName: string, buyerPhone: string, buyerEmail: string, buyerAddress: string, remark: string, orderId: string) {
-    createBuyerInfomation({ data: { recipientName: buyerName, recipientPhone: buyerPhone, recipientEmail: buyerEmail, recipientAddress: buyerAddress, remark: remark, orderId: orderId } })
+  //新增訂單
+  const { mutate: createOrder } = usePostApiUsedBookOrdersCreateApi();
+  function createOrders(
+    orderItem: UsedBookCartsDto[],
+    buyerId: number,
+    fee: number,
+    method: string,
+    paymentNumber: string,
+    paymentAmount: number
+  ) {
+    createOrder({
+      data: orderItem,
+      params: {
+        buyerId: buyerId,
+        fee: fee,
+        method: method,
+        paymentNumber: paymentNumber,
+        paymentAmount: paymentAmount
+      }
+    });
+  }
+
+  //新增收件人資料
+  const { mutate: createBuyerInfomation } =
+    usePostApiUsedBookBuyerInfomationsApi();
+  function createInfomation(
+    buyerName: string,
+    buyerPhone: string,
+    buyerEmail: string,
+    buyerAddress: string,
+    remark: string,
+    orderId: string
+  ) {
+    createBuyerInfomation({
+      data: {
+        recipientName: buyerName,
+        recipientPhone: buyerPhone,
+        recipientEmail: buyerEmail,
+        recipientAddress: buyerAddress,
+        remark: remark,
+        orderId: orderId
+      }
+    });
   }
 
   const requestPayment = async (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -272,12 +325,31 @@ export const CheckOutStep2 = () => {
           if (item.sellerID == seller) {
             amount += item.unitPrice!;
           }
-        })
+        });
       });
 
       //生成訂單&明細&付款紀錄
-      createOrders(orderItem, memberId, orderFee, 'LinePay', paymentNumber, count)
-      createInfomation(BuyerName, BuyerPhone, BuyerEmail, BuyerAddress, remark, paymentNumber)
+      createOrders(
+        orderItem,
+        memberId,
+        orderFee,
+        'LinePay',
+        paymentNumber,
+        count
+      );
+      createInfomation(
+        BuyerName,
+        BuyerPhone,
+        BuyerEmail,
+        BuyerAddress,
+        remark,
+        paymentNumber
+      );
+
+      //移除結帳完的購物車商品
+      orderItem.forEach((item) => {
+        deleteCartItems(item.id!);
+      });
 
       const res = await response.json();
       window.location = res.info.paymentUrl.web;
@@ -420,15 +492,14 @@ const OrderConfirmation: React.FC = () => {
     }
   }, [location.state]);
 
-  const { orderItem, setOrderItem, orderFee, setOrderFee } = usedUsedBookCartStore<usedBookCartState>(
-    (state) => state
-  );
+  const { orderItem, setOrderItem, orderFee, setOrderFee } =
+    usedUsedBookCartStore<usedBookCartState>((state) => state);
   useEffect(() => {
-    setOrderItem(cart)
-  }, [cart])
+    setOrderItem(cart);
+  }, [cart]);
   useEffect(() => {
-    setOrderFee(fee)
-  }, [fee])
+    setOrderFee(fee);
+  }, [fee]);
 
   return (
     <div className='page-content'>
