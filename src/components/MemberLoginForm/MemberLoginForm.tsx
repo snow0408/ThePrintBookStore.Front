@@ -24,12 +24,12 @@ export async function action({ request }: { request: Request }) {
 }
 function logout() {
   localStorage.removeItem('token');
-  window.location.href = '/MemberLoginForm';
+  window.location.href = '/member-login';
 }
 
 function MemberLoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('123testtest01@gmail.com');
+  const [password, setPassword] = useState('a123123!');
   const [captchaUrl, setCaptchaUrl] = useState('');
   const [captcha, setUserCaptcha] = useState('');
   const [cacheKey, setCacheKey] = useState('');
@@ -65,7 +65,7 @@ function MemberLoginForm() {
 
       alert('登入成功');
       // 這裡可以重定向到會員中心或執行其他操作
-      window.location.href = '/MemberCenter'; // 重定向到會員中心頁面
+      window.location.href = '/'; // 重定向到會員中心頁面
     } catch (error) {
       if (error instanceof Error) alert(error.message);
     }

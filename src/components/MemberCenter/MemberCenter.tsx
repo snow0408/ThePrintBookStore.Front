@@ -33,11 +33,10 @@ const menuItems = [
     link: '問妍如',
     icon: 'far fa-user',
     subItems: [
-      { title: '我的二手書', link: '/MemberCenter' },
-      { title: '訂單管理', link: '/MemberCenter' },
-      { title: '好書收藏', link: '/MemberCenter' }
+      { title: '我的二手書', link: '/usedBook/used-book-list' },
+      { title: '訂單管理', link: '//usedBook/usedBookOrder' }
     ]
-  },
+  }
   // 添加其他主選項...
 ];
 
