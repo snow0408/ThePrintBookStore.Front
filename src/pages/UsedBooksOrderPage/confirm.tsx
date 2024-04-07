@@ -1,22 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { usepaymentAmountStore, paymentAmountstate } from '../../state';
 import '../../App.css';
+import { usePutApiUsedBookPaymentRecordsApi, useGetApiUsedBookPaymentRecordsApi, usePutApiUsedBookOrdersApi, usePostApiUsedBookBuyerInfomationsApiOrderRecipient } from '../../API';
 
 const LinePay: React.FC = () => {
   const navigate = useNavigate(); // useNavigate在函式組件的主體使用
   const [transactionId, setTransactionId] = useState<string>('');
   const [orderId, setOrderId] = useState<string>('');
-  const { count, setCount } = usepaymentAmountStore<paymentAmountstate>(
-    (state) => state
-  );
+
+  const { mutate: putUsedBookOrder } = usePutApiUsedBookOrdersApi();
+  function updateUsedBookOrder(id: number, status: string) {
+    putUsedBookOrder({ params: { Id: id, status: status } });
+  }
+
+  const { mutate: putUsedBookPaymentRecord } = usePutApiUsedBookPaymentRecordsApi();
+  function updatePaymentStatus(orderId: string, paymentStatus: boolean) {
+    putUsedBookPaymentRecord({ params: { paymentNumber: orderId, status: paymentStatus } });
+  }
+
+  const { mutate: postOrderRecipient } = usePostApiUsedBookBuyerInfomationsApiOrderRecipient();
+  function createOrderRecipient(paymentId: string) {
+    postOrderRecipient({ params: { paymentId: paymentId } })
+  }
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const transactionIdParam = params.get('transactionId');
     const orderIdParam = params.get('orderId');
-    setCount(500);
 
     if (transactionIdParam && orderIdParam) {
       setTransactionId(transactionIdParam);
@@ -24,13 +35,25 @@ const LinePay: React.FC = () => {
     }
   }, []);
 
+  const [amount, setAmount] = useState<number>(0)
+  const [orderIdString, setOrderIdString] = useState<string>('');
+  const getPaymentRecord = useGetApiUsedBookPaymentRecordsApi({ paymentNumber: orderId });
+  const paymentRecord = getPaymentRecord.data?.data;
+  useEffect(() => {
+    if (paymentRecord && paymentRecord.length > 0) {
+      const firstPaymentRecord = paymentRecord[0];
+      setAmount(firstPaymentRecord.paymentAmount!);
+      setOrderIdString(firstPaymentRecord.orderId);
+    }
+  }, [paymentRecord]);
+  const orderIdArray = orderIdString.split(',').map(Number);
+
   const baseLoginPayUrl = 'https://localhost:7236/api/LinePay/';
   const confirmPayment = async () => {
-    console.log(count);
 
     try {
       const payment = {
-        amount: 500,
+        amount: amount,
         currency: 'TWD'
       };
 
@@ -51,6 +74,15 @@ const LinePay: React.FC = () => {
       ) {
         console.log('完成付款');
         paymentStatus = true;
+
+        //更新付款紀錄
+        updatePaymentStatus(orderId, true);
+        //更新訂單狀態
+        orderIdArray.forEach((orderId) => {
+          updateUsedBookOrder(orderId, '已付款');
+        });
+        //提交收件人資訊
+        createOrderRecipient(orderId);
       } else {
         console.log('付款失敗');
       }
@@ -63,16 +95,11 @@ const LinePay: React.FC = () => {
   };
 
   return (
-    //todo這一段不需要餒
+
     <div className='cart'>
-      {/* 最上方的 bar */}
+
       <center>
-        <table>
-          <thead>
-            <tr>
-              <th colSpan={2}> 測試商品 </th>
-            </tr>
-          </thead>
+        <table className='mt-5'>
           <tbody>
             <tr>
               <td colSpan={2}>
@@ -83,22 +110,19 @@ const LinePay: React.FC = () => {
               </td>
             </tr>
             <tr>
-              <td colSpan={2}> 購買數量 : </td>
-            </tr>
-            <tr>
-              <td colSpan={2} style={{ textAlign: 'right' }}>
-                總金額 : {count}
+              <td colSpan={2} align='center'>
+                <h5>總金額 : {amount}</h5>
               </td>
             </tr>
             <tr>
               <td align='center' colSpan={2}>
-                <button onClick={confirmPayment}> 確認付款</button>
+                <button onClick={confirmPayment} className='btn btn-primary btnhover btnhover2 mt-3'> 確認付款</button>
               </td>
             </tr>
           </tbody>
         </table>
 
-        <div className='Container'>
+        <div className='Container mt-4'>
           <p id='paymentStatus'>交易狀態 : 交易已授權，等待確認</p>
         </div>
       </center>

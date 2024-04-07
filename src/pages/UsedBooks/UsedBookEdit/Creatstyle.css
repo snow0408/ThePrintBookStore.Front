@@ -72,11 +72,14 @@ section.section-fourty-eight {
   max-height: 240px; /* 或其他根據實際需要調整的高度 */
   overflow-y: auto;
   padding: 10px; /* 使得垂直方向上超出部分可滾動 */
+  white-space: normal; /* 允许正常换行 */
+  overflow-wrap: break-word; /* 单词太长时允许换行 */
 }
 
 /* 針對所有滾動條 */
 ::-webkit-scrollbar {
   width: 5px; /* 滾動條的寬度 */
+  height: 5px; /* 水平滚动条的高度 */
 }
 
 /* 滾動條軌道 */

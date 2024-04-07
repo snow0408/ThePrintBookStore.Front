@@ -6,19 +6,30 @@ import {
   useGetApiUsedBookOrdersApi,
   UsedBookOrderDto,
   useGetApiUsedBookOrderDetails,
-  UsedBookOrderDetailDto
+  UsedBookOrderDetailDto,
+  useGetApiUsedBookBuyerInfomationsApi,
+  UsedBookBuyerInformation
 } from '../../API';
 
 interface OrderDetailProps {
   id: number;
 }
 
+//訂單明細
 const OrderDetail: React.FC<OrderDetailProps> = ({ id }) => {
+  //取得訂單明細
   const orderDetailData = useGetApiUsedBookOrderDetails({ orderId: id });
   const [orderDetail, setOrderDetail] = useState<UsedBookOrderDetailDto[]>([]);
   useEffect(() => {
     setOrderDetail(orderDetailData.data?.data as UsedBookOrderDto[]);
   }, [orderDetailData.data?.data]);
+
+  const buyerInfomationData = useGetApiUsedBookBuyerInfomationsApi({ orderId: id });
+  const [buyerInfomation, setBuyerInfomation] = useState<UsedBookBuyerInformation>();
+  useEffect(() => {
+    setBuyerInfomation(buyerInfomationData.data?.data)
+  }, [buyerInfomationData.data?.data])
+
   return (
     <div className='modal-body'>
       <table className='table'>
@@ -40,12 +51,24 @@ const OrderDetail: React.FC<OrderDetailProps> = ({ id }) => {
             })}
         </tbody>
       </table>
+
+      <hr className='my-4' />
+      <div className="card">
+        <ul className="list-group list-group-flush">
+          <li className="list-group-item">收件人姓名：{buyerInfomation?.recipientName}</li>
+          <li className="list-group-item">收件人電話：{buyerInfomation?.recipientPhone}</li>
+          <li className="list-group-item">收件人地址：{buyerInfomation?.recipientAddress}</li>
+          <li className="list-group-item">備註：{buyerInfomation?.remark}</li>
+        </ul>
+      </div>
+
     </div>
   );
 };
 
+//訂單管理頁面
 const UsedBooksOrder: React.FC = () => {
-  const memberId = 16;
+  const [memberId, setMemberId] = useState<number>(28);
 
   //購買訂單
   const buyerOrderData = useGetApiUsedBookOrdersApi({
@@ -101,18 +124,18 @@ const UsedBooksOrder: React.FC = () => {
 
   return (
     <div className='cart'>
-      <h2>二手書訂單查詢</h2>
+      <h2 className='text-secondary'>二手書訂單查詢</h2>
       <hr />
 
-      <h4>購買訂單</h4>
+      <h4 className='pb-3'>購買訂單</h4>
       <table className='cart-table mb-24'>
         <thead>
           <tr>
-            <th>訂單編號</th>
-            <th>訂購日期</th>
-            <th style={{ textAlign: 'right' }}>訂單金額</th>
-            <th>訂單狀態</th>
-            <th style={{ textAlign: 'center' }}>賣家</th>
+            <th style={{ textAlign: 'left' }}>訂單編號</th>
+            <th className='ps-4' style={{ textAlign: 'left' }}>訂購日期</th>
+            <th style={{ textAlign: 'left' }}>訂單金額</th>
+            <th className='ps-3' style={{ textAlign: 'left' }}>訂單狀態</th>
+            <th className='ps-4' style={{ textAlign: 'left' }}>賣家</th>
             <th>　　　　</th>
           </tr>
         </thead>
@@ -121,23 +144,23 @@ const UsedBooksOrder: React.FC = () => {
             return (
               <tbody key={item.id}>
                 <tr>
-                  <td>
+                  <td style={{ textAlign: 'left' }}>
                     <a href='#' onClick={() => showOrderDetail(item.id!)}>
-                      {item.id}
+                      #{item.id}
                     </a>
                   </td>
-                  <td>{formatDate(item.orderDate!)}</td>
-                  <td>{item.totalAmount}</td>
-                  <td>{item.status}</td>
-                  <td style={{ fontSize: '16px', color: '#212529' }}>
+                  <td style={{ textAlign: 'left' }}>{formatDate(item.orderDate!)}</td>
+                  <td style={{ textAlign: 'left' }}>{item.totalAmount}</td>
+                  <td style={{ textAlign: 'left' }}>{item.status}</td>
+                  <td style={{ fontSize: '16px', color: '#212529', textAlign: 'left' }}>
                     {item.sellerName}
-                    <a href='#' style={{ display: 'inline', fontSize: '12px' }}>
+                    <a href='#'>
                       <img src={mailBox} />
                     </a>
                   </td>
-                  <td>
+                  <td style={{ textAlign: 'left' }}>
                     <button
-                      className='btn'
+                      className='btn btn-outline-secondary'
                       style={{ display: 'inline' }}
                       onClick={() => handleLinkClick(item.id!)}
                     >
@@ -157,16 +180,16 @@ const UsedBooksOrder: React.FC = () => {
         )}
       </table>
 
-      <hr />
-      <h4>銷售訂單</h4>
+      <hr className='my-5' />
+      <h4 className='pb-3'>銷售訂單</h4>
       <table className='cart-table mb-24'>
         <thead>
           <tr>
-            <th>訂單編號</th>
-            <th>訂購日期</th>
-            <th style={{ textAlign: 'right' }}>訂單金額</th>
-            <th>訂單狀態</th>
-            <th style={{ textAlign: 'center' }}>買家</th>
+            <th style={{ textAlign: 'left' }}>訂單編號</th>
+            <th className='ps-4' style={{ textAlign: 'left' }}>訂購日期</th>
+            <th style={{ textAlign: 'left' }}>訂單金額</th>
+            <th className='ps-3' style={{ textAlign: 'left' }}>訂單狀態</th>
+            <th className='ps-4' style={{ textAlign: 'left' }}>買家</th>
             <th>　　　　</th>
           </tr>
         </thead>
@@ -175,19 +198,23 @@ const UsedBooksOrder: React.FC = () => {
             return (
               <tbody key={item.id}>
                 <tr>
-                  <td>{item.id}</td>
-                  <td>{formatDate(item.orderDate!)}</td>
-                  <td>{item.totalAmount}</td>
-                  <td>{item.status}</td>
-                  <td style={{ fontSize: '16px', color: '#212529' }}>
+                  <td style={{ textAlign: 'left' }}>
+                    <a href='#' onClick={() => showOrderDetail(item.id!)}>
+                      #{item.id}
+                    </a>
+                  </td>
+                  <td style={{ textAlign: 'left' }}>{formatDate(item.orderDate!)}</td>
+                  <td style={{ textAlign: 'left' }}>{item.totalAmount}</td>
+                  <td style={{ textAlign: 'left' }}>{item.status}</td>
+                  <td style={{ fontSize: '16px', color: '#212529', textAlign: 'left' }}>
                     {item.buyerName}
-                    <a href='#' style={{ display: 'inline', fontSize: '12px' }}>
+                    <a href='#'>
                       <img src={mailBox} />
                     </a>
                   </td>
-                  <td>
+                  <td style={{ textAlign: 'left' }}>
                     <button
-                      className='btn'
+                      className='btn btn-outline-secondary'
                       style={{ display: 'inline' }}
                       onClick={() => handleLinkClick(item.id!)}
                     >
@@ -227,12 +254,10 @@ const UsedBooksOrder: React.FC = () => {
                 <div className='modal-header'>
                   <h5 className='modal-title'>訂單取消申請</h5>
                   <button
-                    type='button'
-                    className='close'
+                    className='btn'
                     onClick={handleCloseModal}
-                    aria-label='Close'
                   >
-                    <span aria-hidden='true'>&times;</span>
+                    X
                   </button>
                 </div>
                 <div className='modal-body'>
@@ -269,39 +294,26 @@ const UsedBooksOrder: React.FC = () => {
           role='dialog'
           style={{ display: 'block', backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
         >
-          <div className='modal-dialog' role='document'>
+          <div className='modal-dialog modal-dialog-centered' role='document'>
             <div className='modal-content'>
               <div className='modal-header'>
                 <h5 className='modal-title'>訂單明細</h5>
                 <button
-                  type='button'
-                  className='close'
+                  className='btn'
                   onClick={closeOrderDetail}
-                  aria-label='Close'
                 >
-                  <span aria-hidden='true'>&times;</span>
+                  X
                 </button>
               </div>
               <div className='modal-body'>
                 <OrderDetail id={detailIndex} />
-                {/* {cart.map((item) => {
-                                        if (item.sellerName == seller) {
-                                            orderTotal += item.unitPrice!;
-                                            return (
-
-                                                <div className="sub-total" key={item.id}>
-                                                    <h6><span className="dark-gray">{item.name}</span></h6>
-                                                    <h6>${item.unitPrice}</h6>
-                                                </div>
-                                            )
-                                        }
-                                    })} */}
               </div>
             </div>
           </div>
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 };
 

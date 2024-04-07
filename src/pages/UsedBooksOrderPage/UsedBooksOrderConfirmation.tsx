@@ -1,6 +1,5 @@
 import { useLocation } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
-import { usePostApiUsedBookOrdersApi } from '../../API';
 
 const UsedBooksOrderConfirmation: React.FC = () => {
   const [paymentStatus, setPaymentStatus] = useState<boolean>(false);
@@ -12,31 +11,19 @@ const UsedBooksOrderConfirmation: React.FC = () => {
     }
   }, [location.state]);
 
-  const { mutate: createOrder } = usePostApiUsedBookOrdersApi();
-  const handleCreateOrder = (e: React.MouseEvent<HTMLButtonElement>) => {
-    createOrder({
-      data: {
-        sellerId: 10,
-        buyerId: 11,
-        totalAmount: 8888,
-        status: 'TEST',
-        shippingFee: 0
-      }
-    });
-    console.log('新增成功');
-  };
 
   setTimeout(() => {
     window.location.href = 'http://localhost:5173/usedBook/UsedBookOrder';
-  }, 2000);
+  }, 3000);
 
   return (
-    <>
+
+    <div className="cart">
       <h2>UsedBooksOrderConfirmation</h2>
       {paymentStatus ? <h3>付款成功</h3> : <h3>付款失敗</h3>}
+      <h5>請等候跳轉...</h5>
+    </div>
 
-      <button onClick={handleCreateOrder}>TEST</button>
-    </>
   );
 };
 export default UsedBooksOrderConfirmation;

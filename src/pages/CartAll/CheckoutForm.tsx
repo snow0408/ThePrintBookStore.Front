@@ -1,19 +1,28 @@
 // OrderConfirmation.tsx
-import React, { useState, useRef, useEffect } from 'react';
-import '../../assets/css/app.css';
-import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { useCartStore, CartState } from './CountMath';
-import { CartItemType } from '../../App';
+import React, { useState, useRef, useEffect } from "react";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
+
+//css
+import "../../assets/css/app.css";
+
+//component
+import { CartItemType } from "../../App";
+import { useCartStore, CartState } from "./CountMath";
+
+//API
 import {
   useGetApiCartsMemberId,
   usePutTotalAmountId,
   usePostApiOrder,
   OrdersDto,
-  OrderCreationDto,
-  OrderDetailsDto
-} from '../../API';
-import LinePay from '../../picture/LinePay.png';
-import Ecpay from '../../picture/ECPay.png';
+  useGetApiOrderMemberId,
+  useGetApiOrder,
+  useGetAllCoupon,
+} from "../../API";
+
+//image
+import LinePay from "../../picture/LinePay.png";
+import Ecpay from "../../picture/ECPay.png";
 
 // 擴展訂單介面以包含買家資訊
 
@@ -27,39 +36,27 @@ export const Step1: React.FC<CartProps> = ({ initialCart }) => {
 
   //APIs
   const { mutate: updateCart } = usePutTotalAmountId();
-  const { mutate: createOrder } = usePostApiOrder();
+  const { mutate: createOrder, data } = usePostApiOrder();
 
-  interface usePostApiOrder {
-    address?: string | null;
-    discountAmount?: number | null;
-    id?: number;
-    memberId?: number;
-    memberName?: string | null;
-    message?: string | null;
-    orderDate?: string;
-    paymentMethod?: string | null;
-    phone?: string | null;
-    status?: string | null;
-    totalAmount?: number;
-    orderId?: number;
-    price?: number;
-    productId?: number;
-    productName?: string | null;
-    quantity?: number;
-    unitPrice?: number;
-  }
+  //todo抓取優惠券
+  const GetAllCoupon = useGetAllCoupon();
 
   //zustand
   const { cart } = useCartStore<CartState>((state) => state);
 
   // State
   const formRef = useRef<HTMLFormElement>(null); // 創建一個ref表單對象
-  const [memberName, setMemberName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
-  const [message, setMessage] = useState('');
+  const [memberName, setMemberName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [message, setMessage] = useState("");
   const memberId = 2; //假資料 之後更改 todo
 
+  useEffect(() => {
+    if (data?.data) {
+      navigate("/list/Step2", { state: { orderId: data?.data } });
+    }
+  }, [data?.data]);
   // const handleMemberNameChange = (
   //   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   // ) => {
@@ -117,99 +114,98 @@ export const Step1: React.FC<CartProps> = ({ initialCart }) => {
     // 使用模板字符串來創建一個格式化的日期時間字符串
     const formattedDateTime = `${year}-${month
       .toString()
-      .padStart(2, '0')}-${day.toString().padStart(2, '0')}T${hours
+      .padStart(2, "0")}-${day.toString().padStart(2, "0")}T${hours
       .toString()
-      .padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds
+      .padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds
       .toString()
-      .padStart(2, '0')}`;
+      .padStart(2, "0")}`;
 
     const formData = new FormData(formRef.current as HTMLFormElement);
-    const orderBody: OrderCreationDto[] = {
-      phone: formData.get('phone') as string,
-      message: formData.get('message') as string,
-      address: formData.get('address') as string,
+    const orderBody: OrdersDto = {
+      phone: formData.get("phone") as string,
+      message: formData.get("message") as string,
+      address: formData.get("address") as string,
       memberId: memberId,
-      paymentMethod: '信用卡', //寫死
+      paymentMethod: "信用卡", //寫死
       orderDate: formattedDateTime,
       totalAmount: total,
-      status: '未付款',
-      discountAmount: 0 //折扣 todo
+      status: "未付款",
+      discountAmount: 0, //折扣 todo
     };
 
     if (!phone || !address) {
-      alert('請填寫完整的客戶資料');
+      alert("請填寫完整的客戶資料");
       return;
     }
 
-    await createOrder(orderBody);
-
-    const navigate = useNavigate();
-    navigate('/list/Step2');
+    await createOrder({
+      data: { ordersDto: orderBody, orderDetailsDto: cart },
+    });
   };
 
   return (
-    <div id='step-1' role='tabpanel' aria-labelledby='step-1'>
+    <div id="step-1" role="tabpanel" aria-labelledby="step-1">
       <form ref={formRef} onSubmit={handleSubmit}>
-        <div className='contact-info'>
-          <h4 className='mb-32'>確認資料</h4>
+        <div className="contact-info">
+          <h4 className="mb-32">確認資料</h4>
         </div>
-        <div className='row'>
-          <div className='col-sm-6'>
-            <div className='mb-24'>
+        <div className="row">
+          <div className="col-sm-6">
+            <div className="mb-24">
               <input
-                type='text'
-                className='form-control'
-                id='memberName'
-                name='memberName'
-                placeholder='客戶姓名'
+                type="text"
+                className="form-control"
+                id="memberName"
+                name="memberName"
+                placeholder="客戶姓名"
                 value={memberName}
                 readOnly
               />
             </div>
           </div>
-          <div className='col-sm-6'>
-            <div className='mb-24'>
+          <div className="col-sm-6">
+            <div className="mb-24">
               <input
-                type='tel'
-                className='form-control'
-                id='phone'
-                name='phone'
-                placeholder='手機號碼'
+                type="tel"
+                className="form-control"
+                id="phone"
+                name="phone"
+                placeholder="手機號碼"
                 defaultValue={phone}
                 onChange={handlePhoneChange}
               />
               {!isValid && (
-                <p style={{ color: '#F08080' }}>請輸入有效的手機號碼</p>
+                <p style={{ color: "#F08080" }}>請輸入有效的手機號碼</p>
               )}
             </div>
           </div>
-          <div className='col-sm-12'>
-            <div className='mb-24'>
+          <div className="col-sm-12">
+            <div className="mb-24">
               <input
-                type='text'
-                className='form-control'
-                id='address'
-                name='address'
+                type="text"
+                className="form-control"
+                id="address"
+                name="address"
                 value={address}
                 onChange={handleAddressChange}
-                placeholder='請輸入完整地址'
+                placeholder="請輸入完整地址"
               />
             </div>
           </div>
-          <div className='col-sm-12'>
+          <div className="col-sm-12">
             <textarea
-              className='form-control notes mb-32'
-              name='message'
-              id='message'
+              className="form-control notes mb-32"
+              name="message"
+              id="message"
               cols={68}
               rows={5}
-              placeholder='備註事項'
+              placeholder="備註事項"
               value={message}
               onChange={handleMessageChange}
             ></textarea>
           </div>
-          <div className='sw-toolbar-elm toolbar toolbar-bottom' role='toolbar'>
-            <button className='btn sw-btn-prev sw-btn' type='submit'>
+          <div className="sw-toolbar-elm toolbar toolbar-bottom" role="toolbar">
+            <button className="btn sw-btn-prev sw-btn" type="submit">
               去結帳
             </button>
           </div>
@@ -221,102 +217,107 @@ export const Step1: React.FC<CartProps> = ({ initialCart }) => {
 
 //付款方式LinePay
 export const Step2 = () => {
-  const { cart, total } = useCartStore<CartState>((state) => state);
-  const calculateTotal = () => {
-    let total = 0;
-    cart.forEach((item) => {
-      total += item.unitPrice! * item.quantity!;
-    });
-    return total;
-  };
+  const { cart } = useCartStore<CartState>((state) => state);
+  const location = useLocation();
+  const orderId = location.state.orderId;
+
+  const orderTotalResponse = useGetApiOrder({ orderId: orderId });
+
+  let orderTotalAmount = 0;
+  if (orderId != 0) {
+    orderTotalAmount = orderTotalResponse.data?.data?.totalAmount as number;
+  }
 
   const requestPayment = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    const totalAmount = calculateTotal(); // 獲取總金額
-    const baseLoginPayUrl = 'https://localhost:7236/api/LinePay/';
+    // console.log(orderTotalAmount);
+    // const totalAmount = calculateTotal(); // 獲取總金額
+    const baseLoginPayUrl = "https://localhost:7236/api/LinePay/";
     const payment = {
-      amount: totalAmount,
-      currency: 'TWD',
-      orderId: '0', //這裡:()
+      amount: orderTotalAmount,
+      currency: "TWD",
+      orderId: orderId.toString(),
       packages: [
         {
-          id: '20191011I001',
-          amount: totalAmount,
-          name: '印跡書閣',
+          id: "20191011I001",
+          amount: orderTotalAmount,
+          name: "印跡書閣",
           products: [
             {
-              name: '印跡書閣',
+              name: "印跡書閣",
               quantity: 1,
-              price: totalAmount
-            }
-          ]
-        }
+              price: orderTotalAmount,
+            },
+          ],
+        },
       ],
       redirectUrls: {
-        confirmUrl: 'http://127.0.0.1:5173/linepay',
-        cancelUrl: 'https://localhost:7236/api/Cancel'
-      }
+        confirmUrl: "http://127.0.0.1:5173/linepay",
+        cancelUrl: "https://localhost:7236/api/Cancel",
+      },
     };
 
     try {
-      const response = await fetch(baseLoginPayUrl + 'Create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payment)
-      });
+      if (orderTotalAmount) {
+        const response = await fetch(baseLoginPayUrl + "Create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payment),
+        });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const res = await response.json();
+        window.location = res.info.paymentUrl.web;
       }
-
-      const res = await response.json();
-      window.location = res.info.paymentUrl.web;
     } catch (error) {
-      console.log('Request failed', error);
+      console.log("Request failed", error);
     }
   };
 
   return (
-    <div id='step-2' role='tabpanel' aria-labelledby='step-2'>
-      <div className='contact-info'>
-        <h4 className='mb-32'>付款方式</h4>
+    <div id="step-2" role="tabpanel" aria-labelledby="step-2">
+      <div className="contact-info">
+        <h4 className="mb-32">付款方式</h4>
       </div>
-      <div className='row'>
-        <div className='col-sm-6'>
-          <div className='mb-24'>
-            <div className='mb-24'>
+      <div className="row">
+        <div className="col-sm-6">
+          <div className="mb-24">
+            <div className="mb-24">
               <div>
                 <button
-                  type='button'
+                  type="button"
                   onClick={requestPayment}
-                  className='col-5'
+                  className="col-5"
                 >
                   <img src={LinePay} />
                 </button>
                 <button
-                  type='button'
+                  type="button"
                   onClick={requestPayment}
-                  className='col-5'
+                  className="col-5"
                 >
-                  <img src={Ecpay} alt='' />
+                  <img src={Ecpay} alt="" />
                 </button>
               </div>
             </div>
           </div>
         </div>
-        <div className='col-sm-6'>
-          <div className='mb-24'>
-            <div className='mb-32'></div>
+        <div className="col-sm-6">
+          <div className="mb-24">
+            <div className="mb-32"></div>
           </div>
         </div>
-        <div className='col-sm-12'>
-          <div className='mb-24'></div>
+        <div className="col-sm-12">
+          <div className="mb-24"></div>
         </div>
-        <div className='sw-toolbar-elm toolbar toolbar-bottom' role='toolbar'>
-          <Link to={'/list'} className='nav-link'>
-            <button className='btn sw-btn-prev sw-btn' type='button'>
+        <div className="sw-toolbar-elm toolbar toolbar-bottom" role="toolbar">
+          <Link to={"/list"} className="nav-link">
+            <button className="btn sw-btn-prev sw-btn" type="button">
               上一步
             </button>
           </Link>
@@ -333,58 +334,59 @@ export const YourOrder: React.FC = () => {
   return (
     <div>
       {cart.length > 0 && (
-        <div className='order-detail'>
-          <div className='sub-total'>
-            <h6 className='col-3'>
-              <span className='dark-gray'>訂單商品</span>
+        <div className="order-detail">
+          <div className="sub-total">
+            <h6 className="col-3">
+              <span className="dark-gray">訂單商品</span>
             </h6>
-            <h6 className='col-3'>單價</h6>
-            <h6 className='col-3'>數量</h6>
-            <h6 className='col-3'>總價</h6>
+            <h6 className="col-3">單價</h6>
+            <h6 className="col-3">數量</h6>
+            <h6 className="col-3">總價</h6>
           </div>
           <hr />
           {cart.map((item) => (
-            <div className='sub-total' key={item.id}>
-              <h6 className='col-3'>
-                <span className='dark-gray'>{item.productName}</span>
+            <div className="sub-total" key={item.id}>
+              <h6 className="col-3">
+                <span className="dark-gray">{item.productName}</span>
               </h6>
-              <h6 className='col-3'>${item.unitPrice}</h6>
-              <h6 className='col-3'>{item.quantity}</h6>
-              <h6 className='col-3'>
-                ${(item.unitPrice! * item.quantity!).toFixed(0)}
+              <h6 className="col-3">${item.unitPrice}</h6>
+              <h6 className="col-3">{item.quantity}</h6>
+              <h6 className="col-3">
+                ${(item.unitPrice * item.quantity).toFixed(0)}
               </h6>
             </div>
           ))}
           <hr />
-          <div className='sub-total'>
-            <h5 className='dark-gray'>商品總價</h5>
+          <div className="sub-total">
+            <h5 className="dark-gray">商品總價</h5>
             <h5>$ {total}</h5>
           </div>
           <hr />
-          <div className='sub-total'>
-            <h5 className='dark-gray'>運費</h5>
-            <h5>Free Shipping</h5>
+          <div className="sub-total">
+            <h5 className="dark-gray">運費</h5>
+            <h5>免運費</h5>
           </div>
           <hr />
           <h6>選擇折價券</h6>
-          <div className='find-books-input'>
+          <div className="find-books-input">
             <select
-              name='coupon'
-              id='coupon'
-              className='search-input dark-gray'
+              name="coupon"
+              id="coupon"
+              className="search-input dark-gray"
             >
-              <option value=''>選擇折價券</option>
-              <option value='coupon1'>折價券1</option>
-              <option value='coupon2'>折價券2</option>
-              <option value='coupon3'>折價券3</option>
+              <option value="">選擇折價券</option>
+              <option value="coupon1">折價券1</option>
+              <option value="coupon2">折價券2</option>
+              <option value="coupon3">折價券3</option>
             </select>
           </div>
+
           <hr />
-          <div className='sub-total'>
-            <h5 className='dark-gray'>折價金額</h5>
+          <div className="sub-total">
+            <h5 className="dark-gray">折價金額</h5>
             <h5>-$0</h5>
           </div>
-          <div className='sub-total'>
+          <div className="sub-total">
             <h4>總付款金額</h4>
             <h4>${total.toFixed(0)}</h4>
           </div>
@@ -401,36 +403,36 @@ const OrderConfirmation: React.FC = () => {
   // if (TestData.isSuccess)
   //   console.log(TestData.data?.data)
   return (
-    <div className='page-content '>
+    <div className="page-content ">
       {/* Shipping Details Start */}
-      <section className='checkout container'>
-        <div className='row'>
-          <div className='col-8'>
-            <div className='checkout-form'>
+      <section className="checkout container">
+        <div className="row">
+          <div className="col-8">
+            <div className="checkout-form">
               {/* <form action="signup.html" id="form-wizard"> */}
-              <ul className='nav'>
-                <li className='nav-item'>
-                  <div className='nav-link'>
-                    <div className='num'>1</div>
+              <ul className="nav">
+                <li className="nav-item">
+                  <div className="nav-link">
+                    <div className="num">1</div>
                     <span>確認資料</span>
                   </div>
                 </li>
-                <li className='nav-item'>
-                  <div className='nav-link'>
-                    <div className='num'>2</div>
+                <li className="nav-item">
+                  <div className="nav-link">
+                    <div className="num">2</div>
                     <span>付款方式</span>
                   </div>
                 </li>
               </ul>
 
-              <div className='tab-content'>
+              <div className="tab-content">
                 <Outlet />
               </div>
 
               {/* </form> */}
             </div>
           </div>
-          <div className='col-4'>
+          <div className="col-4">
             <YourOrder />
           </div>
         </div>

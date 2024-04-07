@@ -77,6 +77,7 @@ section.section-fourty-eight {
 /* 針對所有滾動條 */
 ::-webkit-scrollbar {
   width: 5px; /* 滾動條的寬度 */
+  height: 5px; /* 水平滚动条的高度 */
 }
 
 /* 滾動條軌道 */

@@ -1,60 +1,74 @@
-import React from "react";
+
+import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
+
+
 import {
-  CartDetailsDto,
-  OrderDetailsDto,
   OrdersDto,
-  useGetApiCartsDetails,
+  useGetApiOrder,
   useGetApiOrderMemberId,
   useGetApiOrdersDetailsId,
+
+  useGetApiProductsId,
 } from "../../API";
-import { AxiosError, AxiosResponse } from "axios";
-import { UseQueryResult } from "@tanstack/react-query";
 import Accordion from "@mui/material/Accordion";
-import AccordionActions from "@mui/material/AccordionActions";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Button from "@mui/material/Button";
+import "../../assets/css/app.css";
+import returnIcon from "../../picture/return.png";
+import deliveryIcon from "../../picture/delivery.png";
+import pricingIcon from "../../picture/pricing.png";
+import dealsIcon from "../../picture/deals.png";
+import backmenu from "../../picture/btn-book.png";
+
+import b21 from "../../picture/b2-1.png";
+import b22 from "../../picture/b2-2.png";
+import b23 from "../../picture/b2-3.png";
+import b24 from "../../picture/b2-4.png";
+import b25 from "../../picture/b2-5.png";
+import ProductPictrue from "./ProductPictrue";
+import LoadingMessage from "../../main";
+
 
 interface OrderProp {
   memberId: number;
 }
 // 定義 SideOrder 組件，接受 orderData 屬性
-const SideOrder: React.FC<{ orderData: OrdersDto[] }> = ({ orderData }) => {
+const SideOrder: React.FC<{ orderData: OrdersDto }> = ({ orderData }) => {
   return (
     <div className="col-lg-5 mt-5">
       <form className="shop-form widget">
         <h4 className="widget-title">訂單資訊</h4>
-        {orderData &&
-          orderData.length > 0 &&
-          orderData.map((order, index) => (
-            <table className="table-bordered check-tbl mb-4" key={index}>
-              <tbody>
-                <tr>
-                  <td>付款方式</td>
-                  <td className="product-price">信用卡</td>
-                </tr>
-                <tr>
-                  <td>下單時間</td>
-                  <td>{order.orderDate}</td>
-                </tr>
-                <tr>
-                  <td>運送狀態</td>
-                  <td className="product-price-total">{order.status}</td>
-                </tr>
-                <tr>
-                  <td>使用優惠券</td>
-                  <td className="product-price">
-                    {order.discountAmount ? "$0.00" : "未使用"}
-                  </td>
-                </tr>
-                <tr>
-                  <td>總價格</td>
-                  <td className="product-price-total">${order.totalAmount}</td>
-                </tr>
-              </tbody>
-            </table>
-          ))}
+
+
+        <table className="table-bordered check-tbl mb-4">
+          <tbody>
+            <tr>
+              <td>付款方式</td>
+              <td className="product-price">{orderData?.paymentMethod}</td>
+            </tr>
+            <tr>
+              <td>下單時間</td>
+              <td>{orderData?.orderDate}</td>
+            </tr>
+            <tr>
+              <td>運送狀態</td>
+              <td className="product-price-total">{orderData?.status}</td>
+            </tr>
+            <tr>
+              <td>使用優惠券</td>
+              <td className="product-price">
+                {orderData?.discountAmount ? "$0.00" : "未使用"}
+              </td>
+            </tr>
+            <tr>
+              <td>總價格</td>
+              <td className="product-price-total">${orderData?.totalAmount}</td>
+            </tr>
+          </tbody>
+        </table>
+
       </form>
     </div>
   );
@@ -67,6 +81,24 @@ const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
   // 從回應中取得訂單詳細資料
   const orderDetailData = orderDetailResponse.data?.data;
   // console.log(orderId, " ", orderDetailData);
+  const orderResponse = useGetApiOrder({ orderId: orderId });
+  const orderData = orderResponse.data?.data;
+
+  const dateTimeString = orderData?.orderDate || "";
+  const dateObject = new Date(dateTimeString);
+
+  const year = dateObject.getFullYear().toString(); // 取得年份後兩位
+  const month = (dateObject.getMonth() + 1).toString().padStart(2, "0"); // 取得月份並補零
+  const day = dateObject.getDate().toString().padStart(2, "0"); // 取得日期並補零
+
+  const formattedDate = `${year}年${month}月${day}日`;
+
+  //抓商品圖片
+  // orderDetailData?.map((item) => {
+  //   console.log(item.productId);
+  // }
+  if (orderDetailResponse.isLoading && orderResponse.isLoading)
+    return <LoadingMessage />;
   return (
     <div className="mb-2">
       {/* 手風琴的開始 */}
@@ -76,8 +108,14 @@ const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
           aria-controls="panel1-content"
           id="panel1-header"
         >
-          <h5>訂單編號:{orderId}</h5>
+          {/* todo怎麼下單時間沒有抓到?? */}
+          <div>
+            <h5>訂單編號:{orderId}</h5>
+            <h5>下單時間:{formattedDate}</h5>
+            <h5>總金額:{orderData?.totalAmount}</h5>
+          </div>
         </AccordionSummary>
+
         {/* 手風琴的詳細內容 */}
         <AccordionDetails>
           <div className="mb-2">
@@ -102,7 +140,11 @@ const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
                           <tr>
                             <td className="product-item-img col-2">
                               {/* 顯示商品圖片 */}
-                              <img src={item.imgSrc} alt={"圖片謀去啊"} />
+
+                              <ProductPictrue
+                                productId={item.productId as number}
+                              />
+
                             </td>
                             {/* 顯示商品名稱 */}
                             <td className="product-item-name col-6">
@@ -129,7 +171,11 @@ const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
                         <tbody>
                           <tr>
                             <td className="product-item-img col-2">
-                              <img src={item.imgSrc} alt={"圖片謀去啊"} />
+
+                              <ProductPictrue
+                                productId={item.productId as number}
+                              />
+
                             </td>
                             <td className="product-item-name  col-6">
                               {item.productName}
@@ -152,6 +198,9 @@ const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
               <div>這個訂單什麼都沒有，資料庫忘了載吼。</div>
             )}
           </div>
+          <div>
+            <SideOrder orderData={orderData as OrdersDto} />
+          </div>
         </AccordionDetails>
       </Accordion>
     </div>
@@ -165,60 +214,93 @@ const OrderPage: React.FC<OrderProp> = ({ memberId }) => {
 
   // 從回應中取得會員訂單資料
   const orderData = orderResponse.data?.data;
-
+  const backtoMenu = () => {
+    window.location.href = "/";
+  };
+  if (orderResponse.isLoading) return <LoadingMessage />;
   return (
     <div className="container">
-      <div className="row ">
+
+      <div className="row">
         {/* 左側區域顯示會員的訂單列表 */}
-        <div className="col-lg-7 widget mt-5">
+        <div className="col-lg-12 widget mt-5">
+
           <h4 className="widget-title">您的訂單</h4>
           {orderData && orderData.length > 0 ? (
             orderData.map((order, index) => (
               <OneOrder orderId={order.id as number} key={index} />
             ))
           ) : (
-            // 如果沒有訂單資料，顯示提示訊息
-            <div>沒有任何的訂單，哭了，要不要去逛逛呢?</div>
-          )}
-        </div>
+            <>
+              <div className="hero-banner-2 pb-40">
+                <div className="container">
+                  <div className="banner-2">
+                    <div className="banner-images">
+                      <img src={b21} alt="" className="stair-image-1" />
+                      <img src={b22} alt="" className="stair-image-2" />
+                      <img src={b23} alt="" className="stair-image-3" />
+                      <img src={b24} alt="" className="stair-image-4" />
+                      <img src={b25} alt="" className="stair-image-5" />
+                    </div>
+                    <div className="banner-text text-center">
+                      <h1>訂單內尚未有書籍</h1>
+                      <h5 className="dark-gray">快點來購入心儀書籍吧~ </h5>
+                      <h6>
+                        {" "}
+                        <div className="d-flex justify-content-center">
+                          <button
+                            onClick={backtoMenu}
+                            className="cus-btn "
+                            style={{ border: 0 }}
+                          >
+                            <span className="icon">
+                              <img src={backmenu} alt="" />
+                            </span>
+                            返回商城
+                          </button>
+                        </div>
+                      </h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-        {/* 右側區域顯示訂單資訊 */}
-        <div className="col-lg-5 mt-5">
-          <form className="shop-form widget">
-            <h4 className="widget-title">訂單資訊</h4>
-            {orderData &&
-              orderData.length > 0 &&
-              orderData.map((order, index) => (
-                <table className="table-bordered check-tbl mb-4">
-                  <tbody>
-                    <tr>
-                      <td>付款方式</td>
-                      <td className="product-price">信用卡</td>
-                    </tr>
-                    <tr>
-                      <td>下單時間</td>
-                      <td>{order.orderDate}</td>
-                    </tr>
-                    <tr>
-                      <td>運送狀態</td>
-                      <td className="product-price-total">{order.status}</td>
-                    </tr>
-                    <tr>
-                      <td>使用優惠券</td>
-                      <td className="product-price">
-                        {order.discountAmount ? "$0.00" : "未使用"}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>總價格</td>
-                      <td className="product-price-total">
-                        ${order.totalAmount}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              ))}
-          </form>
+
+              <div className="m-40">
+                <div className="container">
+                  <div className="benifits bg-lightest-gray">
+                    <div className="row">
+                      <div className="col-xl-3 col-sm-6">
+                        <div className="benifits-block mb-32 mb-xl-0">
+                          <img src={returnIcon} alt="" />
+                          <h5>Easy Return</h5>
+                        </div>
+                      </div>
+                      <div className="col-xl-3 col-sm-6">
+                        <div className="benifits-block mb-32 mb-xl-0">
+                          <img src={deliveryIcon} alt="" />
+                          <h5>Free Delivery</h5>
+                        </div>
+                      </div>
+                      <div className="col-xl-3 col-sm-6">
+                        <div className="benifits-block mb-32 mb-sm-0">
+                          <img src={pricingIcon} alt="" />
+                          <h5>Best Price and Offer</h5>
+                        </div>
+                      </div>
+                      <div className="col-xl-3 col-sm-6">
+                        <div className="benifits-block">
+                          <img src={dealsIcon} alt="" />
+                          <h5>Great Daily Deal</h5>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
         </div>
       </div>
     </div>
