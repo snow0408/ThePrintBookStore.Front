@@ -19,7 +19,7 @@ import MainHeader from '../MainHeader/MainHeader';
 import { useGetApiUsedBookCartsApi, UsedBookCartsDto } from '../../API';
 
 const PhysicalEBookNav: React.FC = () => {
-  const memberId = 2;
+  const memberId = 28;
   const cartResponse = useGetApiUsedBookCartsApi({ memberId: memberId });
   const [bookSearch, setBookSearch] = useState<number>(10);
   const [dropdownVisible, setDropdownVisible] = useState(false);

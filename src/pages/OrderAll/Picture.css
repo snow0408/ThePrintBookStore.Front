@@ -1,14 +1,14 @@
 .img-block2 {
-  width: 100px; /* 定義正方形的寬度 */
-  height: 100px; /* 定義正方形的高度 */
+  width: 100px;
+  height: 100px;
 
-  display: flex; /* 使用 flexbox 布局 */
-  justify-content: center; /* 水平置中 */
-  align-items: center; /* 垂直置中 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .img-block2 img {
-  object-fit: cover; /* 保持圖片的比例，同時填滿元素的整個內容框 */
-  min-width: 100%; /* 確保圖片至少與區塊同寬 */
-  min-height: 100%; /* 確保圖片至少與區塊同高 */
+  object-fit: cover;
+  min-width: 100%;
+  min-height: 100%;
 }
