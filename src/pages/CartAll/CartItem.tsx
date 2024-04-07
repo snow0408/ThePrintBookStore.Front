@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { CartItemType } from "../../App";
+
+//css
 import "../../assets/css/app.css";
-import { faBook } from "@fortawesome/free-solid-svg-icons";
+
+//icon
 import returnIcon from "../../picture/return.png";
 import deliveryIcon from "../../picture/delivery.png";
 import pricingIcon from "../../picture/pricing.png";
@@ -28,6 +31,7 @@ import b24 from "../../picture/b2-4.png";
 import b25 from "../../picture/b2-5.png";
 import { UseQueryResult, useQueries } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 interface CartProps {
   initialCart: CartDetailsDto[];
@@ -199,27 +203,32 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                 <table className="cart-table mb-24">
                   <thead>
                     <tr>
-                      <th>商品</th>
-                      <th>單價</th>
-                      <th>數量</th>
-                      <th>總計</th>
+                      <th className="col-4">商品</th>
+                      <th className="col-2">單價</th>
+                      <th className="col-2">數量</th>
+                      <th className="col-2">總計</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr className="col-md-12 mb-5">
+                    <tr className="col-md-8 mb-5">
                       <td className="pd">
-                        <div className="product-detail-box">
-                          <div className="img-block product-item-img col-2">
+                        <div className="product-detail-box col-12">
+                          <div className="img-block product-item-img col-6">
                             <ProductPictrue
                               productId={item.productId as number}
                             />
                           </div>
-                          <div>
-                            <h5 className="dark-gray">{item.productName}</h5>
+                          <div className="col-6">
+                            <h5
+                              className="dark-gray
+                            "
+                            >
+                              {item.productName}
+                            </h5>
                           </div>
                         </div>
                       </td>
-                      <td>
+                      <td className="col-2">
                         <h5 className="dark-gray">
                           $
                           {Math.ceil(
@@ -236,7 +245,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                             ).price}
                         </h5>
                       </td>
-                      <td>
+                      <td className="col-3">
                         <div className="quantity quantity-wrap">
                           <input
                             className="decrement dark-gray"
@@ -282,7 +291,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                           />
                         </div>
                       </td>
-                      <td>
+                      <td className="col-2" style={{ textAlign: "center" }}>
                         <h5>
                           $
                           {(
@@ -305,8 +314,8 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                         <a href="#">
                           <i
                             className="fa-solid fa-trash-can"
-                            onClick={() => deleteDetail(item.id)}
-                          ></i>
+                            onClick={() => removeFromCart(item.id)}
+                          />
                         </a>
                       </td>
                     </tr>
@@ -320,20 +329,26 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                 <table className="cart-table mb-24">
                   <tbody>
                     <tr className="col-md-12 mb-5">
-                      <td className="pd">
-                        <div className="product-detail-box">
-                          <div className="img-block product-item-img col-2">
+                      <td className="pd col-4">
+                        <div className="product-detail-box col-12">
+                          <div className="img-block product-item-img col-6">
                             <ProductPictrue
                               productId={item.productId as number}
                             />
                           </div>
-                          <div>
-                            <h5 className="dark-gray">{item.productName}</h5>
+                          <div className="col-6">
+                            <h5
+                              className="dark-gray
+                            "
+                            >
+                              {item.productName}
+                            </h5>
                           </div>
                         </div>
                       </td>
-                      <td>
+                      <td className="col-2">
                         <h5 className="dark-gray">
+                          $
                           {Math.ceil(
                             produtDetail.find(
                               (pditem) =>
@@ -348,7 +363,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                             ).price}
                         </h5>
                       </td>
-                      <td>
+                      <td className="col-3">
                         <div className="quantity quantity-wrap">
                           <input
                             className="decrement dark-gray"
@@ -394,7 +409,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                           />
                         </div>
                       </td>
-                      <td>
+                      <td className="col-2" style={{ textAlign: "center" }}>
                         <h5>
                           $
                           {(
@@ -417,8 +432,8 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                         <a href="#">
                           <i
                             className="fa-solid fa-trash-can"
-                            onClick={() => deleteDetail(item.id)}
-                          ></i>
+                            onClick={() => removeFromCart(item.id)}
+                          />
                         </a>
                       </td>
                     </tr>

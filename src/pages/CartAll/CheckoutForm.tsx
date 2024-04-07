@@ -31,7 +31,7 @@ export const Step1: React.FC<CartProps> = ({ initialCart }) => {
   const { mutate: createOrder, data } = usePostApiOrder();
 
   //todo抓取優惠券
-  const GetAllCoupon =useGetAllCoupon();
+  const GetAllCoupon = useGetAllCoupon();
 
   //zustand
   const { cart } = useCartStore<CartState>((state) => state);
