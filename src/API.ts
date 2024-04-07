@@ -4590,6 +4590,72 @@ export const useGetApiProductsGetByMostProductOrder = <
   return query;
 };
 
+export const getApiProductsGetByMostProductOrder = (
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<BookProductDto[]>> => {
+  return axios.get(`/api/Products/GetByMostProductOrder`, options);
+};
+
+export const getGetApiProductsGetByMostProductOrderQueryKey = () => {
+  return [`/api/Products/GetByMostProductOrder`] as const;
+};
+
+export const getGetApiProductsGetByMostProductOrderQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiProductsGetByMostProductOrder>>,
+  TError = AxiosError<unknown>
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProductsGetByMostProductOrder>>,
+    TError,
+    TData
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiProductsGetByMostProductOrderQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiProductsGetByMostProductOrder>>
+  > = ({ signal }) =>
+    getApiProductsGetByMostProductOrder({ signal, ...axiosOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProductsGetByMostProductOrder>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetApiProductsGetByMostProductOrderQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiProductsGetByMostProductOrder>>
+>;
+export type GetApiProductsGetByMostProductOrderQueryError = AxiosError<unknown>;
+
+export const useGetApiProductsGetByMostProductOrder = <
+  TData = Awaited<ReturnType<typeof getApiProductsGetByMostProductOrder>>,
+  TError = AxiosError<unknown>
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getApiProductsGetByMostProductOrder>>,
+    TError,
+    TData
+  >;
+  axios?: AxiosRequestConfig;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions =
+    getGetApiProductsGetByMostProductOrderQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
 export const getApiProductsCategory = (
   options?: AxiosRequestConfig
 ): Promise<AxiosResponse<string[]>> => {
@@ -5497,6 +5563,217 @@ export const usePostApiUsedBookOrderDetails = <
 }) => {
   const mutationOptions =
     getPostApiUsedBookOrderDetailsMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const getApiUsedBookOrderMessages = (
+  params?: GetApiUsedBookOrderMessagesParams,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<UsedBookOrderMessage[]>> => {
+  return axios.get(`/api/UsedBookOrderMessages`, {
+    ...options,
+    params: { ...params, ...options?.params }
+  });
+};
+
+export const getGetApiUsedBookOrderMessagesQueryKey = (
+  params?: GetApiUsedBookOrderMessagesParams
+) => {
+  return [`/api/UsedBookOrderMessages`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetApiUsedBookOrderMessagesQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApiUsedBookOrderMessages>>,
+  TError = AxiosError<unknown>
+>(
+  params?: GetApiUsedBookOrderMessagesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiUsedBookOrderMessages>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+) => {
+  const { query: queryOptions, axios: axiosOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetApiUsedBookOrderMessagesQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getApiUsedBookOrderMessages>>
+  > = ({ signal }) =>
+    getApiUsedBookOrderMessages(params, { signal, ...axiosOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getApiUsedBookOrderMessages>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetApiUsedBookOrderMessagesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getApiUsedBookOrderMessages>>
+>;
+export type GetApiUsedBookOrderMessagesQueryError = AxiosError<unknown>;
+
+export const useGetApiUsedBookOrderMessages = <
+  TData = Awaited<ReturnType<typeof getApiUsedBookOrderMessages>>,
+  TError = AxiosError<unknown>
+>(
+  params?: GetApiUsedBookOrderMessagesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getApiUsedBookOrderMessages>>,
+      TError,
+      TData
+    >;
+    axios?: AxiosRequestConfig;
+  }
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } => {
+  const queryOptions = getGetApiUsedBookOrderMessagesQueryOptions(
+    params,
+    options
+  );
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  query.queryKey = queryOptions.queryKey;
+
+  return query;
+};
+
+export const postApiUsedBookOrderMessages = (
+  usedBookOrderMessage: UsedBookOrderMessage,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<string>> => {
+  return axios.post(
+    `/api/UsedBookOrderMessages`,
+    usedBookOrderMessage,
+    options
+  );
+};
+
+export const getPostApiUsedBookOrderMessagesMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiUsedBookOrderMessages>>,
+    TError,
+    { data: UsedBookOrderMessage },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiUsedBookOrderMessages>>,
+  TError,
+  { data: UsedBookOrderMessage },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiUsedBookOrderMessages>>,
+    { data: UsedBookOrderMessage }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return postApiUsedBookOrderMessages(data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiUsedBookOrderMessagesMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiUsedBookOrderMessages>>
+>;
+export type PostApiUsedBookOrderMessagesMutationBody = UsedBookOrderMessage;
+export type PostApiUsedBookOrderMessagesMutationError = AxiosError<unknown>;
+
+export const usePostApiUsedBookOrderMessages = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiUsedBookOrderMessages>>,
+    TError,
+    { data: UsedBookOrderMessage },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions =
+    getPostApiUsedBookOrderMessagesMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const postApiUsedBookOrderReturnApi = (
+  params?: PostApiUsedBookOrderReturnApiParams,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<string>> => {
+  return axios.post(`/api/UsedBookOrderReturnApi`, undefined, {
+    ...options,
+    params: { ...params, ...options?.params }
+  });
+};
+
+export const getPostApiUsedBookOrderReturnApiMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiUsedBookOrderReturnApi>>,
+    TError,
+    { params?: PostApiUsedBookOrderReturnApiParams },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof postApiUsedBookOrderReturnApi>>,
+  TError,
+  { params?: PostApiUsedBookOrderReturnApiParams },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof postApiUsedBookOrderReturnApi>>,
+    { params?: PostApiUsedBookOrderReturnApiParams }
+  > = (props) => {
+    const { params } = props ?? {};
+
+    return postApiUsedBookOrderReturnApi(params, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type PostApiUsedBookOrderReturnApiMutationResult = NonNullable<
+  Awaited<ReturnType<typeof postApiUsedBookOrderReturnApi>>
+>;
+
+export type PostApiUsedBookOrderReturnApiMutationError = AxiosError<unknown>;
+
+export const usePostApiUsedBookOrderReturnApi = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof postApiUsedBookOrderReturnApi>>,
+    TError,
+    { params?: PostApiUsedBookOrderReturnApiParams },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions =
+    getPostApiUsedBookOrderReturnApiMutationOptions(options);
 
   return useMutation(mutationOptions);
 };
