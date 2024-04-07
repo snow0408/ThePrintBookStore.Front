@@ -1,21 +1,28 @@
+import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+
+//css
 import "../../assets/css/app.css";
+
 import { useCartStore, CartState } from "./CountMath";
+
+//API
 import {
   Order,
   useGetApiCartsMemberId,
   useGetApiOrder,
   usePutApiOrderId,
 } from "../../API";
-import { useNavigate } from "react-router-dom";
+
+//image
 import logo from "../../assets/images/logo.png";
 import uc from "../../picture/uc.jpg";
 
 const LinePayPage: React.FC = () => {
   const [transactionId, setTransactionId] = useState<string>("");
   const [orderId, setOrderId] = useState<string>("");
-  const [naviSeconds, setNaviSeconds] = useState<number>(2); // 跳轉秒數
+  const [naviSeconds, setNaviSeconds] = useState<number>(5); // 跳轉秒數
   const [isConfirm, setIsConfirm] = useState<boolean>(true); // 是否確認付款
   const navigate = useNavigate();
   const orderResponse = useGetApiOrder({ orderId: Number(orderId) });
@@ -33,7 +40,7 @@ const LinePayPage: React.FC = () => {
     }
     const interval = setInterval(() => {
       setNaviSeconds((prevSeconds) => prevSeconds - 1); // 每秒減少一秒
-    }, 10000); // 1000 毫秒 = 1 秒
+    }, 5000); // 1000 毫秒 = 1 秒
 
     return () => clearInterval(interval);
   }, []);

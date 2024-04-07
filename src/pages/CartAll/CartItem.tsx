@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { CartItemType } from "../../App";
+
 
 //css
 import "../../assets/css/app.css";
 
-//icon
+//image
 import returnIcon from "../../picture/return.png";
 import deliveryIcon from "../../picture/delivery.png";
 import pricingIcon from "../../picture/pricing.png";
 import dealsIcon from "../../picture/deals.png";
 import ProductPictrue from "../OrderAll/ProductPictrue";
-
 import orangeCart from "../../picture/orange-cart.png";
 import backmenu from "../../picture/btn-book.png";
+import b21 from "../../picture/b2-1.png";
+import b22 from "../../picture/b2-2.png";
+import b23 from "../../picture/b2-3.png";
+import b24 from "../../picture/b2-4.png";
+import b25 from "../../picture/b2-5.png";
+
+//component
 import { useCartStore, CartState } from "./CountMath";
+import { CartItemType } from "../../App";
+
+//API
 import {
   CartDetailsDto,
   useDeleteApiCartsDetailsId,
@@ -24,11 +33,6 @@ import {
 } from "../../API";
 import { useNavigate } from "react-router-dom";
 import LoadingMessage from "../../main";
-import b21 from "../../picture/b2-1.png";
-import b22 from "../../picture/b2-2.png";
-import b23 from "../../picture/b2-3.png";
-import b24 from "../../picture/b2-4.png";
-import b25 from "../../picture/b2-5.png";
 import { UseQueryResult, useQueries } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

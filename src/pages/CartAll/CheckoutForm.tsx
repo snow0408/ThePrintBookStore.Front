@@ -1,9 +1,15 @@
 // OrderConfirmation.tsx
 import React, { useState, useRef, useEffect } from "react";
-import "../../assets/css/app.css";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
+
+//css
+import "../../assets/css/app.css";
+
+//component
+import { CartItemType } from "../../App";
 import { useCartStore, CartState } from "./CountMath";
-import { CartItemType } from "../../API";
+
+//API
 import {
   useGetApiCartsMemberId,
   usePutTotalAmountId,
@@ -13,6 +19,8 @@ import {
   useGetApiOrder,
   useGetAllCoupon,
 } from "../../API";
+
+//image
 import LinePay from "../../picture/LinePay.png";
 import Ecpay from "../../picture/ECPay.png";
 
