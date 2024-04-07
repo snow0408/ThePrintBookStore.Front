@@ -185,12 +185,13 @@ const UsedBooksCart: React.FC = () => {
                     書況
                   </th>
                   <th
-                    className='col-1'
+                    className='col-2'
                     style={{
-                      paddingLeft: '20px',
+                      textAlign: 'center',
                       color: '#ffff',
                       fontWeight: 'bold',
-                      paddingTop: '20px'
+                      paddingTop: '20px',
+                      paddingLeft: '21px'
                     }}
                   >
                     賣家
@@ -203,9 +204,7 @@ const UsedBooksCart: React.FC = () => {
                       fontWeight: 'bold',
                       paddingTop: '20px'
                     }}
-                  >
-                    刪除
-                  </th>
+                  ></th>
                 </tr>
               </thead>
               <tbody>
@@ -258,7 +257,7 @@ const UsedBooksCart: React.FC = () => {
                         <td>
                           <h6
                             className='dark-gray'
-                            style={{ textAlign: 'left' }}
+                            style={{ textAlign: 'center' }}
                           >
                             {item.sellerName}
                           </h6>

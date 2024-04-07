@@ -24,7 +24,7 @@ const menuItems = [
     subItems: [
       { title: '個人資料', link: '/MemberCenter' },
       { title: '我的訂單', link: '/order' },
-      { title: '優惠券總覽', link: '/Datatables' }
+      { title: '優惠券總覽', link: '/Coupons' }
       // { title: "訂單記錄", link: "/orders" },
       // 添加其他次選項...
     ]
