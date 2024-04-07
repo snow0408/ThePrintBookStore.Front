@@ -502,45 +502,47 @@ const OrderConfirmation: React.FC = () => {
   }, [fee]);
 
   return (
-    <div className='page-content'>
-      {/* Shipping Details Start */}
-      <section className='checkout container'>
-        <div className='row'>
-          <div className='col-xl-8'>
-            <div className='checkout-form'>
-              <form action='signup.html' id='form-wizard'>
-                <ul className='nav'>
-                  <li className='nav-item'>
-                    {/* <Link to={'/checkOut/'} className="nav-link"> */}
-                    <div className='nav-link'>
-                      <div className='num'>1</div>
-                      <span>寄送資訊</span>
-                    </div>
-                    {/* </Link> */}
-                  </li>
-                  <li className='nav-item'>
-                    {/* <Link to={`/checkOut/Step2`} className="nav-link"> */}
-                    <div className='nav-link'>
-                      <div className='num'>2</div>
-                      <span>付款方式</span>
-                    </div>
-                    {/* </Link> */}
-                  </li>
-                </ul>
+    <div className="cart">
+      <div className='page-content'>
+        {/* Shipping Details Start */}
+        <section className='checkout container'>
+          <div className='row'>
+            <div className='col-xl-8'>
+              <div className='checkout-form'>
+                <form action='signup.html' id='form-wizard'>
+                  <ul className='nav'>
+                    <li className='nav-item'>
+                      {/* <Link to={'/checkOut/'} className="nav-link"> */}
+                      <div className='nav-link'>
+                        <div className='num'>1</div>
+                        <span>寄送資訊</span>
+                      </div>
+                      {/* </Link> */}
+                    </li>
+                    <li className='nav-item'>
+                      {/* <Link to={`/checkOut/Step2`} className="nav-link"> */}
+                      <div className='nav-link'>
+                        <div className='num'>2</div>
+                        <span>付款方式</span>
+                      </div>
+                      {/* </Link> */}
+                    </li>
+                  </ul>
 
-                <div className='tab-content'>
-                  <Outlet />
-                </div>
-              </form>
+                  <div className='tab-content'>
+                    <Outlet />
+                  </div>
+                </form>
+              </div>
+            </div>
+            <div className='col-xl-4'>
+              <YourUsedBookOrder cart={cart} total={total} fee={fee} />
             </div>
           </div>
-          <div className='col-xl-4'>
-            <YourUsedBookOrder cart={cart} total={total} fee={fee} />
-          </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Shipping Details End */}
+        {/* Shipping Details End */}
+      </div>
     </div>
   );
 };
