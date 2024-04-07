@@ -23,6 +23,7 @@ const menuItems = [
     icon: 'far fa-user',
     subItems: [
       { title: '個人資料', link: '/MemberCenter' },
+      { title: '我的訂單', link: '/order' },
       { title: '優惠券總覽', link: '/Datatables' }
       // { title: "訂單記錄", link: "/orders" },
       // 添加其他次選項...
@@ -34,7 +35,7 @@ const menuItems = [
     icon: 'far fa-user',
     subItems: [
       { title: '我的二手書', link: '/usedBook/used-book-list' },
-      { title: '訂單管理', link: '//usedBook/usedBookOrder' }
+      { title: '訂單管理', link: '/usedBook/usedBookOrder' }
     ]
   }
   // 添加其他主選項...
