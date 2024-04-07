@@ -40,6 +40,7 @@ export const Step1: React.FC<CartProps> = ({ initialCart }) => {
 
   //todo抓取優惠券
   const GetAllCoupon = useGetAllCoupon();
+  const AllCoupon = GetAllCoupon.data?.data;
 
   //zustand
   const { cart } = useCartStore<CartState>((state) => state);
@@ -149,6 +150,7 @@ export const Step1: React.FC<CartProps> = ({ initialCart }) => {
         <div className="contact-info">
           <h4 className="mb-32">確認資料</h4>
         </div>
+        {/* //todo抓會員名字 */}
         <div className="row">
           <div className="col-sm-6">
             <div className="mb-24">
@@ -157,7 +159,7 @@ export const Step1: React.FC<CartProps> = ({ initialCart }) => {
                 className="form-control"
                 id="memberName"
                 name="memberName"
-                placeholder="客戶姓名"
+                placeholder="王測試"
                 value={memberName}
                 readOnly
               />
@@ -331,6 +333,25 @@ export const Step2 = () => {
 export const YourOrder: React.FC = () => {
   const { cart, total } = useCartStore<CartState>((state) => state);
 
+  const [discountAmount, setDiscountAmount] = useState(0);
+
+  const clickCouponChange = (event) => {
+    const selectedCoupon = event.target.value;
+    // 根據所選擇的折價券更新折價金額
+    switch (selectedCoupon) {
+      case "coupon1":
+        setDiscountAmount(10);
+        break;
+      case "coupon2":
+      case "coupon3":
+        setDiscountAmount(100);
+        break;
+      default:
+        setDiscountAmount(0);
+        break;
+    }
+  };
+
   return (
     <div>
       {cart.length > 0 && (
@@ -373,18 +394,19 @@ export const YourOrder: React.FC = () => {
               name="coupon"
               id="coupon"
               className="search-input dark-gray"
+              onChange={clickCouponChange}
             >
               <option value="">選擇折價券</option>
-              <option value="coupon1">折價券1</option>
-              <option value="coupon2">折價券2</option>
-              <option value="coupon3">折價券3</option>
+              <option value="coupon1">Pure10off</option>
+              <option value="coupon2">wow100off</option>
+              <option value="coupon3">wow100off</option>
             </select>
           </div>
 
           <hr />
           <div className="sub-total">
             <h5 className="dark-gray">折價金額</h5>
-            <h5>-$0</h5>
+            <h5>-${discountAmount}</h5>
           </div>
           <div className="sub-total">
             <h4>總付款金額</h4>
