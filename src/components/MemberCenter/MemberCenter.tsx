@@ -23,7 +23,7 @@ const menuItems = [
     icon: 'far fa-user',
     subItems: [
       { title: '個人資料', link: '/MemberCenter' },
-      { title: '優惠券', link: '/CouponOverview' }
+      { title: '優惠券總覽', link: '/Datatables' }
       // { title: "訂單記錄", link: "/orders" },
       // 添加其他次選項...
     ]
@@ -37,7 +37,7 @@ const menuItems = [
       { title: '訂單管理', link: '/MemberCenter' },
       { title: '好書收藏', link: '/MemberCenter' }
     ]
-  }
+  },
   // 添加其他主選項...
 ];
 
@@ -66,7 +66,7 @@ const MemberCenter: React.FC = () => {
         );
 
         if (!response.ok) {
-          throw new Error('無法獲取會員信息');
+          throw new Error('無法獲取會員資訊');
         }
 
         const data = await response.json();
@@ -74,6 +74,7 @@ const MemberCenter: React.FC = () => {
         setMemberInfo(data);
       } catch (error) {
         console.error(error);
+        throw error;
       }
     };
 

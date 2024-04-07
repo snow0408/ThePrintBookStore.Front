@@ -13,13 +13,15 @@ import ForgetPassword from './components/ForgetPassword/ForgetPasswordForm';
 import ResetPassword from './components/ResetEmailForm/ResetEmailForm';
 import HomePage from './pages/UsedBooks/HomePage/HomePage';
 import PublicLayout from './layouts/PublicLayout';
-import CouponOverview from './components/CouponOverview/CouponOverview.tsx';
+// import CouponOverview from './components/CouponOverview/CouponOverview.tsx';
 import Ecpay from './pages/Ecpay.tsx';
 import LinePayPage from './pages/CartAll/confirm.tsx';
 import CartPage from './pages/CartAll/CartItem.tsx';
 import OrderConfirmation from './pages/CartAll/CheckoutForm.tsx';
 import { Step1, Step2, Step3 } from './pages/CartAll/CheckoutForm.tsx';
 import MemberCenter from './components/MemberCenter/MemberCenter.tsx';
+import Datatables  from "./components/Datatables/Datatables.tsx";
+
 //componets
 import App from './App.tsx';
 import Error404Page from './pages/ErrorPage/Error404Page.tsx';
@@ -83,7 +85,7 @@ const router = createBrowserRouter(
         />
         <Route path='ProductSearch' element={<ProductSearchPage />} />
         <Route path='/MemberCenter' element={<MemberCenter />} />
-        <Route path='/CouponOverview' element={<CouponOverview />} />
+        <Route path='/Coupons' element={<Datatables />} />
         <Route path='/productSearch' element={<ProductSearchPage />} />
         <Route path='/order' element={<OrderPage memberId={2} />} />
         <Route path='/cart' element={<CartPage />} />
