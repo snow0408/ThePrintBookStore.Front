@@ -14,17 +14,19 @@ import { useCartState } from "../../state";
 import { useQueryClient } from "@tanstack/react-query";
 import Snackbar from "@mui/material/Snackbar";
 import pdDetailsStyle from "./ProductDetailPage.module.css";
+import Alert from "@mui/material/Alert";
 
 const ProductDetail: React.FC = () => {
   const { productId } = useParams();
   const [publishDate, setPublishDate] = useState<Date | null>(null);
   const [open, setOpen] = useState(false);
   const [barMesaage, setBarMessage] = useState("");
+  const [addStatus, setAddStatus] = useState<string>("success");
   const { cartCount, setCartCount } = useCartState((state) => state);
 
   const queryClient = useQueryClient();
   const productResponse = useGetApiProductsId(Number(productId));
-  const cartDetailResponse = useGetApiCartsDetails({ Id: 2 }); //todo 會員ID
+  const cartDetailResponse = useGetApiCartsDetails({ Id: 2 }); //TODO: 會員ID
   const sameCategoryBookResponse =
     useGetApiProductsGetByDetailsCategoryProductId(Number(productId));
   const { mutate: addCart } = usePostApiCartsDetails();
@@ -41,32 +43,50 @@ const ProductDetail: React.FC = () => {
     return <LoadingMessage />;
   }
 
-  const handleClickAddCart = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleClickAddCart = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    addProductId: number
+  ) => {
     e.preventDefault();
-    if (product === undefined) {
+    if (addProductId === undefined) {
       setOpen(true);
       setBarMessage("找不到商品。");
+      setAddStatus("error");
+      return;
     } else if (cartDetailData === undefined) setCartCount(1);
     else if (
-      cartDetailData.find((item) => item.productId! === product.productId!) ===
+      cartDetailData.find((item) => item.productId === addProductId) ===
       undefined
     )
       setCartCount(1);
     else if (
-      cartDetailData.find((item) => item.productId === product?.productId)
+      cartDetailData.find((item) => item.productId === addProductId)
         ?.quantity >= 10
     ) {
       setOpen(true);
       setBarMessage("此商品超過購買數量限制。");
+      setAddStatus("error");
       return;
     }
-    addCart({ params: { memberId: 2, productId: product?.productId } }); //TODO: 會員ID
-    queryClient.invalidateQueries({
-      queryKey: getGetApiCartsDetailsQueryKey({ Id: 2 }), //TODO: 會員ID
-    });
-    queryClient.invalidateQueries({
-      queryKey: getGetApiCartsDetailsQueryKey({ Id: 2 }),
-    });
+
+    addCart(
+      { params: { memberId: 2, productId: addProductId } }, //TODO: 會員ID
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({
+            queryKey: getGetApiCartsDetailsQueryKey({ Id: 2 }), //TODO: 會員ID
+          });
+          setOpen(true);
+          setBarMessage("成功加入購物車。");
+          setAddStatus("success");
+        },
+        onError: () => {
+          setOpen(true);
+          setBarMessage("加入購物車失敗。");
+          setAddStatus("error");
+        },
+      }
+    );
   };
   const handleClose = () => {
     setOpen(false);
@@ -79,7 +99,18 @@ const ProductDetail: React.FC = () => {
         open={open}
         onClose={handleClose}
         message={barMesaage}
-      />
+        autoHideDuration={3000}
+        sx={{ zIndex: 9999, mt: 9 }}
+      >
+        <Alert
+          onClose={handleClose}
+          severity={addStatus}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {barMesaage}
+        </Alert>
+      </Snackbar>
       <section className="content-inner-1">
         <div className="container">
           <div className="row book-grid-row style-4 m-b60">
@@ -107,64 +138,6 @@ const ProductDetail: React.FC = () => {
                 <div className="dz-content">
                   <div className="dz-header">
                     <h3 className="title">{product?.productName}</h3>
-                    {/* <div className="shop-item-rating">
-                                            <div className="d-lg-flex d-sm-inline-flex d-flex align-items-center">
-                                                <ul className="dz-rating">
-                                                    <li>
-                                                        <i className="flaticon-star text-yellow"></i>
-                                                    </li>
-                                                    <li>
-                                                        <i className="flaticon-star text-yellow"></i>
-                                                    </li>
-                                                    <li>
-                                                        <i className="flaticon-star text-yellow"></i>
-                                                    </li>
-                                                    <li>
-                                                        <i className="flaticon-star text-yellow"></i>
-                                                    </li>
-                                                    <li>
-                                                        <i className="flaticon-star text-muted"></i>
-                                                    </li>
-                                                </ul>
-                                                <h6 className="m-b0">4.0</h6>
-                                            </div>
-                                            <div className="social-area">
-                                                <ul className="dz-social-icon style-3">
-                                                    <li>
-                                                        <a
-                                                            href="javascript:;"
-                                                            target="_self"
-                                                        >
-                                                            <i className="fa-brands fa-facebook-f"></i>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a
-                                                            href="javascript:;"
-                                                            target="_self"
-                                                        >
-                                                            <i className="fa-brands fa-twitter"></i>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a
-                                                            href="javascript:;"
-                                                            target="_self"
-                                                        >
-                                                            <i className="fa-brands fa-whatsapp"></i>
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a
-                                                            href="javascript:;"
-                                                            target="_self"
-                                                        >
-                                                            <i className="fa-solid fa-envelope"></i>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div> */}
                   </div>
                   <div className="dz-body">
                     <div className="book-detail">
@@ -189,7 +162,9 @@ const ProductDetail: React.FC = () => {
                         </li>
                       </ul>
                     </div>
-                    <p className="text-1">{product?.description}</p>
+                    <p className="text-1" style={{ textAlign: "justify" }}>
+                      {product?.description}
+                    </p>
                     <div className="book-footer">
                       <div className="price">
                         <h5>
@@ -206,24 +181,13 @@ const ProductDetail: React.FC = () => {
                       <div className="product-num">
                         <a
                           className="btn btn-primary btnhover btnhover2"
-                          onClick={handleClickAddCart}
+                          onClick={(e) =>
+                            handleClickAddCart(e, product?.productId as number)
+                          }
                         >
                           <i className="flaticon-shopping-cart-1"></i>{" "}
                           <span>加入購物車</span>
                         </a>
-                        {/* <div className="bookmark-btn style-1 d-none d-sm-block">
-                                                    <input
-                                                        className="form-check-input"
-                                                        type="checkbox"
-                                                        id="flexCheckDefault1"
-                                                    />
-                                                    <label
-                                                        className="form-check-label"
-                                                        htmlFor="flexCheckDefault1"
-                                                    >
-                                                        <i className="flaticon-heart"></i>
-                                                    </label>
-                                                </div> */}
                       </div>
                     </div>
                   </div>
@@ -241,11 +205,6 @@ const ProductDetail: React.FC = () => {
                       書籍資訊
                     </a>
                   </li>
-                  {/* <li>
-                                        <a data-bs-toggle="tab" href="">
-                                            用戶評論
-                                        </a>
-                                    </li> */}
                 </ul>
                 <div className="tab-content">
                   <div id="graphic-design-1" className="tab-pane show active">
@@ -326,7 +285,7 @@ const ProductDetail: React.FC = () => {
                           key={book.productId}
                         >
                           <div className="dz-shop-card style-5">
-                            <div className="dz-media">
+                            <div className="dz-media d-flex justify-content-center align-items-center">
                               <Link to={`/ProductDetail/${book.productId}`}>
                                 <img
                                   src={book?.imageUrl![0] ?? noImage}
@@ -341,7 +300,11 @@ const ProductDetail: React.FC = () => {
                             </div>
                             <div className="dz-content">
                               <Link to={`/ProductDetail/${book.productId}`}>
-                                <h5 className="subtitle">{book.productName}</h5>
+                                <h5
+                                  className={`subtitle ${pdDetailsStyle.clampTitle}`}
+                                >
+                                  {book.productName}
+                                </h5>
                               </Link>
 
                               <ul className="dz-tags">
@@ -373,7 +336,12 @@ const ProductDetail: React.FC = () => {
                               </div>
                               <a
                                 className="btn btn-outline-primary btn-sm btnhover btnhover2"
-                                onClick={handleClickAddCart}
+                                onClick={(e) =>
+                                  handleClickAddCart(
+                                    e,
+                                    book.productId as number
+                                  )
+                                }
                               >
                                 <i className="flaticon-shopping-cart-1 me-2"></i>{" "}
                                 加入購物車

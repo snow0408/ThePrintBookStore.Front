@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 
 
@@ -23,11 +24,13 @@ import { useCartStore, CartState } from "./CountMath";
 import { CartItemType } from "../../App";
 
 //API
+
 import {
   CartDetailsDto,
   useDeleteApiCartsDetailsId,
   usePutApiCartsDetailsId,
   useGetApiCartsDetails,
+
   useGetApiProductsId,
   BookProductDto,
 } from "../../API";
@@ -36,6 +39,7 @@ import LoadingMessage from "../../main";
 import { UseQueryResult, useQueries } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 
 interface CartProps {
   initialCart: CartDetailsDto[];
@@ -78,19 +82,23 @@ const CartPage: React.FC = () => {
   //todo會員Id
   const memberId = 2;
   const TestData = useGetApiCartsDetails({ Id: memberId });
+
   const ProductsDataArray = useProductDetails(
     TestData.data?.data as CartDetailsDto[]
   );
+
 
   if (TestData.isLoading) return <LoadingMessage />;
   if (TestData.data?.data && ProductsDataArray.length === 0)
     return <LoadingMessage />;
   return (
     <div className="container">
+
       <CartItem
         initialCart={TestData.data?.data as CartDetailsDto[]}
         produtDetail={ProductsDataArray}
       />
+
     </div>
   );
 };
@@ -171,7 +179,9 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
           cart.map((item) => {
             updateDetail({
               id: itemId ?? 0,
+
               params: { quantity: Math.max(0, item.quantity! - 1) },
+
             });
             return item.id === itemId
               ? { ...item, quantity: Math.max(0, item.quantity! - 1) }
@@ -198,7 +208,9 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
 
   return (
     <div className="cart">
+
       <h4 className="widget-title">購物車</h4>
+
       {cart.length > 0 ? (
         cart.map((item, index) => {
           return index === 0 ? (
@@ -211,10 +223,14 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                       <th className="col-2">單價</th>
                       <th className="col-2">數量</th>
                       <th className="col-2">總計</th>
+
+                      <th className="col-2"></th> //TODO:跑版就刪
+
                     </tr>
                   </thead>
                   <tbody>
                     <tr className="col-md-8 mb-5">
+
                       <td className="pd">
                         <div className="product-detail-box col-12">
                           <div className="img-block product-item-img col-6">
@@ -229,10 +245,12 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                             >
                               {item.productName}
                             </h5>
+
                           </div>
                         </div>
                       </td>
                       <td className="col-2">
+
                         <h5 className="dark-gray">
                           $
                           {Math.ceil(
@@ -250,6 +268,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                         </h5>
                       </td>
                       <td className="col-3">
+
                         <div className="quantity quantity-wrap">
                           <input
                             className="decrement dark-gray"
@@ -295,6 +314,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                           />
                         </div>
                       </td>
+
                       <td className="col-2" style={{ textAlign: "center" }}>
                         <h5>
                           $
@@ -320,6 +340,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                             className="fa-solid fa-trash-can"
                             onClick={() => removeFromCart(item.id)}
                           />
+
                         </a>
                       </td>
                     </tr>
@@ -332,6 +353,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
               <div className="col-lg-12">
                 <table className="cart-table mb-24">
                   <tbody>
+
                     <tr className="col-md-12 mb-5">
                       <td className="pd col-4">
                         <div className="product-detail-box col-12">
@@ -347,10 +369,12 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                             >
                               {item.productName}
                             </h5>
+
                           </div>
                         </div>
                       </td>
                       <td className="col-2">
+
                         <h5 className="dark-gray">
                           $
                           {Math.ceil(
@@ -368,6 +392,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                         </h5>
                       </td>
                       <td className="col-3">
+
                         <div className="quantity quantity-wrap">
                           <input
                             className="decrement dark-gray"
@@ -413,6 +438,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                           />
                         </div>
                       </td>
+
                       <td className="col-2" style={{ textAlign: "center" }}>
                         <h5>
                           $
@@ -448,6 +474,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
           );
         })
       ) : (
+
         <>
           <div className="hero-banner-2 pb-40">
             <div className="container">
@@ -510,6 +537,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                       <h5>Great Daily Deal</h5>
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -538,6 +566,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                       <h6>{totalItems}</h6>
                     </div>
 
+
                     <div className="grand-total mb-24">
                       <h5>總金額：</h5>
                       <h5>{total.toFixed(0)}</h5>
@@ -557,6 +586,7 @@ const CartItem: React.FC<CartProps> = ({ initialCart, produtDetail }) => {
                     </h6>
                   </div>
                 </div>
+
               </div>
             </div>
           </div>

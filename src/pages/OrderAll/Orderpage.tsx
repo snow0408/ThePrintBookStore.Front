@@ -1,11 +1,14 @@
+
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
+
 
 import {
   OrdersDto,
   useGetApiOrder,
   useGetApiOrderMemberId,
   useGetApiOrdersDetailsId,
+
   useGetApiProductsId,
 } from "../../API";
 import Accordion from "@mui/material/Accordion";
@@ -27,6 +30,7 @@ import b25 from "../../picture/b2-5.png";
 import ProductPictrue from "./ProductPictrue";
 import LoadingMessage from "../../main";
 
+
 interface OrderProp {
   memberId: number;
 }
@@ -36,6 +40,7 @@ const SideOrder: React.FC<{ orderData: OrdersDto }> = ({ orderData }) => {
     <div className="col-lg-5 mt-5">
       <form className="shop-form widget">
         <h4 className="widget-title">訂單資訊</h4>
+
 
         <table className="table-bordered check-tbl mb-4">
           <tbody>
@@ -63,6 +68,7 @@ const SideOrder: React.FC<{ orderData: OrdersDto }> = ({ orderData }) => {
             </tr>
           </tbody>
         </table>
+
       </form>
     </div>
   );
@@ -134,9 +140,11 @@ const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
                           <tr>
                             <td className="product-item-img col-2">
                               {/* 顯示商品圖片 */}
+
                               <ProductPictrue
                                 productId={item.productId as number}
                               />
+
                             </td>
                             {/* 顯示商品名稱 */}
                             <td className="product-item-name col-6">
@@ -163,9 +171,11 @@ const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
                         <tbody>
                           <tr>
                             <td className="product-item-img col-2">
+
                               <ProductPictrue
                                 productId={item.productId as number}
                               />
+
                             </td>
                             <td className="product-item-name  col-6">
                               {item.productName}
@@ -210,9 +220,11 @@ const OrderPage: React.FC<OrderProp> = ({ memberId }) => {
   if (orderResponse.isLoading) return <LoadingMessage />;
   return (
     <div className="container">
+
       <div className="row">
         {/* 左側區域顯示會員的訂單列表 */}
         <div className="col-lg-12 widget mt-5">
+
           <h4 className="widget-title">您的訂單</h4>
           {orderData && orderData.length > 0 ? (
             orderData.map((order, index) => (
@@ -253,6 +265,7 @@ const OrderPage: React.FC<OrderProp> = ({ memberId }) => {
                 </div>
               </div>
 
+
               <div className="m-40">
                 <div className="container">
                   <div className="benifits bg-lightest-gray">
@@ -287,6 +300,7 @@ const OrderPage: React.FC<OrderProp> = ({ memberId }) => {
               </div>
             </>
           )}
+
         </div>
       </div>
     </div>
