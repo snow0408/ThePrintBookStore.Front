@@ -2,7 +2,8 @@ import { useParams, useHistory } from 'react-router-dom';
 import {
   useGetApiUsedBooksIdId,
   useGetApiUsedBooksCategoryBookId,
-  usePostApiUsedBookCartsApi
+  usePostApiUsedBookCartsApi,
+  getGetApiUsedBookCartsApiQueryKey
 } from '../../API';
 // import LoadingMessage from '../../main';
 //images
@@ -23,11 +24,16 @@ import {
   faHeart,
   faShoppingCart
 } from '@fortawesome/free-solid-svg-icons';
+import { useQueryClient } from '@tanstack/react-query';
+import { useSnackbar } from '../../Context/SnackbarContext';
 
 const UsedBookInside: React.FC = () => {
   const { UsedBookId } = useParams();
-  const memberId = 2; //TODO:
+  const memberId = 28; //TODO:
   const [publishDate, setPublishDate] = useState<Date | null>(null);
+  const { showSnackbar } = useSnackbar();
+  //query客戶端鉤子
+  const queryClient = useQueryClient();
 
   //加入購物車
   const addBookToCartMutation = usePostApiUsedBookCartsApi();
@@ -82,12 +88,17 @@ const UsedBookInside: React.FC = () => {
       },
       {
         onSuccess: (data) => {
+          queryClient.invalidateQueries({
+            queryKey: getGetApiUsedBookCartsApiQueryKey({ memberId: 28 }) //TODO: 會員ID
+          });
           console.log('回應數據:', data);
-          alert('書籍已加入購物車！');
+          showSnackbar('書籍已加入購物車！', 'success');
         },
         onError: (error) => {
           console.error('請求錯誤:', error);
-          alert('加入購物車時出現錯誤。');
+          if (error.response.data == '商品已在購物車中')
+            showSnackbar('商品已在購物車中。', 'error');
+          else showSnackbar('加入購物車時出現錯誤。', 'error');
         }
       }
     );
