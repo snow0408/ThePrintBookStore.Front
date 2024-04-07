@@ -1,8 +1,8 @@
 import {
   createBrowserRouter,
   createRoutesFromElements,
-  Route
-} from 'react-router-dom';
+  Route,
+} from "react-router-dom";
 
 // 舊元件
 import EmployeeLoginForm from './components/EmployeeLoginForm/EmployeeLoginForm';
@@ -61,24 +61,24 @@ const LinePay = lazy(() => import('./pages/UsedBooksOrderPage/confirm.tsx'));
 const AddUsedBook = lazy(() => import('./pages/UsedBooks/UseBookCreate/index'));
 
 const ProductSearchPage = lazy(
-  () => import('./pages/ProductSearchPage/ProductSearchPage.tsx')
+  () => import("./pages/ProductSearchPage/ProductSearchPage.tsx")
 );
 
 const PhysicalEBookHomePage = lazy(
-  () => import('./pages/PhysicalEBookHomePage/PhysicalEBookHomePage.tsx')
+  () => import("./pages/PhysicalEBookHomePage/PhysicalEBookHomePage.tsx")
 );
 
 const ProductDetailPage = lazy(
-  () => import('./pages/ProductDetailPage/ProductDetailPage.tsx')
+  () => import("./pages/ProductDetailPage/ProductDetailPage.tsx")
 );
 // #endregion
 const router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      <Route path='/' element={<App />} errorElement={<OtherErrorPage />}>
+      <Route path="/" element={<App />} errorElement={<OtherErrorPage />}>
         <Route index element={<PhysicalEBookHomePage />} />
         <Route
-          path='ProductDetail/:productId'
+          path="ProductDetail/:productId"
           element={<ProductDetailPage />}
         />
         <Route path='ProductSearch' element={<ProductSearchPage />} />
@@ -89,25 +89,25 @@ const router = createBrowserRouter(
         <Route path='/cart' element={<CartPage />} />
         <Route path='/list' element={<OrderConfirmation />}>
           <Route index element={<Step1 />} />
-          <Route path='/list/Step2' element={<Step2 />} />
+          <Route path="/list/Step2" element={<Step2 />} />
         </Route>
-        <Route path='/linepay' element={<LinePayPage />} />
+        <Route path="/linepay" element={<LinePayPage />} />
       </Route>
       <Route path='/member-login' element={<MemberLoginForm />} />
       <Route path='/employee-login' element={<EmployeeLoginForm />} />
       <Route path='/Register' element={<Register />} />
       <Route
-        path='/CheckVerificationCode'
+        path="/CheckVerificationCode"
         element={<CheckVerificationCode />}
       />
-      <Route path='/ForgetPassword' element={<ForgetPassword />} />
-      <Route path='/ResetPassword/:token' element={<ResetPassword />} />
-      <Route path='/usedBook' element={<PublicLayout />}>
+      <Route path="/ForgetPassword" element={<ForgetPassword />} />
+      <Route path="/ResetPassword/:token" element={<ResetPassword />} />
+      <Route path="/usedBook" element={<PublicLayout />}>
         <Route index element={<HomePage />} />
 
-        <Route path='/usedBook/add-used-book' element={<AddUsedBook />} />
+        <Route path="/usedBook/add-used-book" element={<AddUsedBook />} />
         <Route
-          path='/usedBook/used-book-list'
+          path="/usedBook/used-book-list"
           element={<UserBooksList userId={2} />}
         />
         <Route
@@ -117,24 +117,24 @@ const router = createBrowserRouter(
         <Route path='/usedBook/usedBookAllBook' element={<UsedBookAllBook />} />
         <Route path='/usedBook/:UsedBookId' element={<UsedBookInside />} />
         <Route
-          path='/usedBook/usedBookCart'
+          path="/usedBook/usedBookCart"
           element={<UsedBooksCart />}
         ></Route>
-        <Route path='/usedBook/checkOut' element={<UsedBooksCheckOutForm />}>
+        <Route path="/usedBook/checkOut" element={<UsedBooksCheckOutForm />}>
           <Route index element={<CheckOutStep1 />} />
-          <Route path='/usedBook/checkOut/Step2' element={<CheckOutStep2 />} />
+          <Route path="/usedBook/checkOut/Step2" element={<CheckOutStep2 />} />
         </Route>
-        <Route path='/usedBook/usedBookPayment/linepay' element={<LinePay />} />
+        <Route path="/usedBook/usedBookPayment/linepay" element={<LinePay />} />
         <Route
-          path='/usedBook/UsedBooksOrderConfirmation'
+          path="/usedBook/UsedBooksOrderConfirmation"
           element={<UsedBooksOrderConfirmation />}
         ></Route>
         <Route
-          path='/usedBook/usedBookOrder'
+          path="/usedBook/usedBookOrder"
           element={<UsedBooksOrder />}
         ></Route>
       </Route>
-      <Route path='*' element={<Error404Page />} />
+      <Route path="*" element={<Error404Page />} />
     </>
   )
 );

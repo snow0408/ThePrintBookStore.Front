@@ -1,9 +1,15 @@
 // OrderConfirmation.tsx
 import React, { useState, useRef, useEffect } from "react";
-import "../../assets/css/app.css";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
+
+//css
+import "../../assets/css/app.css";
+
+//component
+import { CartItemType } from "../../App";
 import { useCartStore, CartState } from "./CountMath";
-import { CartItemType } from "../../API";
+
+//API
 import {
   useGetApiCartsMemberId,
   usePutTotalAmountId,
@@ -11,7 +17,10 @@ import {
   OrdersDto,
   useGetApiOrderMemberId,
   useGetApiOrder,
+  useGetAllCoupon,
 } from "../../API";
+
+//image
 import LinePay from "../../picture/LinePay.png";
 import Ecpay from "../../picture/ECPay.png";
 
@@ -28,6 +37,9 @@ export const Step1: React.FC<CartProps> = ({ initialCart }) => {
   //APIs
   const { mutate: updateCart } = usePutTotalAmountId();
   const { mutate: createOrder, data } = usePostApiOrder();
+
+  //todo抓取優惠券
+  const GetAllCoupon = useGetAllCoupon();
 
   //zustand
   const { cart } = useCartStore<CartState>((state) => state);
@@ -352,7 +364,7 @@ export const YourOrder: React.FC = () => {
           <hr />
           <div className="sub-total">
             <h5 className="dark-gray">運費</h5>
-            <h5>Free Shipping</h5>
+            <h5>免運費</h5>
           </div>
           <hr />
           <h6>選擇折價券</h6>
