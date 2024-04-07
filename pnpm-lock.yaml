@@ -47,6 +47,9 @@ dependencies:
   clsx:
     specifier: ^2.1.0
     version: 2.1.0
+  i:
+    specifier: ^0.3.7
+    version: 0.3.7
   material-react-table:
     specifier: ^2.12.1
     version: 2.12.1(@emotion/react@11.11.4)(@emotion/styled@11.11.0)(@mui/icons-material@5.15.14)(@mui/material@5.15.13)(@mui/x-date-pickers@7.1.0)(react-dom@18.2.0)(react@18.2.0)
@@ -2278,6 +2281,11 @@ packages:
   /html-attributes@1.1.0:
     resolution: {integrity: sha512-reT/KK6Ju+DZqAbAn3sIkpMH+658kEsaEjpNrej2O5XSUsH5SzVHX7NGZk5RiZcVi7l+RsV+5q3C6TqM5vxsVA==}
     engines: {node: '>= 0.10.26', npm: '>=1.4.3'}
+    dev: false
+
+  /i@0.3.7:
+    resolution: {integrity: sha512-FYz4wlXgkQwIPqhzC5TdNMLSE5+GS1IIDJZY/1ZiEPCT2S3COUVZeT5OW4BmW4r5LHLQuOosSwsvnroG9GR59Q==}
+    engines: {node: '>=0.4'}
     dev: false
 
   /ignore@5.3.1:
