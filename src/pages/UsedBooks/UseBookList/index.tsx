@@ -36,6 +36,7 @@ const UserBooksList: React.FC<{ userId: number }> = ({ userId }) => {
     });
   };
 
+  if (isLoading) return <Preloader />;
   if (error) return <div>Error: {error.message}</div>;
 
   return (

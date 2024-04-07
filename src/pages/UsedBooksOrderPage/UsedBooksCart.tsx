@@ -18,7 +18,7 @@ import './UsedBooksOrderPage.css';
 
 const UsedBookPicture: React.FC<{ UsedBookId: number }> = ({ UsedBookId }) => {
   const UsedBooksResponse = useGetApiUsedBooksIdId(UsedBookId);
-  if (UsedBooksResponse.isLoading) return <Preloader />;
+  if (UsedBooksResponse.isLoading) return <div>Loading</div>;
   return (
     <div className='img-block2'>
       <img

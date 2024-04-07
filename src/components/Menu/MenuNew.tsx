@@ -105,7 +105,7 @@ const PhysicalEBookNav: React.FC = () => {
             <div className='extra-nav'>
               <div className='extra-cell' style={{ margin: '20px' }}>
                 <ul className='navbar-nav header-right'>
-                  <li className='nav-item'>
+                  {/* <li className='nav-item'>
                     <a className='nav-link' href='#'>
                       <svg
                         xmlns='http://www.w3.org/2000/svg'
@@ -119,7 +119,7 @@ const PhysicalEBookNav: React.FC = () => {
                       </svg>
                       <span className='badge'>21</span>
                     </a>
-                  </li>
+                  </li> */}
                   <li className='nav-item'>
                     <Link
                       to='/usedBook/usedBookCart'

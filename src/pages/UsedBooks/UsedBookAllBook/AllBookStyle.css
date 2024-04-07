@@ -82,12 +82,30 @@
   left: 40px;
   margin-top: auto; /* 將價格容器推到底部 */
 }
-.heart {
+.cart {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   position: absolute;
-  top: 440px;
-  left: 190px;
+  top: 380px;
+  left: 250px;
   margin-top: auto; /* 將價格容器推到底部 */
+}
+.btn-custom {
+  background-color: #ae9e88; /* 初始背景色 */
+  color: white; /* 文字顏色 */
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  outline: none;
+  border-radius: 5px;
+}
+
+.btn-custom:hover {
+  background-color: #846e4b;
+  color: white; /* 文字顏色 */ /* 滑過時的背景色 */
+}
+
+.btn-custom:active {
+  background-color: #a98d70; /* 按下時的背景色 */
 }

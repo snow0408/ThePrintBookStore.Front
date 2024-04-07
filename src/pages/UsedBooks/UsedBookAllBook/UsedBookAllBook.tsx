@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { useParams, Link } from 'react-router-dom';
 // import '../../../assets/css/bootstrap.css';
 import '../../../assets/css/style.css';
 import '../../../assets/css/responsive.css';
 import '../../../assets/css/color.css';
 import '../UsedBookAllBook/AllBookStyle.css'; // Make sure your CSS file has all the necessary styles
 import Preloader from '../../../components/Preloader/Preloader';
-import { useGetApiUsedBooks } from '../../../API';
+import {
+  useGetApiUsedBooks,
+  useGetApiUsedBooksIdId,
+  usePostApiUsedBookCartsApi,
+  getGetApiUsedBookCartsApiQueryKey
+} from '../../../API';
 import defaultImage from '../../../assets/images/NoImageSmall.jpg';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../../../components/Menu/nav.css';
@@ -17,12 +22,25 @@ import {
   faHeart,
   faShoppingCart
 } from '@fortawesome/free-solid-svg-icons';
+import { useSnackbar } from '../../../Context/SnackbarContext';
+//Token
+import { jwtDecode } from 'jwt-decode';
+import { useQueryClient } from '@tanstack/react-query';
 
 const UsedBookAllBook = () => {
+  const { UsedBookId } = useParams();
   const navigate = useNavigate();
   const { data, isLoading, error } = useGetApiUsedBooks();
   const [selectedBook, setSelectedBook] = useState<number | null>(null);
   const [showScrollToTop, setShowScrollToTop] = useState(false);
+  const { showSnackbar } = useSnackbar();
+  const queryClient = useQueryClient();
+
+  const memberId = 28;
+
+  //加入購物車
+  const addBookToCartMutation = usePostApiUsedBookCartsApi();
+
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollToTop(window.scrollY > 100);
@@ -31,12 +49,50 @@ const UsedBookAllBook = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleBookClick = (bookId: number) => {
+  const handleBookClick = (event: React.MouseEvent, bookId: number) => {
+    event.stopPropagation();
     navigate(`/usedBook/${bookId}`);
   };
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  //加入購物車
+  const handleAddToCart = (event: React.MouseEvent, bookId: number) => {
+    event.stopPropagation();
+    console.log('memberId:', memberId);
+    console.log('bookID:', bookId);
+    if (!memberId || !bookId) {
+      showSnackbar('無法加入購物車。', 'error');
+      console.error('無效的 memberId 或 bookID');
+
+      return;
+    }
+
+    addBookToCartMutation.mutate(
+      {
+        data: {
+          memberID: memberId,
+          bookID: bookId
+        }
+      },
+      {
+        onSuccess: (data) => {
+          queryClient.invalidateQueries({
+            queryKey: getGetApiUsedBookCartsApiQueryKey({ memberId: memberId }) //TODO: 會員ID
+          });
+          console.log('回應數據:', data);
+          showSnackbar('書籍已加入購物車！', 'success');
+        },
+        onError: (error) => {
+          console.error('請求錯誤:', error);
+          if (error.response.data == '商品已在購物車中')
+            showSnackbar('商品已在購物車中。', 'error');
+          else showSnackbar('加入購物車時出現錯誤。', 'error');
+        }
+      }
+    );
   };
 
   if (isLoading) return <Preloader />;
@@ -55,11 +111,28 @@ const UsedBookAllBook = () => {
                 className={`books-panel-item-wrap ${
                   selectedBook === book.id ? 'is-flipped' : ''
                 }`}
-                onClick={() => handleBookClick(book.id)} // 添加點擊處理器
+                onClick={(e) => handleBookClick(e, book.id)} // 添加點擊處理器
                 onMouseEnter={() => setSelectedBook(book.id as number)}
                 onMouseLeave={() => setSelectedBook(null)}
                 style={{ cursor: 'pointer' }}
               >
+                <button
+                  type='button'
+                  onClick={(e) => handleAddToCart(e, book.id as number)}
+                  className='btn btnhover btn-custom '
+                  style={{
+                    backgroundColor: '#ae9e88',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    position: 'absolute',
+                    top: '440px',
+                    left: '260px',
+                    marginTop: 'auto'
+                  }}
+                >
+                  <i className='flaticon-shopping-cart-1'></i>{' '}
+                </button>
                 <div className='book-thumb-img-wrap has-edge'>
                   <img
                     width='200'
@@ -75,7 +148,14 @@ const UsedBookAllBook = () => {
                     <p className='book-thumb-title'>{book.title}</p>
                     <br />
                   </div>
-                  <div className='heart'>
+
+                  {/* <div className='cart'>
+                    <div className='extra-nav'>
+                      <div className=' extra-cell'></div>
+                    </div>
+                  </div> */}
+
+                  {/* <div className='heart'>
                     <div className='extra-nav'>
                       <div className=' extra-cell'>
                         <ul className='navbar-nav header-right'>
@@ -96,7 +176,7 @@ const UsedBookAllBook = () => {
                         </ul>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                   <p className='bookPrice'>
                     <FontAwesomeIcon icon={faTag} />
                     &ensp; 價格 NT{book.price}
@@ -117,6 +197,3 @@ const UsedBookAllBook = () => {
 };
 
 export default UsedBookAllBook;
-function setShowScrollToTop(arg0: boolean) {
-  throw new Error('Function not implemented.');
-}

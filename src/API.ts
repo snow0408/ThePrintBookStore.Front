@@ -15,7 +15,6 @@ import type {
 } from '@tanstack/react-query';
 import axios from 'axios';
 import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
-
 axios.defaults.baseURL = 'https://localhost:7236';
 export type PatchApiUsedBooksIdBody = {
   ImageFile?: Blob;
@@ -2161,6 +2160,129 @@ export const useGetCouponByCode = <
   query.queryKey = queryOptions.queryKey;
 
   return query;
+};
+
+export const updateCouponByCode = (
+  code: string,
+  couponCreateDTO: CouponCreateDTO,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.put(`/api/Coupon/${code}`, couponCreateDTO, options);
+};
+
+export const getUpdateCouponByCodeMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateCouponByCode>>,
+    TError,
+    { code: string; data: CouponCreateDTO },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateCouponByCode>>,
+  TError,
+  { code: string; data: CouponCreateDTO },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateCouponByCode>>,
+    { code: string; data: CouponCreateDTO }
+  > = (props) => {
+    const { code, data } = props ?? {};
+
+    return updateCouponByCode(code, data, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateCouponByCodeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateCouponByCode>>
+>;
+export type UpdateCouponByCodeMutationBody = CouponCreateDTO;
+export type UpdateCouponByCodeMutationError = AxiosError<unknown>;
+
+export const useUpdateCouponByCode = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateCouponByCode>>,
+    TError,
+    { code: string; data: CouponCreateDTO },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getUpdateCouponByCodeMutationOptions(options);
+
+  return useMutation(mutationOptions);
+};
+
+export const deleteCouponByCode = (
+  code: string,
+  options?: AxiosRequestConfig
+): Promise<AxiosResponse<void>> => {
+  return axios.delete(`/api/Coupon/${code}`, options);
+};
+
+export const getDeleteCouponByCodeMutationOptions = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteCouponByCode>>,
+    TError,
+    { code: string },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteCouponByCode>>,
+  TError,
+  { code: string },
+  TContext
+> => {
+  const { mutation: mutationOptions, axios: axiosOptions } = options ?? {};
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteCouponByCode>>,
+    { code: string }
+  > = (props) => {
+    const { code } = props ?? {};
+
+    return deleteCouponByCode(code, axiosOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteCouponByCodeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteCouponByCode>>
+>;
+
+export type DeleteCouponByCodeMutationError = AxiosError<unknown>;
+
+export const useDeleteCouponByCode = <
+  TError = AxiosError<unknown>,
+  TContext = unknown
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteCouponByCode>>,
+    TError,
+    { code: string },
+    TContext
+  >;
+  axios?: AxiosRequestConfig;
+}) => {
+  const mutationOptions = getDeleteCouponByCodeMutationOptions(options);
+
+  return useMutation(mutationOptions);
 };
 
 export const postApiEmailSendResetPassword = (
