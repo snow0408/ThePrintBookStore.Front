@@ -1,14 +1,11 @@
-
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
-
 
 import {
   OrdersDto,
   useGetApiOrder,
   useGetApiOrderMemberId,
   useGetApiOrdersDetailsId,
-
   useGetApiProductsId,
 } from "../../API";
 import Accordion from "@mui/material/Accordion";
@@ -30,17 +27,16 @@ import b25 from "../../picture/b2-5.png";
 import ProductPictrue from "./ProductPictrue";
 import LoadingMessage from "../../main";
 
-
 interface OrderProp {
   memberId: number;
 }
 // 定義 SideOrder 組件，接受 orderData 屬性
+//todo照著下訂日期去做排序
 const SideOrder: React.FC<{ orderData: OrdersDto }> = ({ orderData }) => {
   return (
     <div className="col-lg-5 mt-5">
       <form className="shop-form widget">
         <h4 className="widget-title">訂單資訊</h4>
-
 
         <table className="table-bordered check-tbl mb-4">
           <tbody>
@@ -66,9 +62,12 @@ const SideOrder: React.FC<{ orderData: OrdersDto }> = ({ orderData }) => {
               <td>總價格</td>
               <td className="product-price-total">${orderData?.totalAmount}</td>
             </tr>
+            <tr>
+              <td>備註</td>
+              <td className="product-price-total">{orderData?.message}</td>
+            </tr>
           </tbody>
         </table>
-
       </form>
     </div>
   );
@@ -108,11 +107,22 @@ const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
           aria-controls="panel1-content"
           id="panel1-header"
         >
-          {/* todo怎麼下單時間沒有抓到?? */}
           <div>
-            <h5>訂單編號:{orderId}</h5>
-            <h5>下單時間:{formattedDate}</h5>
-            <h5>總金額:{orderData?.totalAmount}</h5>
+            <table className="table-bordered check-tbl mb-4">
+              <tbody>
+                <tr>
+                  <td>訂單編號</td>
+                  <td className="product-price">{orderId}</td>
+                  <td>下單時間</td>
+                  <td>{formattedDate}</td>
+
+                  <td>總金額</td>
+                  <td className="product-price-total">
+                    {orderData?.totalAmount}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </AccordionSummary>
 
@@ -144,7 +154,6 @@ const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
                               <ProductPictrue
                                 productId={item.productId as number}
                               />
-
                             </td>
                             {/* 顯示商品名稱 */}
                             <td className="product-item-name col-6">
@@ -171,11 +180,9 @@ const OneOrder: React.FC<{ orderId: number }> = ({ orderId }) => {
                         <tbody>
                           <tr>
                             <td className="product-item-img col-2">
-
                               <ProductPictrue
                                 productId={item.productId as number}
                               />
-
                             </td>
                             <td className="product-item-name  col-6">
                               {item.productName}
@@ -214,17 +221,23 @@ const OrderPage: React.FC<OrderProp> = ({ memberId }) => {
 
   // 從回應中取得會員訂單資料
   const orderData = orderResponse.data?.data;
+
+  //訂單排序
+  orderData?.sort((a, b) => {
+    const dataA = new Date(a.orderDate);
+    const dataB = new Date(b.orderDate);
+    return dataB - dataA;
+  });
+
   const backtoMenu = () => {
     window.location.href = "/";
   };
   if (orderResponse.isLoading) return <LoadingMessage />;
   return (
     <div className="container">
-
       <div className="row">
         {/* 左側區域顯示會員的訂單列表 */}
         <div className="col-lg-12 widget mt-5">
-
           <h4 className="widget-title">您的訂單</h4>
           {orderData && orderData.length > 0 ? (
             orderData.map((order, index) => (
@@ -265,7 +278,6 @@ const OrderPage: React.FC<OrderProp> = ({ memberId }) => {
                 </div>
               </div>
 
-
               <div className="m-40">
                 <div className="container">
                   <div className="benifits bg-lightest-gray">
@@ -300,7 +312,6 @@ const OrderPage: React.FC<OrderProp> = ({ memberId }) => {
               </div>
             </>
           )}
-
         </div>
       </div>
     </div>

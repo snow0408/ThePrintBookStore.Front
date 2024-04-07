@@ -17,7 +17,7 @@ import {
 
 //image
 import logo from "../../assets/images/logo.png";
-import uc from "../../picture/uc.jpg";
+import uc from "../../picture/uc.png";
 
 const LinePayPage: React.FC = () => {
   const [transactionId, setTransactionId] = useState<string>("");
@@ -87,7 +87,7 @@ const LinePayPage: React.FC = () => {
 
         setTimeout(() => {
           navigate("/order"); // 跳轉到付款成功頁面路徑
-        }, 10000);
+        }, 5000);
       } else {
         console.log("付款失敗");
       }

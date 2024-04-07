@@ -159,7 +159,7 @@ export const Step1: React.FC<CartProps> = ({ initialCart }) => {
                 className="form-control"
                 id="memberName"
                 name="memberName"
-                placeholder="王測試"
+                placeholder="王大明"
                 value={memberName}
                 readOnly
               />
@@ -229,6 +229,11 @@ export const Step2 = () => {
   if (orderId != 0) {
     orderTotalAmount = orderTotalResponse.data?.data?.totalAmount as number;
   }
+  // //todo移除購物車商品
+  // const { mutate: deleteCartItem } = useDeleteApiUsedBookCartsApiId();
+  // function deleteCartItems(Id: number) {
+  //   deleteCartItem({ id: Id });
+  // }
 
   const requestPayment = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
