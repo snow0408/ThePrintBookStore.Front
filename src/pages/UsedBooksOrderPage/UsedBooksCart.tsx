@@ -33,7 +33,7 @@ const UsedBookPicture: React.FC<{ UsedBookId: number }> = ({ UsedBookId }) => {
 };
 
 const UsedBooksCart: React.FC = () => {
-  const [memberId, setMemberId] = useState<number>(2);
+  const [memberId, setMemberId] = useState<number>(28);
   const cartData = useGetApiUsedBookCartsApi({ memberId: memberId });
   const [cart, setCart] = useState<UsedBookCartsDto[]>([]);
   useEffect(() => {
