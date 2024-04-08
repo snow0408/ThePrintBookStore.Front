@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../../App.css';
 import { usePutApiUsedBookPaymentRecordsApi, useGetApiUsedBookPaymentRecordsApi, usePutApiUsedBookOrdersApi, usePostApiUsedBookBuyerInfomationsApiOrderRecipient } from '../../API';
+import logo from '../../picture/logo-5.jpg'
 
 const LinePay: React.FC = () => {
   const navigate = useNavigate(); // useNavigate在函式組件的主體使用
@@ -104,8 +105,10 @@ const LinePay: React.FC = () => {
             <tr>
               <td colSpan={2}>
                 <img
-                  src='https://static.accupass.com/org/2011051025162614811630.jpg'
+                  //src='https://static.accupass.com/org/2011051025162614811630.jpg'
+                  src={logo}
                   alt='商品圖片'
+                  style={{ borderRadius: '5px' }}
                 />
               </td>
             </tr>
