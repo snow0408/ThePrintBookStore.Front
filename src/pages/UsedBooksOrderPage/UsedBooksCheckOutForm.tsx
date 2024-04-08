@@ -8,7 +8,8 @@ import {
   UsedBookCartsDto,
   usePostApiUsedBookOrdersCreateApi,
   usePostApiUsedBookBuyerInfomationsApi,
-  useDeleteApiUsedBookCartsApiId
+  useDeleteApiUsedBookCartsApiId,
+  useGetApiMembersId
 } from '../../API';
 import {
   usepaymentAmountStore,
@@ -29,11 +30,25 @@ interface UsedBookOrderProps {
 
 //寄送資訊
 export const CheckOutStep1 = () => {
+  const memberId: number = 28;
   const [recipientName, setRecipientName] = useState<string>('');
   const [recipientPhone, setRecipientPhone] = useState<string>('');
   const [recipientAddress, setRecipientAddress] = useState<string>('');
   const [recipientEmail, setRecipientEmail] = useState<string>('');
   const [remark, setRemark] = useState<string>('');
+
+  //帶入會員資料
+  const memberData = useGetApiMembersId(memberId);
+  console.log(memberData.data?.data);
+  useEffect(() => {
+    const data = memberData.data?.data;
+    if (data) {
+      setRecipientName(data.name)
+      setRecipientPhone(data.phoneNumber)
+      setRecipientAddress(data.address)
+      setRecipientEmail(data.email)
+    }
+  }, [memberData.data?.data])
 
   const [nameValid, setNameValid] = useState<boolean>();
   const [addressValid, setAddressValid] = useState<boolean>();
