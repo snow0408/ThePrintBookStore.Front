@@ -19,6 +19,7 @@ import {
   usedBuyerInformationStore
 } from '../../state';
 import LinePay from '../../picture/LinePay.png';
+import Ecpay from "../../picture/ECPay.png";
 
 interface UsedBookOrderProps {
   cart: UsedBookCartsDto[];
@@ -370,6 +371,9 @@ export const CheckOutStep2 = () => {
               <div>
                 <button type='button' onClick={requestPayment}>
                   <img src={LinePay} />
+                </button>
+                <button type="button" className="col-5" >
+                  <img src={Ecpay} />
                 </button>
               </div>
             </div>
