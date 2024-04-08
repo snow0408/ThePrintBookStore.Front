@@ -335,7 +335,7 @@ const PhysicalEBookNav: React.FC = () => {
                 </div>
             </div>
             {/* sticky-header */}
-            <div className=" main-bar-wraper navbar-expand-lg">
+            {/* <div className=" main-bar-wraper navbar-expand-lg">
                 <div className="main-bar clearfix">
                     <div className="container clearfix">
                         <div
@@ -343,11 +343,7 @@ const PhysicalEBookNav: React.FC = () => {
                             id="navbarNavDropdown"
                         >
                             <ul className="nav navbar-nav">
-                                {/* <li>
-                                    <a href="#">
-                                        <span>關於我們</span>
-                                    </a>
-                                </li> */}
+                     
                                 <li>
                                     <Link to="/">
                                         <span>實體書/電子書</span>
@@ -358,55 +354,12 @@ const PhysicalEBookNav: React.FC = () => {
                                         <span>二手書</span>
                                     </Link>
                                 </li>
-                                {/* <li className="sub-menu-down">
-                                    <a href="">
-                                        <span></span>
-                                    </a>
-                                    <ul className="sub-menu">
-                                        <li>
-                                            <a href="books-grid-view.html">
-                                                Shop Grid
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li className="sub-menu-down">
-                                    <a href="">
-                                        <span>文章</span>
-                                    </a>
-                                    <ul className="sub-menu">
-                                        <li>
-                                            <a href="blog-grid.html">
-                                                Blog Grid
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="blog-large-sidebar.html">
-                                                Blog Large Sidebar
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="blog-list-sidebar.html">
-                                                Blog List Sidebar
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="blog-detail.html">
-                                                Blog Details
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li> */}
-                                {/* <li>
-                                    <a href="#">
-                                        <span>聯絡我們</span>
-                                    </a>
-                                </li> */}
+                                
                             </ul>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> */}
         </>
     );
 };
