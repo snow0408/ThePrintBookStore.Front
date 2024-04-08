@@ -304,10 +304,10 @@ export const CheckOutStep2 = () => {
         {
           id: '20191011I001',
           amount: count,
-          name: '印跡書閣',
+          name: '島讀日',
           products: [
             {
-              name: '印跡書閣',
+              name: '島讀日',
               quantity: 1,
               price: count
             }
@@ -380,23 +380,18 @@ export const CheckOutStep2 = () => {
         <h4 className='mb-32'>付款方式</h4>
       </div>
       <div className='row'>
-        <div className='col-sm-6'>
+        <div className=''>
           <div className='mb-24'>
             <div className='mb-24'>
               <div>
-                <button type='button' onClick={requestPayment}>
-                  <img src={LinePay} />
+                <button type='button' onClick={requestPayment} className='col-5 mx-3' style={{ backgroundColor: 'white' }}>
+                  <img style={{ height: '170px', border: '1px solid gray', borderRadius: '10px' }} src={LinePay} />
                 </button>
-                <button type="button" className="col-5" >
-                  <img src={Ecpay} />
+                <button type="button" className='col-5 mx-3' style={{ backgroundColor: 'white' }}>
+                  <img style={{ height: '170px', border: '1px solid gray', borderRadius: '10px', padding: '30px', backgroundColor: 'white' }} src={Ecpay} />
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-        <div className='col-sm-6'>
-          <div className='mb-24'>
-            <div className='mb-32'></div>
           </div>
         </div>
         <div className='col-sm-12'>
@@ -410,7 +405,7 @@ export const CheckOutStep2 = () => {
           </Link>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
