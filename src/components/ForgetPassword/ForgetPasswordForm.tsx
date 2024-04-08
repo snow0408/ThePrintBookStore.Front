@@ -2,41 +2,64 @@ import { useState } from "react";
 import { usePostApiEmailSendForgotPassword } from "../../API";
 
 function ForgetPassword() {
-    const { mutate: addForgotPassword, error } =
-        usePostApiEmailSendForgotPassword();
-    const [email, setEmail] = useState("123testtest01@gmail.com"); // 增加狀態來保存郵件地址
-    const [message, setMessage] = useState(""); // 新增一個狀態來保存發送郵件的提示信息
+  const [email, setEmail] = useState("123testtest01@gmail.com");
+  const [message, setMessage] = useState("");
+  const { mutate: addForgotPassword, error } =
+    usePostApiEmailSendForgotPassword();
 
-    const handleAddPet = () => {
-        addForgotPassword(
-            { data: { email: email } },
-            {
-                onSuccess: () => {
-                    // 在發送郵件成功時設置提示信息
-                    setMessage("郵件已經發送至您的信箱，請檢查。");
-                },
-                onError: () => {
-                    // 在發送郵件失敗時也可以設置相應的提示信息
-                    setMessage("發送郵件失敗，請稍後再試。");
-                },
-            }
-        );
-    };
-    if (error) return <div>錯誤警報錯誤警報 {error.message}</div>;
-
-    return (
-        <div>
-            <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="請輸入信箱"
-            />
-            <button onClick={handleAddPet}>發送至信箱</button>
-            {message && <div>{message}</div>}{" "}
-            {/* 在這裡顯示發送郵件的提示信息 */}
-        </div>
+  const handleForgotPassword = () => {
+    addForgotPassword(
+      { data: { email: email } },
+      {
+        onSuccess: () => {
+          setMessage("郵件已經發送至您的信箱，請檢查。");
+        },
+        onError: () => {
+          setMessage("發送郵件失敗，請稍後再試。");
+        },
+      }
     );
+  };
+
+  return (
+    <section className="content-inner">
+      <div className="container">
+        <div className="row justify-content-center">
+          <div className="col-lg-6 col-md-6 mb-4">
+            <div className="reset-area">
+              <h4 className="text-secondary">忘記密碼</h4>
+              {error && (
+                <div className="alert alert-danger" role="alert">
+                  錯誤警報: {error.message}
+                </div>
+              )}
+
+              <div className="form-group">
+                <label htmlFor="email">電子信箱:</label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="請輸入信箱"
+                  className="form-control"
+                />
+              </div>
+              <button
+                onClick={handleForgotPassword}
+                className="btn btn-primary"
+              >
+                發送至信箱
+              </button>
+              {message && (
+                <div className="alert alert-info mt-2">{message}</div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export default ForgetPassword;
